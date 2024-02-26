@@ -41,14 +41,33 @@ const createBowlingLane = () => {
   const lane = BABYLON.MeshBuilder.CreateBox("cube", {
     width: 30,
     height: 0.5,
-    depth: 120
+    depth: 170
   })
   lane.position.y = 0.25
-  lane.position.z = 40
+  lane.position.z = 15
 
   const laneMat = new BABYLON.StandardMaterial();
   laneMat.diffuseTexture = new BABYLON.Texture("Images/bowling_floor.jpg");
-  lane.material = laneMat
+  lane.material = laneMat;
+
+
+  const laneLeft = BABYLON.MeshBuilder.CreateBox("cube", {
+    width: 1,
+    height: 5,
+    depth: 170
+  })
+  laneLeft.position.x = -15.5
+  laneLeft.position.y = 0.25;
+  laneLeft.position.z = 15;
+
+  const laneRight = BABYLON.MeshBuilder.CreateBox("cube", {
+    width: 1,
+    height: 5,
+    depth: 170
+  })
+  laneRight.position.x = 15.5
+  laneRight.position.y = 0.25;
+  laneRight.position.z = 15;
 }
 
 
@@ -69,6 +88,21 @@ const createEnvironment = () => {
   leftWall.position.y = 25;
   leftWall.rotation.y = -Math.PI / 2;
 
+  const leftWallMat = new BABYLON.StandardMaterial();
+  leftWallMat.diffuseTexture = new BABYLON.Texture("Images/Sidewalls2.jpg");
+  leftWallMat.diffuseTexture.wrapU = BABYLON.Texture.WRAP_ADDRESSMODE;
+  leftWallMat.diffuseTexture.wrapV = BABYLON.Texture.WRAP_ADDRESSMODE;
+
+  leftWallMat.diffuseTexture.uScale = 2;
+  leftWallMat.diffuseTexture.vScale = 2;
+
+  leftWall.material = leftWallMat;
+
+
+
+
+
+
   const rightWall = new BABYLON.MeshBuilder.CreatePlane("plane", {
     height: 50,
     width: 200,
@@ -77,12 +111,38 @@ const createEnvironment = () => {
   rightWall.position.y = 25;
   rightWall.rotation.y = Math.PI / 2;
 
-  const backWall = new BABYLON.MeshBuilder.CreatePlane("plane", {
-    height: 50,
+//Wall right behind the pins(left as a black screen)
+  const backWall1 = new BABYLON.MeshBuilder.CreatePlane("plane", {
+    height: 10,
+    width: 30,
+  });
+  backWall1.position.y = 5;
+  backWall1.position.z = 100;
+
+//Wall where the texture has to be applied
+  const backWall2 = new BABYLON.MeshBuilder.CreatePlane("plane", {
+    height: 40,
     width: 100,
   });
-  backWall.position.y = 25;
-  backWall.position.z = 100;
+  backWall2.position.y = 30;
+  backWall2.position.z = 100;
+  
+//Walls on sides of backWall1(No texture needed only color)
+  const backWall3 = new BABYLON.MeshBuilder.CreatePlane("plane", {
+    height: 10,
+    width: 40,
+  });
+  backWall3.position.x = -30
+  backWall3.position.y = 5;
+  backWall3.position.z = 100;
+
+  const backWall4 = new BABYLON.MeshBuilder.CreatePlane("plane", {
+    height: 10,
+    width: 40,
+  });
+  backWall4.position.x = 30
+  backWall4.position.y = 5;
+  backWall4.position.z = 100;
 };
 
 createScene().then((scene) => {
