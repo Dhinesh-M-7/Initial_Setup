@@ -50,7 +50,10 @@ const createEnvironment = () => {
     width: 100,
     height: 200,
   });
-
+  const groundMat = new BABYLON.StandardMaterial('ground-mat');
+  groundMat.diffuseTexture = new BABYLON.Texture('images/floor.jpg');
+  ground.material = groundMat;
+  
   const leftWall = new BABYLON.MeshBuilder.CreatePlane("plane", {
     height: 50,
     width: 200,
