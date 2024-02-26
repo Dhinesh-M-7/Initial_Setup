@@ -18,18 +18,13 @@ async function createScene() {
 
   const light = new BABYLON.HemisphericLight(
     "light",
-    new BABYLON.Vector3(0, 1, 0)
+    new BABYLON.Vector3(0, 10, -10)
   );
   light.intensity = 0.7;
+  light.lightmapMode = BABYLON.Light.FALLOFF_PHYSICAL;
 
   createEnvironment();
-
-  createBowlingLane();
-
-  
-
-  scene.enablePhysics(new BABYLON.Vector3(0, -9.81, 0), havokPlugin);
-
+  const lane = createBowlingLane();
   //const groundAggregate = new BABYLON.PhysicsAggregate(ground, BABYLON.PhysicsShapeType.BOX, {mass: 0});
 
   return scene;
@@ -46,8 +41,8 @@ const createBowlingLane = () => {
   lane.position.y = 0.25
   lane.position.z = 15
 
-  const laneMat = new BABYLON.StandardMaterial();
-  laneMat.diffuseTexture = new BABYLON.Texture("Images/bowling_floor.jpg");
+  const laneMat = new BABYLON.StandardMaterial("lane-material");
+  laneMat.diffuseTexture = new BABYLON.Texture('Images/bowling_floor.jpg');
   lane.material = laneMat;
 
 
@@ -77,9 +72,9 @@ const createEnvironment = () => {
     height: 200,
   });
   const groundMat = new BABYLON.StandardMaterial('ground-mat');
-  groundMat.diffuseTexture = new BABYLON.Texture('images/floor.jpg');
+  groundMat.diffuseTexture = new BABYLON.Texture('Images/floor.jpg');
   ground.material = groundMat;
-  
+
   const leftWall = new BABYLON.MeshBuilder.CreatePlane("plane", {
     height: 50,
     width: 200,
@@ -87,19 +82,9 @@ const createEnvironment = () => {
   leftWall.position.x = -50;
   leftWall.position.y = 25;
   leftWall.rotation.y = -Math.PI / 2;
-
-  const leftWallMat = new BABYLON.StandardMaterial();
-  leftWallMat.diffuseTexture = new BABYLON.Texture("Images/Sidewalls2.jpg");
-  leftWallMat.diffuseTexture.wrapU = BABYLON.Texture.WRAP_ADDRESSMODE;
-  leftWallMat.diffuseTexture.wrapV = BABYLON.Texture.WRAP_ADDRESSMODE;
-
-  leftWallMat.diffuseTexture.uScale = 2;
-  leftWallMat.diffuseTexture.vScale = 2;
-
+  const leftWallMat = new BABYLON.StandardMaterial('back-wall-material');
+  leftWallMat.diffuseTexture = new BABYLON.Texture('Images/sideWall.jpg');
   leftWall.material = leftWallMat;
-
-
-
 
 
 
