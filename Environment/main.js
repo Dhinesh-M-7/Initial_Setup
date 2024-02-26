@@ -45,6 +45,10 @@ const createBowlingLane = () => {
   })
   lane.position.y = 0.25
   lane.position.z = 40
+
+  const laneMat = new BABYLON.StandardMaterial();
+  laneMat.diffuseTexture = new BABYLON.Texture("Images/bowling_floor.jpg");
+  lane.material = laneMat
 }
 
 
