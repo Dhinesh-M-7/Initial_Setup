@@ -10,21 +10,34 @@ async function  createScene(){
   const havokPlugin = new BABYLON.HavokPlugin(true, havokInstance);
 
 
-  const camera = new BABYLON.FreeCamera("camera", new BABYLON.Vector3(0, 10, -50));
+  const camera = new BABYLON.UniversalCamera("camera", new BABYLON.Vector3(0, 10, -75));
   camera.setTarget(BABYLON.Vector3.Zero());
   camera.attachControl(canvas, true);
 
   const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0));
   light.intensity = 0.7;
 
+  createEnvironment();
+
+
+  scene.enablePhysics(new BABYLON.Vector3(0, -9.81, 0), havokPlugin);
+
+
+  //const groundAggregate = new BABYLON.PhysicsAggregate(ground, BABYLON.PhysicsShapeType.BOX, {mass: 0});
+
+  return scene;
+};
+
+
+const createEnvironment = () => {
   const ground = BABYLON.MeshBuilder.CreateGround("ground", {
     width: 100,
-    height: 100
+    height: 150
   })
 
   const leftWall = new BABYLON.MeshBuilder.CreatePlane("plane", {
     height: 50,
-    width: 100
+    width: 150
   })
   leftWall.position.x = -50;
   leftWall.position.y = 25
@@ -32,7 +45,7 @@ async function  createScene(){
 
   const rightWall = new BABYLON.MeshBuilder.CreatePlane("plane", {
     height: 50,
-    width: 100
+    width: 150
   })
   rightWall.position.x = 50;
   rightWall.position.y = 25;
@@ -43,17 +56,8 @@ async function  createScene(){
     width: 100
   })
   backWall.position.y = 25;
-  backWall.position.z = 50
-
-
-  scene.enablePhysics(new BABYLON.Vector3(0, -9.81, 0), havokPlugin);
-
-
-  const groundAggregate = new BABYLON.PhysicsAggregate(ground, BABYLON.PhysicsShapeType.BOX, {mass: 0});
-
-  return scene;
-};
-
+  backWall.position.z = 75
+}
 
 
 
