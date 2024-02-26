@@ -18,18 +18,13 @@ async function createScene() {
 
   const light = new BABYLON.HemisphericLight(
     "light",
-    new BABYLON.Vector3(0, 1, 0)
+    new BABYLON.Vector3(0, 10, -10)
   );
   light.intensity = 0.7;
+  light.lightmapMode = BABYLON.Light.FALLOFF_PHYSICAL;
 
   createEnvironment();
-
-  createBowlingLane();
-
-  
-
-  scene.enablePhysics(new BABYLON.Vector3(0, -9.81, 0), havokPlugin);
-
+  const lane = createBowlingLane();
   //const groundAggregate = new BABYLON.PhysicsAggregate(ground, BABYLON.PhysicsShapeType.BOX, {mass: 0});
 
   return scene;
@@ -46,9 +41,11 @@ const createBowlingLane = () => {
   lane.position.y = 0.25
   lane.position.z = 40
 
-  const laneMat = new BABYLON.StandardMaterial();
-  laneMat.diffuseTexture = new BABYLON.Texture("Images/bowling_floor.jpg");
-  lane.material = laneMat
+  const laneMat = new BABYLON.StandardMaterial("lane-material");
+  laneMat.diffuseTexture = new BABYLON.Texture('Images/bowling_floor.jpg');
+  lane.material = laneMat;
+
+  return lane;
 }
 
 
@@ -58,9 +55,9 @@ const createEnvironment = () => {
     height: 200,
   });
   const groundMat = new BABYLON.StandardMaterial('ground-mat');
-  groundMat.diffuseTexture = new BABYLON.Texture('images/floor.jpg');
+  groundMat.diffuseTexture = new BABYLON.Texture('Images/floor.jpg');
   ground.material = groundMat;
-  
+
   const leftWall = new BABYLON.MeshBuilder.CreatePlane("plane", {
     height: 50,
     width: 200,
@@ -68,6 +65,9 @@ const createEnvironment = () => {
   leftWall.position.x = -50;
   leftWall.position.y = 25;
   leftWall.rotation.y = -Math.PI / 2;
+  const leftWallMat = new BABYLON.StandardMaterial('back-wall-material');
+  leftWallMat.diffuseTexture = new BABYLON.Texture('Images/sideWall.jpg');
+  leftWall.material = leftWallMat;
 
   const rightWall = new BABYLON.MeshBuilder.CreatePlane("plane", {
     height: 50,
@@ -76,6 +76,9 @@ const createEnvironment = () => {
   rightWall.position.x = 50;
   rightWall.position.y = 25;
   rightWall.rotation.y = Math.PI / 2;
+  const rightWallMat = new BABYLON.StandardMaterial('back-wall-material');
+  rightWallMat.diffuseTexture = new BABYLON.Texture('Images/sideWall.jpg');
+  rightWall.material = rightWallMat;
 
   const backWall = new BABYLON.MeshBuilder.CreatePlane("plane", {
     height: 50,
