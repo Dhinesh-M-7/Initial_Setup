@@ -11,7 +11,7 @@ async function createScene() {
 
   const camera = new BABYLON.UniversalCamera(
     "camera",
-    new BABYLON.Vector3(0, 10, -75)
+    new BABYLON.Vector3(0, 10, -90)
   );
   camera.setTarget(BABYLON.Vector3.Zero());
   camera.attachControl(canvas, true);
@@ -83,7 +83,7 @@ const createEnvironment = () => {
   leftWall.position.y = 25;
   leftWall.rotation.y = -Math.PI / 2;
   const leftWallMat = new BABYLON.StandardMaterial('back-wall-material');
-  leftWallMat.diffuseTexture = new BABYLON.Texture('Images/sideWall.jpg');
+  leftWallMat.diffuseTexture = new BABYLON.Texture('Images/floor.jpg');
   leftWall.material = leftWallMat;
 
 
@@ -95,6 +95,10 @@ const createEnvironment = () => {
   rightWall.position.x = 50;
   rightWall.position.y = 25;
   rightWall.rotation.y = Math.PI / 2;
+  const rightWallMat = new BABYLON.StandardMaterial('back-wall-material');
+  rightWallMat.diffuseTexture = new BABYLON.Texture('Images/floor.jpg');
+  rightWall.material = rightWallMat;
+
 
 //Wall right behind the pins(left as a black screen)
   const backWall1 = new BABYLON.MeshBuilder.CreatePlane("plane", {
@@ -103,6 +107,7 @@ const createEnvironment = () => {
   });
   backWall1.position.y = 5;
   backWall1.position.z = 100;
+
 
 //Wall where the texture has to be applied
   const backWall2 = new BABYLON.MeshBuilder.CreatePlane("plane", {
