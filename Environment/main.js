@@ -26,6 +26,8 @@ async function createScene() {
 
   createBowlingLane();
 
+  
+
   scene.enablePhysics(new BABYLON.Vector3(0, -9.81, 0), havokPlugin);
 
   //const groundAggregate = new BABYLON.PhysicsAggregate(ground, BABYLON.PhysicsShapeType.BOX, {mass: 0});
@@ -36,11 +38,12 @@ async function createScene() {
 
 
 const createBowlingLane = () => {
-  const lane = BABYLON.MeshBuilder.CreateGround("lane", {
-    width: 25,
-    height: 120
+  const lane = BABYLON.MeshBuilder.CreateBox("cube", {
+    width: 30,
+    height: 0.5,
+    depth: 120
   })
-  lane.position.y = 5
+  lane.position.y = 0.25
   lane.position.z = 40
 }
 
