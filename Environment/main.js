@@ -24,12 +24,26 @@ async function createScene() {
 
   createEnvironment();
 
+  createBowlingLane();
+
   scene.enablePhysics(new BABYLON.Vector3(0, -9.81, 0), havokPlugin);
 
   //const groundAggregate = new BABYLON.PhysicsAggregate(ground, BABYLON.PhysicsShapeType.BOX, {mass: 0});
 
   return scene;
 }
+
+
+
+const createBowlingLane = () => {
+  const lane = BABYLON.MeshBuilder.CreateGround("lane", {
+    width: 25,
+    height: 120
+  })
+  lane.position.y = 5
+  lane.position.z = 40
+}
+
 
 const createEnvironment = () => {
   const ground = BABYLON.MeshBuilder.CreateGround("ground", {
