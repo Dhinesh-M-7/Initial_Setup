@@ -12,10 +12,10 @@ async function createScene() {
 
   const camera = new BABYLON.UniversalCamera(
     "camera",
-    new BABYLON.Vector3(0, 10, -90)
+    new BABYLON.Vector3(0, 30, -110)
   );
-  camera.setTarget(new BABYLON.Vector3(0, 0, 60));
-  camera.attachControl(canvas, true);
+  camera.setTarget(new BABYLON.Vector3(0, 0, 0));
+  camera.attachControl(true)
 
   const light = new BABYLON.HemisphericLight(
     "light",
@@ -26,9 +26,8 @@ async function createScene() {
 
   const bowlingBall = new BABYLON.MeshBuilder.CreateSphere("sphere", {
     diameter: 4,
-  })
-  bowlingBall.position.y = 3,
-  bowlingBall.position.z = -68
+  });
+  (bowlingBall.position.y = 3), (bowlingBall.position.z = -68);
 
   createEnvironment();
   createBowlingLane();
@@ -40,8 +39,8 @@ async function createScene() {
     "bowling_pin.glb"
   );
   const bowlingPin = result.meshes[1];
-  bowlingPin.scaling = new BABYLON.Vector3(1.5, 1.5, 1.5)
-  bowlingPin.isVisible = false
+  bowlingPin.scaling = new BABYLON.Vector3(1.5, 1.5, 1.5);
+  bowlingPin.isVisible = false;
 
   const pinPositions = [
     new BABYLON.Vector3(-7, 0.5, 98),
@@ -63,6 +62,8 @@ async function createScene() {
     const pin = new BABYLON.InstancedMesh("pin-" + idx, bowlingPin);
     pin.position = position;
   });
+
+  createAnimations(camera, scene);
 
   return scene;
 }
@@ -162,6 +163,91 @@ const createEnvironment = () => {
   backWall4.position.x = 30;
   backWall4.position.y = 5;
   backWall4.position.z = 100;
+};
+
+const createAnimations = (camera, scene) => {
+  const frameRate = 60;
+
+  const movement = new BABYLON.Animation(
+    "movement",
+    "position",
+    frameRate,
+    BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+    BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT,
+    true
+  );
+  const movement_keys = [];
+
+  movement_keys.push({
+    frame: 0,
+    value: new BABYLON.Vector3(0, 20, -120),
+  });
+
+  movement_keys.push({
+    frame: 1 * frameRate,
+    value: new BABYLON.Vector3(0, 10, -100),
+  });
+
+  movement_keys.push({
+    frame: 5 * frameRate,
+    value: new BABYLON.Vector3(0, 10, 60),
+  });
+
+  movement_keys.push({
+    frame: 6 * frameRate,
+    value: new BABYLON.Vector3(0, 30, 50),
+  });
+
+  movement_keys.push({
+    frame: 13 * frameRate,
+    value: new BABYLON.Vector3(0, 30, -100),
+  });
+
+  movement_keys.push({
+    frame: 15 * frameRate,
+    value: new BABYLON.Vector3(0, 30, -110),
+  });
+
+  movement.setKeys(movement_keys);
+
+  const rotation = new BABYLON.Animation(
+    "rotate",
+    "rotation.y",
+    frameRate,
+    BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+    BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT,
+    true
+  );
+  const rotate_keys = [];
+
+  rotate_keys.push({
+    frame: 0,
+    value: 0,
+  });
+  rotate_keys.push({
+    frame: 5 * frameRate,
+    value: 0,
+  });
+  rotate_keys.push({
+    frame: 9 * frameRate,
+    value: Math.PI,
+  });
+  rotate_keys.push({
+    frame: 13 * frameRate,
+    value: 2 * Math.PI,
+  });
+  
+
+  rotation.setKeys(rotate_keys);
+
+  scene.beginDirectAnimation(
+    camera,
+    [movement, rotation],
+    0,
+    15 * frameRate,
+    false)
+  
+  camera.atta
 };
 
 createScene().then((scene) => {
