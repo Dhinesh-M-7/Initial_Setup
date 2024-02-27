@@ -24,6 +24,12 @@ async function createScene() {
   light.intensity = 0.7;
   light.lightmapMode = BABYLON.Light.FALLOFF_PHYSICAL;
 
+  const bowlingBall = new BABYLON.MeshBuilder.CreateSphere("sphere", {
+    diameter: 4,
+  })
+  bowlingBall.position.y = 3,
+  bowlingBall.position.z = -68
+
   createEnvironment();
   createBowlingLane();
   //const groundAggregate = new BABYLON.PhysicsAggregate(ground, BABYLON.PhysicsShapeType.BOX, {mass: 0});
