@@ -15,7 +15,7 @@ async function createScene() {
     new BABYLON.Vector3(0, 30, -110)
   );
   camera.setTarget(new BABYLON.Vector3(0, 0, 0));
-  camera.attachControl(true)
+  camera.attachControl(true);
 
   const light = new BABYLON.HemisphericLight(
     "light",
@@ -66,17 +66,18 @@ async function createScene() {
   return scene;
 }
 
-
-const createBowlingBall = async() => {
+const createBowlingBall = async () => {
   const result = await BABYLON.SceneLoader.ImportMeshAsync(
     "",
     "Models/",
     "bowling_ball.glb"
   );
   const bowling_ball = result.meshes[1];
-  console.log(bowling_ball)
+  console.log(bowling_ball);
   bowling_ball.scaling = new BABYLON.Vector3(1.5, 1.5, 1.5);
-}
+  bowling_ball.position.y = 4;
+  bowling_ball.position.z = -67;
+};
 
 const createBowlingLane = () => {
   const lane = BABYLON.MeshBuilder.CreateBox("cube", {
@@ -168,7 +169,7 @@ const createEnvironment = () => {
   backWall2.position.y = 32.5;
   backWall2.position.z = 100;
   const backWall2Mat = new BABYLON.StandardMaterial();
-  backWall2Mat.diffuseTexture = new BABYLON.Texture("Images/Backwall.jpg")
+  backWall2Mat.diffuseTexture = new BABYLON.Texture("Images/Backwall.jpg");
   backWall2.material = backWall2Mat;
 
   //Walls on sides of backWall1(No texture needed only color)
@@ -266,7 +267,6 @@ const createAnimations = (camera, scene) => {
     frame: 13 * frameRate,
     value: 2 * Math.PI,
   });
-  
 
   rotation.setKeys(rotate_keys);
 
@@ -275,11 +275,11 @@ const createAnimations = (camera, scene) => {
     [movement, rotation],
     0,
     14 * frameRate,
-    false)
-  
-  camera.atta
-};
+    false
+  );
 
+  camera.atta;
+};
 
 createScene().then((scene) => {
   engine.runRenderLoop(function () {
@@ -291,7 +291,6 @@ createScene().then((scene) => {
 window.addEventListener("resize", function () {
   engine.resize();
 });
-
 
 class StartGame {
   constructor(generalPins, scene) {
@@ -315,7 +314,7 @@ class StartGame {
 
   rollBall() {
     if (this.ballIsRolled) return;
-    const pinsHit = Math.floor(Math.random() * 11); 
+    const pinsHit = Math.floor(Math.random() * 11);
     for (let i = 0; i < pinsHit; i++) {
       const randomPinIndex = Math.floor(Math.random() * this.pinsArray.length);
       this.pinsArray[randomPinIndex].isHit = true;
@@ -356,7 +355,7 @@ class StartGame {
   // Function to initialize pinsArray after the end of every frame
   initializePinsArray() {
     this.pinsArray = this.generalPins.map((pin, pinId) => {
-      return {pinId: pinId, pinPosition: pin.position, isHit: false}
+      return { pinId: pinId, pinPosition: pin.position, isHit: false };
     });
   }
 
@@ -364,9 +363,9 @@ class StartGame {
   setupEventListeners(scene) {
     // Simulate BabylonJS pointer listener for mouseup event (rolling the ball)
     scene.onPointerObservable.add((eventData) => {
-      if (eventData.type === BABYLON.PointerEventTypes.POINTERDOWN){
+      if (eventData.type === BABYLON.PointerEventTypes.POINTERDOWN) {
         this.rollBall();
-      };
+      }
     });
     console.log(this.frames, this.pinsArray);
   }
