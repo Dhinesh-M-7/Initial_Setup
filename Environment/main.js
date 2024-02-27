@@ -25,7 +25,6 @@ async function createScene() {
   light.lightmapMode = BABYLON.Light.FALLOFF_PHYSICAL;
 
   createBowlingBall();
-
   createEnvironment();
   createBowlingLane();
   //const groundAggregate = new BABYLON.PhysicsAggregate(ground, BABYLON.PhysicsShapeType.BOX, {mass: 0});
@@ -55,19 +54,28 @@ async function createScene() {
     new BABYLON.Vector3(0, 0.5, 86),
   ];
 
-  pinPositions.map(function (position, idx) {
+  const setPins = pinPositions.map(function (position, idx) {
     const pin = new BABYLON.InstancedMesh("pin-" + idx, bowlingPin);
     pin.position = position;
+    return pin;
   });
 
+  // // Create a new instance of StartGame with generalPins -- need gui to be added
+  // const game = new StartGame(setPins, scene);
   createAnimations(camera, scene);
-
   return scene;
 }
 
 
-const createBowlingBall = () => {
-  
+const createBowlingBall = async() => {
+  const result = await BABYLON.SceneLoader.ImportMeshAsync(
+    "",
+    "Models/",
+    "bowling_ball.glb"
+  );
+  const bowling_ball = result.meshes[1];
+  console.log(bowling_ball)
+  bowling_ball.scaling = new BABYLON.Vector3(1.5, 1.5, 1.5);
 }
 
 const createBowlingLane = () => {
@@ -272,6 +280,7 @@ const createAnimations = (camera, scene) => {
   camera.atta
 };
 
+
 createScene().then((scene) => {
   engine.runRenderLoop(function () {
     if (scene) {
@@ -282,3 +291,83 @@ createScene().then((scene) => {
 window.addEventListener("resize", function () {
   engine.resize();
 });
+
+
+class StartGame {
+  constructor(generalPins, scene) {
+    this.frames = [];
+    this.currentFrameIndex = 0;
+    this.currentRoll = 1;
+    this.ballIsRolled = false;
+    this.generalPins = generalPins;
+    this.pinsArray = [];
+    this.initializeFrames();
+    this.initializePinsArray();
+    this.setupEventListeners(scene);
+  }
+
+  // Function to initialize frames
+  initializeFrames() {
+    for (let i = 0; i < 10; i++) {
+      this.frames.push({ rolls: [], score: 0, bonus: null });
+    }
+  }
+
+  rollBall() {
+    if (this.ballIsRolled) return;
+    const pinsHit = Math.floor(Math.random() * 11); 
+    for (let i = 0; i < pinsHit; i++) {
+      const randomPinIndex = Math.floor(Math.random() * this.pinsArray.length);
+      this.pinsArray[randomPinIndex].isHit = true;
+    }
+
+    // Update frame values based on pins hit
+    this.updateFrameValues(pinsHit);
+    this.ballIsRolled = true; // Set ballIsRolled flag to true
+  }
+
+  // Function to update frame values after each roll
+  updateFrameValues(pinsHit) {
+    const currentFrame = this.frames[this.currentFrameIndex]; // Get the current frame
+    currentFrame.rolls.push(pinsHit); // Push the number of pins hit in this roll to the rolls array of the current frame
+
+    // Update score
+    currentFrame.score += pinsHit;
+
+    // Check for spare or strike
+    if (currentFrame.rolls.length === 1 && pinsHit === 10) {
+      currentFrame.bonus = "strike";
+    } else if (currentFrame.rolls.length === 2 && currentFrame.score === 10) {
+      currentFrame.bonus = "spare";
+    }
+
+    // Move to the next frame if required
+    if (currentFrame.rolls.length === 2 || currentFrame.bonus === "strike") {
+      this.currentFrameIndex++;
+      this.currentRoll = 1;
+
+      // Reinitialize pinsArray after the end of every frame
+      this.initializePinsArray();
+    } else {
+      this.currentRoll++;
+    }
+  }
+
+  // Function to initialize pinsArray after the end of every frame
+  initializePinsArray() {
+    this.pinsArray = this.generalPins.map((pin, pinId) => {
+      return {pinId: pinId, pinPosition: pin.position, isHit: false}
+    });
+  }
+
+  // Function to setup event listeners
+  setupEventListeners(scene) {
+    // Simulate BabylonJS pointer listener for mouseup event (rolling the ball)
+    scene.onPointerObservable.add((eventData) => {
+      if (eventData.type === BABYLON.PointerEventTypes.POINTERDOWN){
+        this.rollBall();
+      };
+    });
+    console.log(this.frames, this.pinsArray);
+  }
+}
