@@ -36,9 +36,23 @@ async function createScene() {
   createBowlingBall();
   createEnvironment();
   createBowlingLane();
-  
+  //createProjection();
 
-  
+  // var music = new BABYLON.Sound("Violons", "Audio/just-relax-11157.mp3", scene, null, { loop: true, autoplay: true });
+// Load the sound and play it automatically once ready
+// const audioObject = new BABYLON.Sound("Stranger_things", "Audio/stranger_things.mp3", scene, null, { loop: false, autoplay: true });
+
+// Disable the default audio unlock button
+// BABYLON.Engine.audioEngine.useCustomUnlockedButton = true;
+
+// // Unlock audio on first user interaction.
+// window.addEventListener('click', () => {
+//     if(!BABYLON.Engine.audioEngine.unlocked){
+//         BABYLON.Engine.audioEngine.unlock();
+//     }
+// }, { once: true });
+
+BABYLON.Engine.audioEngine.setGlobalVolume(0.5);
 
   const bowlingPin = result.meshes[1];
   bowlingPin.scaling = new BABYLON.Vector3(1.5, 1.5, 1.5);
@@ -74,6 +88,8 @@ async function createScene() {
   // const game = new StartGame(setPins, scene);
 
   createAnimations(camera, scene);
+  createMusic();
+  //Scenemusic.play();
   return scene;
 }
 
@@ -91,7 +107,7 @@ const createBowlingBall = async () => {
 
   const bowling_ballAggregate = new BABYLON.PhysicsAggregate(bowling_ball, BABYLON.PhysicsShapeType.SPHERE, { mass: 1, restitution: 0.45,friction:0.75 });
 
-  //bowling_ballAggregate.body.applyImpulse(new BABYLON.Vector3(0, 0, 40), bowling_ball.getAbsolutePosition());
+  bowling_ballAggregate.body.applyImpulse(new BABYLON.Vector3(0, 0, 40), bowling_ball.getAbsolutePosition());
 };
 
 const createBowlingLane = () => {
@@ -301,8 +317,17 @@ const createAnimations = (camera, scene) => {
     false
   );
 
-  camera.atta;
+  camera.attachControl();
 };
+const createMusic=()=>{
+  const Scenemusic = new BABYLON.Sound("Music", "./Audio/stranger_things.mp3",null, {
+    loop: true,
+    autoplay: true,
+});
+
+
+
+}
 
 createScene().then((scene) => {
   engine.runRenderLoop(function () {
