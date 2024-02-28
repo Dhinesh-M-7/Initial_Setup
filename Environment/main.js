@@ -1,11 +1,13 @@
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders";
 
+
 const canvas = document.getElementById("renderCanvas");
 const engine = new BABYLON.Engine(canvas);
 
 async function createScene() {
   const scene = new BABYLON.Scene(engine);
+
 
   const havokInstance = await HavokPhysics();
   const havokPlugin = new BABYLON.HavokPlugin(true, havokInstance);
@@ -24,16 +26,20 @@ async function createScene() {
   light.intensity = 0.7;
   light.lightmapMode = BABYLON.Light.FALLOFF_PHYSICAL;
 
-  createBowlingBall();
-  createEnvironment();
-  createBowlingLane();
-  //const groundAggregate = new BABYLON.PhysicsAggregate(ground, BABYLON.PhysicsShapeType.BOX, {mass: 0});
+  scene.enablePhysics(new BABYLON.Vector3(0, -9.8, 0), havokPlugin);
 
   const result = await BABYLON.SceneLoader.ImportMeshAsync(
     "",
     "Models/",
-    "bowling_pin.glb"
-  );
+    "bowling_pin.glb");
+
+  createBowlingBall();
+  createEnvironment();
+  createBowlingLane();
+  
+
+  
+
   const bowlingPin = result.meshes[1];
   bowlingPin.scaling = new BABYLON.Vector3(1.5, 1.5, 1.5);
   bowlingPin.isVisible = false;
@@ -53,15 +59,20 @@ async function createScene() {
 
     new BABYLON.Vector3(0, 0.5, 86),
   ];
+  
 
   const setPins = pinPositions.map(function (position, idx) {
     const pin = new BABYLON.InstancedMesh("pin-" + idx, bowlingPin);
     pin.position = position;
+    const pinAggregate = new BABYLON.PhysicsAggregate(pin, BABYLON.PhysicsShapeType.CONVEX_HULL, { mass: 1, restitution: 0.1,friction:1.6 }, scene);
     return pin;
+    
+    
   });
 
   // // Create a new instance of StartGame with generalPins -- need gui to be added
   // const game = new StartGame(setPins, scene);
+
   createAnimations(camera, scene);
   return scene;
 }
@@ -76,6 +87,10 @@ const createBowlingBall = async () => {
   bowling_ball.scaling = new BABYLON.Vector3(1, 1, 1);
   bowling_ball.position.y = 4;
   bowling_ball.position.z = -67;
+
+  const bowling_ballAggregate = new BABYLON.PhysicsAggregate(bowling_ball, BABYLON.PhysicsShapeType.SPHERE, { mass: 1, restitution: 0.45,friction:0.75 });
+
+  //bowling_ballAggregate.body.applyImpulse(new BABYLON.Vector3(0, 0, 40), bowling_ball.getAbsolutePosition());
 };
 
 const createBowlingLane = () => {
@@ -94,8 +109,10 @@ const createBowlingLane = () => {
   const laneLeft = BABYLON.MeshBuilder.CreateBox("cube", {
     width: 1,
     height: 5,
-    depth: 170,
+    depth: 170
   });
+
+  
   laneLeft.position.x = -15.5;
   laneLeft.position.y = 0.25;
   laneLeft.position.z = 15;
@@ -116,6 +133,11 @@ const createBowlingLane = () => {
   const laneRightMat = new BABYLON.StandardMaterial("lane-material");
   laneRightMat.diffuseTexture = new BABYLON.Texture("Images/Neon-floor.jpg");
   laneRight.material = laneRightMat;
+
+  const laneAggregate = new BABYLON.PhysicsAggregate(lane, BABYLON.PhysicsShapeType.BOX, { mass: 0 });
+  const laneLeftAggregate = new BABYLON.PhysicsAggregate(laneLeft, BABYLON.PhysicsShapeType.BOX, { mass: 0 });
+  const laneRightAggregate = new BABYLON.PhysicsAggregate(laneRight, BABYLON.PhysicsShapeType.BOX, { mass: 0});
+
 };
 
 const createEnvironment = () => {
@@ -194,6 +216,7 @@ const createEnvironment = () => {
   backWall4Mat.diffuseColor = new BABYLON.Color4(0, 0, 0, 0);
   backWall4.material = backWall4Mat;
 };
+
 
 const createAnimations = (camera, scene) => {
   const frameRate = 60;
