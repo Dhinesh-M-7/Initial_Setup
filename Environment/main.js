@@ -73,7 +73,6 @@ const createBowlingBall = async () => {
     "bowling_ball.glb"
   );
   const bowling_ball = result.meshes[1];
-  console.log(bowling_ball);
   bowling_ball.scaling = new BABYLON.Vector3(1, 1, 1);
   bowling_ball.position.y = 4;
   bowling_ball.position.z = -67;
@@ -278,7 +277,6 @@ const createAnimations = (camera, scene) => {
     false
   );
 
-  camera.atta;
 };
 
 createScene().then((scene) => {
