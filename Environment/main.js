@@ -54,55 +54,8 @@ async function createScene() {
 
   createEnvironment();
   const lane = createBowlingLane();
-
-  const bowlingPin = bowlingPinResult.meshes[1];
-  bowlingPin.scaling = new BABYLON.Vector3(1.5, 1.5, 1.5);
-  bowlingPin.isVisible = false;
-
-  const originalPinPositions = [
-    new BABYLON.Vector3(-10, 0.5, 98),
-    new BABYLON.Vector3(-4, 0.5, 98),
-    new BABYLON.Vector3(4, 0.5, 98),
-    new BABYLON.Vector3(10, 0.5, 98),
-
-    new BABYLON.Vector3(0, 0.5, 94),
-    new BABYLON.Vector3(-7, 0.5, 94),
-    new BABYLON.Vector3(7, 0.5, 94),
-
-    new BABYLON.Vector3(-3.5, 0.5, 90),
-    new BABYLON.Vector3(3.5, 0.5, 90),
-
-    new BABYLON.Vector3(0, 0.5, 86),
-  ];
-
-
-  const pinPositions = [
-    new BABYLON.Vector3(-10, 0.5, 98),
-    new BABYLON.Vector3(-4, 0.5, 98),
-    new BABYLON.Vector3(4, 0.5, 98),
-    new BABYLON.Vector3(10, 0.5, 98),
-
-    new BABYLON.Vector3(0, 0.5, 94),
-    new BABYLON.Vector3(-7, 0.5, 94),
-    new BABYLON.Vector3(7, 0.5, 94),
-
-    new BABYLON.Vector3(-3.5, 0.5, 90),
-    new BABYLON.Vector3(3.5, 0.5, 90),
-
-    new BABYLON.Vector3(0, 0.5, 86),
-  ];
-
-  let setPins = pinPositions.map(function (position, idx) {
-    const pin = new BABYLON.InstancedMesh("pin-" + idx, bowlingPin);
-    pin.position = position;
-    const pinAggregate = new BABYLON.PhysicsAggregate(
-      pin,
-      BABYLON.PhysicsShapeType.CONVEX_HULL,
-      { mass: 1, restitution: 0.1, friction: 1.6 },
-      scene
-    );
-    return pin;
-  });
+  
+  let setPins = createBowlingPins(bowlingPinResult);
 
   let startingPoint;
   let currentMesh;
@@ -126,7 +79,7 @@ async function createScene() {
       }
   }
 
-  const pointerUp = (bowlingBallResult, bowlingPinResult) => {
+  const pointerUp = () => {
       aim.isVisible = false;
       const bowlingBallPosition = bowling_ball.absolutePosition;
       if (startingPoint) {
@@ -136,11 +89,10 @@ async function createScene() {
         camera.attachControl(canvas, true);
         startingPoint = null;
         setTimeout(() => {
-          setPins = setPins.map((pin, pinIndex) => {
-            pin.position = originalPinPositions[pinIndex];
-            pin.rotation = new BABYLON.Vector3(0, 0, 0);
-            return pin;
+          setPins.forEach((pin, pinIndex) => {
+            pin.dispose();
           });
+          setPins = createBowlingPins(bowlingPinResult);
           bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
           bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
           bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
@@ -214,7 +166,7 @@ async function createScene() {
   // // Create a new instance of StartGame with generalPins -- need gui to be added
   // const game = new StartGame(setPins, scene);
 
-  //createAnimations(camera, scene);
+  createAnimations(camera, scene);
   return scene;
 }
 
