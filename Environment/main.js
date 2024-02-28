@@ -1,16 +1,18 @@
+
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders";
 import {startMenuGUI} from "./startMenuGUI";
 import { rollCollisionHandler } from "./Game_Logic/gameCollisionHandler";
 import { StartNewGame } from "./Game_Logic/newGameDataStructure";
+import { circleOfConfusionPixelShader } from "@babylonjs/core/Shaders/circleOfConfusion.fragment";
 
 
 const canvas = document.getElementById("renderCanvas");
-const engine = new BABYLON.Engine(canvas);
- 
+export let engine = new BABYLON.Engine(canvas);
+export let scene; 
 async function createScene() {
-  const scene = new BABYLON.Scene(engine);
- 
+  scene = new BABYLON.Scene(engine);
+  
  
   const havokInstance = await HavokPhysics();
   const havokPlugin = new BABYLON.HavokPlugin(true, havokInstance);
@@ -21,6 +23,7 @@ async function createScene() {
   );
   camera.setTarget(new BABYLON.Vector3(0, 0, 0));
   camera.attachControl(true);
+  camera.inputs.clear();
  
   const light = new BABYLON.HemisphericLight(
     "light",
@@ -31,18 +34,167 @@ async function createScene() {
  
   scene.enablePhysics(new BABYLON.Vector3(0, -9.8, 0), havokPlugin);
  
-  const result = await BABYLON.SceneLoader.ImportMeshAsync(
+  const bowlingPinResult = await BABYLON.SceneLoader.ImportMeshAsync(
     "",
     "Models/",
-    "bowling_pin.glb");
- 
-  const bowling_ball = createBowlingBall();
+    "bowling_pin.glb"
+  );
+
+  const bowlingBallResult = await BABYLON.SceneLoader.ImportMeshAsync(
+    "",
+    "Models/",
+    "bowling_ball.glb"
+  );
+  let setPins = createBowlingPins(bowlingPinResult);
+  let bowling_ball, bowlingAggregate;
+  [bowling_ball, bowlingAggregate] = createBowlingBall(bowlingBallResult);
   createEnvironment();
   const lane = createBowlingLane();
-  // createProjection();
+  const aim = createAim();
+  //making the aim invisible
+  aim.isVisible = false;
+  //setting bowling_ball as the parent of the aim
+  aim.parent = bowling_ball;
+
+  let startingPoint;
+  let currentMesh;
+
+  const getLanePosition = () => {
+      const pickinfo = scene.pick(scene.pointerX, scene.pointerY, (mesh) => { return mesh == lane; });
+      if (pickinfo.hit) {
+          return pickinfo.pickedPoint;
+      }
+      return null;
+  }
+
+  const pointerDown = (mesh) => {
+      currentMesh = mesh;
+      aim.isVisible = true;
+      startingPoint = getLanePosition();
+      if (startingPoint) { // we need to disconnect camera from canvas
+          setTimeout(() => {
+              camera.detachControl(canvas);
+          }, 0);
+      }
+  }
+
+  const pointerUp = (bowlingBallResult, bowlingPinResult) => {
+      aim.isVisible = false;
+      const bowlingBallPosition = bowling_ball.absolutePosition;
+      if (startingPoint) {
+        const ballSpeed= (-(bowlingBallPosition.z)-6)*10;
+        bowlingAggregate.body.applyImpulse(new BABYLON.Vector3(0 ,0, ballSpeed), bowling_ball.getAbsolutePosition());
+        camera.attachControl(canvas, true);
+        startingPoint = null;
+        setTimeout(()=>{
+          bowlingAggregate.dispose();
+          setPins.forEach((it) => {
+            it.dispose();
+          })
+          const arr =  createBowlingBall(bowlingBallResult);
+          [bowling_ball, bowlingAggregate] = arr;
+          console.log(bowlingAggregate);
+          // aim.parent = bowling_ball;
+          setPins = createBowlingPins(bowlingPinResult)
+
+        }, 800);
+        return;
+      }
+  }
+
+  const pointerMove = () => {
+      if (!startingPoint) {
+          return;
+      }
+      const current = getLanePosition();
+      if (!current) {
+          return;
+      }
+
+      const diff = current.subtract(startingPoint);
+      diff.x = 0;
+
+      // Define the limits for z movement
+      const minZ = -67;  // Minimum z value
+      const maxZ = -62;  // Maximum z value
+
+      const newZ = currentMesh.position.z + diff.z;
+
+      // Check if the new position exceeds the limits
+      if (newZ < minZ) {
+          diff.z = minZ - currentMesh.position.z;
+      } else if (newZ > maxZ) {
+          diff.z = maxZ - currentMesh.position.z;
+      }
+
+      currentMesh.position.addInPlace(diff);
+
+      startingPoint = current;
+
+  }
+
+  scene.onPointerObservable.add((pointerInfo) => {      		
+      switch (pointerInfo.type) {
+      case BABYLON.PointerEventTypes.POINTERDOWN:
+        if(pointerInfo.pickInfo.hit && pointerInfo.pickInfo.pickedMesh == bowling_ball) {
+                    pointerDown(pointerInfo.pickInfo.pickedMesh)
+                }
+        break;
+      case BABYLON.PointerEventTypes.POINTERUP:
+                    pointerUp(bowlingBallResult, bowlingPinResult);
+        break;
+      case BABYLON.PointerEventTypes.POINTERMOVE:          
+                    pointerMove();
+        break;
+      }
+  });
+
+  // // Create a new instance of StartGame with generalPins -- need gui to be added
+  const game = new StartNewGame(setPins, scene);
+  createAnimations(camera, scene, game);
+  havokPlugin.onCollisionEndedObservable.add((ev) => rollCollisionHandler(ev, game));
+  return scene;
+}
  
- 
-  const bowlingPin = result.meshes[1];
+const createBowlingBall = (bowlingBallResult) => {
+  const ball = bowlingBallResult.meshes[1];
+  ball.scaling = new BABYLON.Vector3(1, 1, 1);
+  ball.position.y = 4;
+  ball.position.z = -62;
+
+  const bowling_aggregator = new BABYLON.PhysicsAggregate(
+    ball,
+    BABYLON.PhysicsShapeType.SPHERE,
+    { mass: 1, restitution: 0.45, friction: 0.75}, scene
+  )
+  bowling_aggregator.body.disablePreStep = false;
+  console.log(bowling_aggregator);
+  return [ball, bowling_aggregator];
+};
+
+const createAim = () => {
+  const projection = BABYLON.MeshBuilder.CreateBox("projection", {height: 0.1, width: 1, depth: 125});
+  projection.position.y = 3;
+  const pbrMaterial = new BABYLON.PBRMaterial("pbrMaterial", scene);
+  pbrMaterial.albedoColor = new BABYLON.Color3(1, 1, 1); 
+  // Set other PBR properties
+  pbrMaterial.metallic = 0.5; // Low metallicness
+  pbrMaterial.roughness = 0.3; // Low roughness
+  pbrMaterial.alpha = 0.1;
+
+  const arrow = BABYLON.MeshBuilder.CreateCylinder("sphere", {height: 1, diameter: 7, tessellation: 3}); //{height: 0.01, diameter: 0, diameterTop: 1, diameterBottom: 1, tessellation: 3}
+  arrow.rotation.y = -Math.PI / 2;
+  arrow.position.z = 73;
+
+  arrow.material = pbrMaterial;
+
+  const Aim = BABYLON.Mesh.MergeMeshes([arrow, projection]);
+
+  return Aim;
+}
+
+const createBowlingPins = (bowlingPinResult) => {
+  const bowlingPin = bowlingPinResult.meshes[1];
   bowlingPin.scaling = new BABYLON.Vector3(1.5, 1.5, 1.5);
   bowlingPin.isVisible = false;
  
@@ -69,32 +221,9 @@ async function createScene() {
     pinAggregate.body.setCollisionCallbackEnabled(true);
     return pin;
   });
- 
-  // // Create a new instance of StartGame with generalPins -- need gui to be added
-  const game = new StartNewGame(setPins, scene);
-  createAnimations(camera, scene, game);
-  havokPlugin.onCollisionEndedObservable.add((ev) => rollCollisionHandler(ev, game));
-  return scene;
+  return setPins;
 }
- 
-const createBowlingBall = async () => {
-  const result = await BABYLON.SceneLoader.ImportMeshAsync(
-    "",
-    "Models/",
-    "bowling_ball.glb"
-  );
-  const bowling_ball = result.meshes[1];
-  bowling_ball.scaling = new BABYLON.Vector3(1, 1, 1);
-  bowling_ball.position.y = 4;
-  bowling_ball.position.z = -67;
- 
-  const bowling_ballAggregate = new BABYLON.PhysicsAggregate(bowling_ball, BABYLON.PhysicsShapeType.SPHERE, { mass: 1, restitution: 0.45,friction:0.75 });
- 
-  bowling_ballAggregate.body.applyImpulse(new BABYLON.Vector3(1, 0, 40), bowling_ball.getAbsolutePosition());
-  bowling_ballAggregate.body.setCollisionCallbackEnabled(true);
-  return bowling_ball;
-};
- 
+
 const createBowlingLane = () => {
   const lane = BABYLON.MeshBuilder.CreateBox("cube", {
     width: 30,
@@ -135,13 +264,24 @@ const createBowlingLane = () => {
   const laneRightMat = new BABYLON.StandardMaterial("lane-material");
   laneRightMat.diffuseTexture = new BABYLON.Texture("Images/Neon-floor.jpg");
   laneRight.material = laneRightMat;
- 
-  const laneAggregate = new BABYLON.PhysicsAggregate(lane, BABYLON.PhysicsShapeType.BOX, { mass: 0 });
-  const laneLeftAggregate = new BABYLON.PhysicsAggregate(laneLeft, BABYLON.PhysicsShapeType.BOX, { mass: 0 });
-  const laneRightAggregate = new BABYLON.PhysicsAggregate(laneRight, BABYLON.PhysicsShapeType.BOX, { mass: 0});
-  laneAggregate.body.setCollisionCallbackEnabled(false);
-  laneLeftAggregate.body.setCollisionCallbackEnabled(false);
-  laneRightAggregate.body.setCollisionCallbackEnabled(false);
+
+  const laneAggregate = new BABYLON.PhysicsAggregate(
+    lane,
+    BABYLON.PhysicsShapeType.BOX,
+    { mass: 0 }
+  );
+  const laneLeftAggregate = new BABYLON.PhysicsAggregate(
+    laneLeft,
+    BABYLON.PhysicsShapeType.BOX,
+    { mass: 0 }
+  );
+  const laneRightAggregate = new BABYLON.PhysicsAggregate(
+    laneRight,
+    BABYLON.PhysicsShapeType.BOX,
+    { mass: 0 }
+  );
+
+  return lane;
 };
  
 const createEnvironment = () => {
@@ -302,15 +442,11 @@ const createAnimations = (camera, scene, game) => {
     false,
     1,
     () => {
-      console.log(game);
       startMenuGUI(scene, game);
     }
   );
 };
-
-
-
-
+ 
 createScene().then((scene) => {
   engine.runRenderLoop(function () {
     if (scene) {
@@ -321,3 +457,4 @@ createScene().then((scene) => {
 window.addEventListener("resize", function () {
   engine.resize();
 });
+ 
