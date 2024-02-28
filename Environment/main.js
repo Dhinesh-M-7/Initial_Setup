@@ -164,9 +164,9 @@ async function createScene() {
   });
 
   // // Create a new instance of StartGame with generalPins -- need gui to be added
-  // const game = new StartGame(setPins, scene);
+  let game = new StartNewGame(setPins, scene);
 
-  createAnimations(camera, scene);
+  createAnimations(camera, scene, game);
   return scene;
 }
 
@@ -458,6 +458,7 @@ const createAnimations = (camera, scene, game) => {
     false,
     1,
     () => {
+      console.log(game);
       startMenuGUI(scene, game);
     }
   );

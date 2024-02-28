@@ -21,6 +21,8 @@ export const rollCollisionHandler = (ev, game) => {
     if (pinVpinIndex !== -1) {
         game.pinsArray[pinVpinIndex].isHit = true;
     }
+
+    console.log(game.pinsArray[pinIndex]);
 }
 
 /* function isPinFell(value){
