@@ -45,16 +45,64 @@ async function createScene() {
     "Models/",
     "bowling_ball.glb"
   );
-  let setPins = createBowlingPins(bowlingPinResult);
-  let bowling_ball, bowlingAggregate;
-  [bowling_ball, bowlingAggregate] = createBowlingBall(bowlingBallResult);
+
+
+  const aim = createAim();
+  aim.isVisible = false;
+  let [bowling_ball, bowlingAggregate] = createBowlingBall(bowlingBallResult);
+  aim.parent = bowling_ball;
+
   createEnvironment();
   const lane = createBowlingLane();
-  const aim = createAim();
-  //making the aim invisible
-  aim.isVisible = false;
-  //setting bowling_ball as the parent of the aim
-  aim.parent = bowling_ball;
+
+  const bowlingPin = bowlingPinResult.meshes[1];
+  bowlingPin.scaling = new BABYLON.Vector3(1.5, 1.5, 1.5);
+  bowlingPin.isVisible = false;
+
+  const originalPinPositions = [
+    new BABYLON.Vector3(-10, 0.5, 98),
+    new BABYLON.Vector3(-4, 0.5, 98),
+    new BABYLON.Vector3(4, 0.5, 98),
+    new BABYLON.Vector3(10, 0.5, 98),
+
+    new BABYLON.Vector3(0, 0.5, 94),
+    new BABYLON.Vector3(-7, 0.5, 94),
+    new BABYLON.Vector3(7, 0.5, 94),
+
+    new BABYLON.Vector3(-3.5, 0.5, 90),
+    new BABYLON.Vector3(3.5, 0.5, 90),
+
+    new BABYLON.Vector3(0, 0.5, 86),
+  ];
+
+
+  const pinPositions = [
+    new BABYLON.Vector3(-10, 0.5, 98),
+    new BABYLON.Vector3(-4, 0.5, 98),
+    new BABYLON.Vector3(4, 0.5, 98),
+    new BABYLON.Vector3(10, 0.5, 98),
+
+    new BABYLON.Vector3(0, 0.5, 94),
+    new BABYLON.Vector3(-7, 0.5, 94),
+    new BABYLON.Vector3(7, 0.5, 94),
+
+    new BABYLON.Vector3(-3.5, 0.5, 90),
+    new BABYLON.Vector3(3.5, 0.5, 90),
+
+    new BABYLON.Vector3(0, 0.5, 86),
+  ];
+
+  let setPins = pinPositions.map(function (position, idx) {
+    const pin = new BABYLON.InstancedMesh("pin-" + idx, bowlingPin);
+    pin.position = position;
+    const pinAggregate = new BABYLON.PhysicsAggregate(
+      pin,
+      BABYLON.PhysicsShapeType.CONVEX_HULL,
+      { mass: 1, restitution: 0.1, friction: 1.6 },
+      scene
+    );
+    return pin;
+  });
 
   let startingPoint;
   let currentMesh;
@@ -83,25 +131,30 @@ async function createScene() {
       const bowlingBallPosition = bowling_ball.absolutePosition;
       if (startingPoint) {
         const ballSpeed= (-(bowlingBallPosition.z)-6)*10;
-        bowlingAggregate.body.applyImpulse(new BABYLON.Vector3(0 ,0, ballSpeed), bowling_ball.getAbsolutePosition());
+        if(bowlingBallPosition.z < -63)
+          bowlingAggregate.body.applyImpulse(new BABYLON.Vector3(-(aim.rotation.y)*550 , 0, ballSpeed), bowling_ball.getAbsolutePosition());
         camera.attachControl(canvas, true);
         startingPoint = null;
-        setTimeout(()=>{
-          bowlingAggregate.dispose();
-          setPins.forEach((it) => {
-            it.dispose();
-          })
-          const arr =  createBowlingBall(bowlingBallResult);
-          [bowling_ball, bowlingAggregate] = arr;
-          console.log(bowlingAggregate);
-          // aim.parent = bowling_ball;
-          setPins = createBowlingPins(bowlingPinResult)
-
-        }, 800);
+        setTimeout(() => {
+          setPins = setPins.map((pin, pinIndex) => {
+            pin.position = originalPinPositions[pinIndex];
+            pin.rotation = new BABYLON.Vector3(0, 0, 0);
+            return pin;
+          });
+          bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
+          bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
+          bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
+          bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
+          // viewPositionSetPins(setPins);
+        }, 3000);
         return;
       }
   }
-
+  const viewPositionSetPins = (setPins) => {
+    setPins.forEach((pin) => {
+      console.log(pin.id, pin.position);
+    })
+  }
   const pointerMove = () => {
       if (!startingPoint) {
           return;
@@ -110,6 +163,15 @@ async function createScene() {
       if (!current) {
           return;
       }
+
+      let aimAngle = (current.x)*0.1;
+
+      if(aimAngle > 0.15)
+        aimAngle = 0.15;
+      else if(aimAngle < -0.15)
+        aimAngle = -0.15;
+
+      aim.rotation.y = aimAngle;
 
       const diff = current.subtract(startingPoint);
       diff.x = 0;
@@ -137,44 +199,44 @@ async function createScene() {
       switch (pointerInfo.type) {
       case BABYLON.PointerEventTypes.POINTERDOWN:
         if(pointerInfo.pickInfo.hit && pointerInfo.pickInfo.pickedMesh == bowling_ball) {
-                    pointerDown(pointerInfo.pickInfo.pickedMesh)
-                }
+          pointerDown(pointerInfo.pickInfo.pickedMesh)
+        }
         break;
       case BABYLON.PointerEventTypes.POINTERUP:
-                    pointerUp(bowlingBallResult, bowlingPinResult);
-        break;
+        pointerUp();
+          break;
       case BABYLON.PointerEventTypes.POINTERMOVE:          
-                    pointerMove();
-        break;
+        pointerMove();
+          break;
       }
   });
 
   // // Create a new instance of StartGame with generalPins -- need gui to be added
-  const game = new StartNewGame(setPins, scene);
-  createAnimations(camera, scene, game);
-  havokPlugin.onCollisionEndedObservable.add((ev) => rollCollisionHandler(ev, game));
+  // const game = new StartGame(setPins, scene);
+
+  //createAnimations(camera, scene);
   return scene;
 }
- 
+
 const createBowlingBall = (bowlingBallResult) => {
-  const ball = bowlingBallResult.meshes[1];
-  ball.scaling = new BABYLON.Vector3(1, 1, 1);
-  ball.position.y = 4;
-  ball.position.z = -62;
+  const bowling_ball = bowlingBallResult.meshes[1];
+  bowling_ball.scaling = new BABYLON.Vector3(1, 1, 1);
+  bowling_ball.position.y = 4;
+  bowling_ball.position.z = -62;
 
   const bowling_aggregator = new BABYLON.PhysicsAggregate(
-    ball,
+    bowling_ball,
     BABYLON.PhysicsShapeType.SPHERE,
     { mass: 1, restitution: 0.45, friction: 0.75}, scene
   )
   bowling_aggregator.body.disablePreStep = false;
   console.log(bowling_aggregator);
-  return [ball, bowling_aggregator];
+  return [bowling_ball, bowling_aggregator];
 };
 
 const createAim = () => {
-  const projection = BABYLON.MeshBuilder.CreateBox("projection", {height: 0.1, width: 1, depth: 125});
-  projection.position.y = 3;
+  const projection = BABYLON.MeshBuilder.CreateBox("projection", {height: 0.1, width: 1, depth: 80});
+  projection.position.z = 42;
   const pbrMaterial = new BABYLON.PBRMaterial("pbrMaterial", scene);
   pbrMaterial.albedoColor = new BABYLON.Color3(1, 1, 1); 
   // Set other PBR properties
@@ -182,14 +244,16 @@ const createAim = () => {
   pbrMaterial.roughness = 0.3; // Low roughness
   pbrMaterial.alpha = 0.1;
 
-  const arrow = BABYLON.MeshBuilder.CreateCylinder("sphere", {height: 1, diameter: 7, tessellation: 3}); //{height: 0.01, diameter: 0, diameterTop: 1, diameterBottom: 1, tessellation: 3}
+  const arrow = BABYLON.MeshBuilder.CreateCylinder("sphere", {height: 0.1, diameter: 7, tessellation: 3}); //{height: 0.01, diameter: 0, diameterTop: 1, diameterBottom: 1, tessellation: 3}
   arrow.rotation.y = -Math.PI / 2;
-  arrow.position.z = 73;
+  arrow.position.z = 85;
 
   arrow.material = pbrMaterial;
 
   const Aim = BABYLON.Mesh.MergeMeshes([arrow, projection]);
 
+  Aim.position.y = 0.4;
+  Aim.position = new BABYLON.Vector3(0,0,0);
   return Aim;
 }
 
