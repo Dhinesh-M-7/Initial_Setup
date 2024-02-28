@@ -2,7 +2,6 @@
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders";
 import { startMenuGUI } from "./startMenuGUI";
-import { circleOfConfusionPixelShader } from "@babylonjs/core/Shaders/circleOfConfusion.fragment";
 
 
 const canvas = document.getElementById("renderCanvas");
@@ -16,7 +15,7 @@ async function createScene() {
  
   const camera = new BABYLON.UniversalCamera(
     "camera",
-    new BABYLON.Vector3(0, 38, -110)
+    new BABYLON.Vector3(0, 30, -110)
   );
   camera.setTarget(new BABYLON.Vector3(0, 0, 0));
   camera.attachControl(true);
