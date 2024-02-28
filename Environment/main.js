@@ -16,7 +16,7 @@ async function createScene() {
  
   const camera = new BABYLON.UniversalCamera(
     "camera",
-    new BABYLON.Vector3(0, 30, -110)
+    new BABYLON.Vector3(0, 38, -110)
   );
   camera.setTarget(new BABYLON.Vector3(0, 0, 0));
   camera.attachControl(true);
@@ -37,21 +37,20 @@ async function createScene() {
     "bowling_pin.glb"
   );
 
-  let bowling_ball, bowlingAggregate;
+  const bowlingBallResult = await BABYLON.SceneLoader.ImportMeshAsync(
+    "",
+    "Models/",
+    "bowling_ball.glb"
+  );
 
-  const bowling = createBowlingBall();
-  bowling.then((result) => {
-    bowling_ball = result[0];
-    bowlingAggregate = result[1];
-  })
+
+  const aim = createAim();
+  aim.isVisible = false;
+  let [bowling_ball, bowlingAggregate] = createBowlingBall(bowlingBallResult);
+  aim.parent = bowling_ball;
 
   createEnvironment();
   const lane = createBowlingLane();
-  const aim = createAim();
-  //making the aim invisible
-  aim.isVisible = false;
-  //setting bowling_ball as the parent of the aim
-  aim.parent = bowling_ball;
 
   const bowlingPin = result.meshes[1];
   bowlingPin.scaling = new BABYLON.Vector3(1.5, 1.5, 1.5);
@@ -111,8 +110,11 @@ async function createScene() {
       aim.isVisible = false;
       const bowlingBallPosition = bowling_ball.absolutePosition;
       if (startingPoint) {
+        console.log(aim.rotation.y);
         const ballSpeed= (-(bowlingBallPosition.z)-6)*10;
-        bowlingAggregate.body.applyImpulse(new BABYLON.Vector3(0 ,0, ballSpeed), bowling_ball.getAbsolutePosition());
+        console.log(ballSpeed);
+        if(bowlingBallPosition.z < -63)
+          bowlingAggregate.body.applyImpulse(new BABYLON.Vector3(-(aim.rotation.y)*550 ,0, ballSpeed), bowling_ball.getAbsolutePosition());
         camera.attachControl(canvas, true);
         startingPoint = null;
         return;
@@ -127,6 +129,15 @@ async function createScene() {
       if (!current) {
           return;
       }
+
+      let aimAngle = (current.x)*0.1;
+
+      if(aimAngle > 0.15)
+        aimAngle = 0.15;
+      else if(aimAngle < -0.15)
+        aimAngle = -0.15;
+
+      aim.rotation.y = aimAngle;
 
       const diff = current.subtract(startingPoint);
       diff.x = 0;
@@ -154,32 +165,27 @@ async function createScene() {
       switch (pointerInfo.type) {
       case BABYLON.PointerEventTypes.POINTERDOWN:
         if(pointerInfo.pickInfo.hit && pointerInfo.pickInfo.pickedMesh == bowling_ball) {
-                    pointerDown(pointerInfo.pickInfo.pickedMesh)
-                }
+          pointerDown(pointerInfo.pickInfo.pickedMesh)
+        }
         break;
       case BABYLON.PointerEventTypes.POINTERUP:
-                    pointerUp();
-        break;
+        pointerUp();
+          break;
       case BABYLON.PointerEventTypes.POINTERMOVE:          
-                    pointerMove();
-        break;
+        pointerMove();
+          break;
       }
   });
 
   // // Create a new instance of StartGame with generalPins -- need gui to be added
   // const game = new StartGame(setPins, scene);
 
-  createAnimations(camera, scene);
+  //createAnimations(camera, scene);
   return scene;
 }
 
-const createBowlingBall = async () => {
-  const result = await BABYLON.SceneLoader.ImportMeshAsync(
-    "",
-    "Models/",
-    "bowling_ball.glb"
-  );
-  const bowling_ball = result.meshes[1];
+const createBowlingBall = (bowlingBallResult) => {
+  const bowling_ball = bowlingBallResult.meshes[1];
   bowling_ball.scaling = new BABYLON.Vector3(1, 1, 1);
   bowling_ball.position.y = 4;
   bowling_ball.position.z = -62;
@@ -194,8 +200,8 @@ const createBowlingBall = async () => {
 };
 
 const createAim = () => {
-  const projection = BABYLON.MeshBuilder.CreateBox("projection", {height: 0.1, width: 1, depth: 125});
-  projection.position.y = 3;
+  const projection = BABYLON.MeshBuilder.CreateBox("projection", {height: 0.1, width: 1, depth: 80});
+  projection.position.z = 42;
   const pbrMaterial = new BABYLON.PBRMaterial("pbrMaterial", scene);
   pbrMaterial.albedoColor = new BABYLON.Color3(1, 1, 1); 
   // Set other PBR properties
@@ -203,14 +209,16 @@ const createAim = () => {
   pbrMaterial.roughness = 0.3; // Low roughness
   pbrMaterial.alpha = 0.1;
 
-  const arrow = BABYLON.MeshBuilder.CreateCylinder("sphere", {height: 1, diameter: 7, tessellation: 3}); //{height: 0.01, diameter: 0, diameterTop: 1, diameterBottom: 1, tessellation: 3}
+  const arrow = BABYLON.MeshBuilder.CreateCylinder("sphere", {height: 0.1, diameter: 7, tessellation: 3}); //{height: 0.01, diameter: 0, diameterTop: 1, diameterBottom: 1, tessellation: 3}
   arrow.rotation.y = -Math.PI / 2;
-  arrow.position.z = 73;
+  arrow.position.z = 85;
 
   arrow.material = pbrMaterial;
 
   const Aim = BABYLON.Mesh.MergeMeshes([arrow, projection]);
 
+  Aim.position.y = 0.4;
+  Aim.position = new BABYLON.Vector3(0,0,0);
   return Aim;
 }
 
