@@ -16,7 +16,7 @@ async function createScene() {
  
   const camera = new BABYLON.UniversalCamera(
     "camera",
-    new BABYLON.Vector3(0, 38, -110)
+    new BABYLON.Vector3(0, 30, -110)
   );
   camera.setTarget(new BABYLON.Vector3(0, 0, 0));
   camera.attachControl(true);
@@ -114,9 +114,16 @@ async function createScene() {
         const ballSpeed= (-(bowlingBallPosition.z)-6)*10;
         console.log(ballSpeed);
         if(bowlingBallPosition.z < -63)
-          bowlingAggregate.body.applyImpulse(new BABYLON.Vector3(-(aim.rotation.y)*550 ,0, ballSpeed), bowling_ball.getAbsolutePosition());
+          bowlingAggregate.body.applyImpulse(new BABYLON.Vector3(-(aim.rotation.y)*550 , 0, ballSpeed), bowling_ball.getAbsolutePosition());
         camera.attachControl(canvas, true);
         startingPoint = null;
+        setTimeout(() => {
+          bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
+          bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
+          bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
+          bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
+          console.log(bowlingAggregate);
+        }, 3000);
         return;
       }
   }
