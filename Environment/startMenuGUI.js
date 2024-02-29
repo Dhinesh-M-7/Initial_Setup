@@ -6,6 +6,7 @@ import { infoGUI } from "./infoGUI";
 // import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 const handleStartGame = (advancedTexture) => {
   advancedTexture.dispose();
+  scoreboardValueDisplay.updateText('0');
   scoreboardDisplay.isVisible = true;
   scoreboardValueDisplay.isVisible = true;
 };

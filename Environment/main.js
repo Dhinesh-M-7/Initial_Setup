@@ -3,13 +3,12 @@ import "@babylonjs/loaders";
  
 import { startMenuGUI } from "./startMenuGUI";
 import { rollCollisionHandler } from "./Game_Logic/gameCollisionHandler";
-import { scoreBoardGUI } from "./scoreBoard";
 import { createEnvironment } from "./Environment";
 import { createAnimations } from "./Animation";
 import { createBowlingLane } from "./BowlingLane";
 import { createAim } from "./Aim";
 import { createBowlingBall, createBowlingPins } from "./BowlingBallAndPins";
-import { renderScoreBoard,scoreboardValueDisplay } from "./renderScoreBoard";
+import { renderScoreBoard,scoreboardValueDisplay,scoreboardDisplay } from "./renderScoreBoard";
 
 const canvas = document.getElementById("renderCanvas");
 const engine = new BABYLON.Engine(canvas);
@@ -37,8 +36,8 @@ async function createScene() {
     new BABYLON.Vector3(0, 30, -100)
   );
   camera.setTarget(new BABYLON.Vector3(0, 0, 0));
-  camera.attachControl(true);
-  //camera.inputs.clear();
+  camera.inputs.clear();
+
 
   const light = new BABYLON.HemisphericLight(
     "light",
@@ -84,15 +83,14 @@ async function createScene() {
     return null;
   };
 
+  let rollCount = 0;
+  let totalScore = 0;
+  
+
   const pointerDown = (mesh) => {
     currentMesh = mesh;
     aim.isVisible = true;
     startingPoint = getLanePosition();
-    if (startingPoint) {
-      setTimeout(() => {
-        camera.detachControl(canvas);
-      }, 0);
-    }
   };
 
   const pointerUp = () => {
@@ -125,13 +123,23 @@ async function createScene() {
               trueCount++;
             }
             });
+            totalScore += trueCount;
             booleanArray = Array(10).fill(false);
             setPins = createBowlingPins(bowlingPinResult);
             bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
             bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
             bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
             bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
-            scoreboardValueDisplay.updateText(trueCount.toString());
+            scoreboardValueDisplay.updateText(totalScore.toString());
+            rollCount++;
+            if(rollCount % 5 === 0){
+              setTimeout(() => {
+                totalScore = 0;
+                scoreboardDisplay.isVisible=false;
+                scoreboardValueDisplay.isVisible=false;
+                startMenuGUI(scene);
+              }, 1000)
+            }
           }, 5000)
         }
         return;
@@ -215,11 +223,11 @@ async function createScene() {
     const value = rollCollisionHandler(ev, window);
     booleanArray[value] = true;
   });
-  
   createAnimations(camera, scene);
   createMusic();
   renderScoreBoard(scene);
   havokPlugin.onCollisionEndedObservable.add((ev) => rollCollisionHandler(ev, scene, window));
+  console.log(scene.currentMesh);
   return scene;
 }
 
