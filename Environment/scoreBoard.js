@@ -21,8 +21,8 @@ export function scoreBoardGUI(scene, positionCoordinates, visibility, value) {
 
   let text1 = new TextBlock();
   text1.text = value;
-  text1.color = "blue";
-  text1.fontSize = 35;
+  text1.color = "#14f9fe";
+  text1.fontSize = 45;
   button.content = text1;
 
   button.updateText = function (newValue) {

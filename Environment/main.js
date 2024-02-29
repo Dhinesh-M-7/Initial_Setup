@@ -11,19 +11,22 @@ import { createBowlingBall, createBowlingPins } from "./BowlingBallAndPins";
 import { renderScoreBoard,scoreboardValueDisplay,scoreboardDisplay } from "./renderScoreBoard";
 
 const canvas = document.getElementById("renderCanvas");
-export let engine = new BABYLON.Engine(canvas);
-export let scene;
+const engine = new BABYLON.Engine(canvas);
 
 async function createScene() {
   let booleanArray = new Array(10).fill(false);
-  scene = new BABYLON.Scene(engine);
+  const scene = new BABYLON.Scene(engine);
 
-
-  const music = new BABYLON.Sound("Music", "./Audio/stranger_things.mp3", scene, null, {
-    loop: true,
-    autoplay: true,
-    
-  });
+  const music = new BABYLON.Sound(
+    "Music",
+    "./Audio/stranger_things.mp3",
+    scene,
+    null,
+    {
+      loop: true,
+      autoplay: true,
+    }
+  );
 
   const havokInstance = await HavokPhysics();
   const havokPlugin = new BABYLON.HavokPlugin(true, havokInstance);
@@ -34,6 +37,7 @@ async function createScene() {
   );
   camera.setTarget(new BABYLON.Vector3(0, 0, 0));
   camera.inputs.clear();
+
 
   const light = new BABYLON.HemisphericLight(
     "light",
