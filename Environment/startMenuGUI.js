@@ -10,19 +10,11 @@ const handleStartGame = (advancedTexture, game) => {
   game.initializeFrames();
   game.initializePins();
   console.log(game);
-
 };
 
-/*Not working  */
-// const handleExitGame = (advancedTexture) => {
-//   advancedTexture.dispose();
-//   if (scene) {
-//     scene.dispose();
-//   }
-//   if (engine) {
-//     engine.dispose();
-//   }
-// };
+const handleExitGame = (advancedTexture) => {
+  window.close();
+};
 
 export async function startMenuGUI(scene, game) {
   // Create the advanced texture
