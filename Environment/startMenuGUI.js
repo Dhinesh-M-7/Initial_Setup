@@ -1,6 +1,7 @@
 import { AdvancedDynamicTexture } from "@babylonjs/gui";
 import { scoreboardDisplay } from "./renderScoreBoard";
 import { scoreboardValueDisplay } from "./renderScoreBoard";
+import { infoGUI } from "./infoGUI";
 
 // import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 const handleStartGame = (advancedTexture, game) => {
@@ -16,6 +17,10 @@ const handleExitGame = (advancedTexture) => {
   window.close();
 };
 
+const handleInfo = (scene) => {
+  infoGUI(scene);
+};
+
 export async function startMenuGUI(scene, game) {
   // Create the advanced texture
   let advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI(
@@ -26,7 +31,7 @@ export async function startMenuGUI(scene, game) {
 
   // Load the GUI from the snippet asynchronously
   try {
-    await advancedTexture.parseFromSnippetAsync("#7Q01P8#10");
+    await advancedTexture.parseFromSnippetAsync("#7Q01P8#12");
     console.log("GUI loaded successfully");
   } catch (error) {
     console.error("Error loading GUI:", error);
@@ -47,7 +52,7 @@ export async function startMenuGUI(scene, game) {
   });
 
   infoButton.onPointerClickObservable.add(function () {
-    console.log("Info button clicked");
+    handleInfo(scene);
   });
 
   // Return the advanced texture

@@ -20,12 +20,16 @@ export let scene;
 async function createScene() {
   scene = new BABYLON.Scene(engine);
 
-
-  const music = new BABYLON.Sound("Music", "./Audio/stranger_things.mp3", scene, null, {
-    loop: true,
-    autoplay: true,
-    
-  });
+  const music = new BABYLON.Sound(
+    "Music",
+    "./Audio/stranger_things.mp3",
+    scene,
+    null,
+    {
+      loop: true,
+      autoplay: true,
+    }
+  );
 
   const havokInstance = await HavokPhysics();
   const havokPlugin = new BABYLON.HavokPlugin(true, havokInstance);
@@ -36,7 +40,7 @@ async function createScene() {
   );
   camera.setTarget(new BABYLON.Vector3(0, 0, 0));
   camera.attachControl(true);
-  camera.inputs.clear();
+  //camera.inputs.clear();
 
   const light = new BABYLON.HemisphericLight(
     "light",
@@ -95,32 +99,36 @@ async function createScene() {
   };
 
   const pointerUp = () => {
-      let ballMoved = false;
-      aim.isVisible = false;
-      const bowlingBallPosition = bowling_ball.absolutePosition;
-      if (startingPoint) {
-        const ballSpeed = (-(bowlingBallPosition.z)-6)*10;
-        if(bowlingBallPosition.z < -63){
-          bowlingAggregate.body.applyImpulse(new BABYLON.Vector3(-(aim.rotation.y)*550 , 0, ballSpeed), bowling_ball.getAbsolutePosition());
-          window.globalShootmusic.play();
-          ballMoved = true;
-        }
-        camera.attachControl(canvas, true);
-        startingPoint = null;
-        if(ballMoved){
-          setTimeout(() => {
-            setPins.forEach((pin, pinIndex) => {
-              pin.dispose();
-            });
-            setPins = createBowlingPins(bowlingPinResult);
-            bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
-            bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
-            bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
-            bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
-          }, 3000);
-        }
-        return;
-    
+    let ballMoved = false;
+    aim.isVisible = false;
+    const bowlingBallPosition = bowling_ball.absolutePosition;
+    if (startingPoint) {
+      const ballSpeed = (-bowlingBallPosition.z - 6) * 10;
+      if (bowlingBallPosition.z < -63) {
+        bowlingAggregate.body.applyImpulse(
+          new BABYLON.Vector3(-aim.rotation.y * 550, 0, ballSpeed),
+          bowling_ball.getAbsolutePosition()
+        );
+        window.globalShootmusic.play();
+        ballMoved = true;
+      }
+      camera.attachControl(canvas, true);
+      startingPoint = null;
+      if (ballMoved) {
+        setTimeout(() => {
+          setPins.forEach((pin, pinIndex) => {
+            pin.dispose();
+          });
+          setPins = createBowlingPins(bowlingPinResult);
+          bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
+          bowlingAggregate.body.setAngularVelocity(
+            new BABYLON.Vector3(0, 0, 0)
+          );
+          bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
+          bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
+        }, 3000);
+      }
+      return;
     }
   };
 
@@ -210,11 +218,16 @@ async function createScene() {
 }
 
 const createMusic = () => {
-  window.globalShootmusic = new BABYLON.Sound("rollMusic", "./Audio/rollingball.mp3", null, {
-  loop: true,
-  autoplay: true,
-});
-}
+  window.globalShootmusic = new BABYLON.Sound(
+    "rollMusic",
+    "./Audio/rollingball.mp3",
+    null,
+    {
+      loop: true,
+      autoplay: true,
+    }
+  );
+};
 
 createScene().then((scene) => {
   engine.runRenderLoop(function () {
