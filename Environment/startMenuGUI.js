@@ -2,10 +2,8 @@ import { AdvancedDynamicTexture } from "@babylonjs/gui";
 // import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 const handleStartGame = (advancedTexture, game) => {
   advancedTexture.dispose();
-  console.log(game);
   game.initializeFrames();
   game.initializePins();
-  console.log(game);
 
 };
 

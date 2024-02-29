@@ -12,6 +12,7 @@ import { createAnimations } from "./Animation";
 import { createBowlingLane } from "./BowlingLane";
 import { createAim } from "./Aim";
 import { createBowlingBall, createBowlingPins } from "./BowlingBallAndPins";
+// import { j } from "vite/dist/node/types.d-jgA8ss1A";
 
 const canvas = document.getElementById("renderCanvas");
 export let engine = new BABYLON.Engine(canvas);
@@ -86,33 +87,34 @@ async function createScene() {
   }
 
   const pointerUp = () => {
+      let ballMoved = false;
       aim.isVisible = false;
       const bowlingBallPosition = bowling_ball.absolutePosition;
       if (startingPoint) {
-        const ballSpeed= (-(bowlingBallPosition.z)-6)*10;
-        if(bowlingBallPosition.z < -63)
+        const ballSpeed = (-(bowlingBallPosition.z)-6)*10;
+        if(bowlingBallPosition.z < -63){
           bowlingAggregate.body.applyImpulse(new BABYLON.Vector3(-(aim.rotation.y)*550 , 0, ballSpeed), bowling_ball.getAbsolutePosition());
+          ballMoved = true;
+        }
         camera.attachControl(canvas, true);
         startingPoint = null;
-        setTimeout(() => {
-          setPins.forEach((pin, pinIndex) => {
-            pin.dispose();
-          });
-          setPins = createBowlingPins(bowlingPinResult);
-          bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
-          bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
-          bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
-          bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
-          // viewPositionSetPins(setPins);
-        }, 3000);
+        if(ballMoved){
+          setTimeout(() => {
+            setPins.forEach((pin, pinIndex) => {
+              pin.dispose();
+            });
+            setPins = createBowlingPins(bowlingPinResult);
+            bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
+            bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
+            bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
+            bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
+          }, 3000);
+        }
         return;
       }
   }
-  const viewPositionSetPins = (setPins) => {
-    setPins.forEach((pin) => {
-      console.log(pin.id, pin.position);
-    })
-  }
+
+
   const pointerMove = () => {
       if (!startingPoint) {
           return;
@@ -153,6 +155,16 @@ async function createScene() {
 
   }
 
+  const ballMovement = (pressedArrow) => {
+    if(bowling_ball.position.x <= 8 && bowling_ball.position.x >= -8){
+      if(pressedArrow == "ArrowLeft" && bowling_ball.position.x != 8)
+        bowling_ball.position.x += 1;
+      if(pressedArrow == "ArrowRight" && bowling_ball.position.x != -8)
+        bowling_ball.position.x -= 1;
+    }
+    
+  }
+
   scene.onPointerObservable.add((pointerInfo) => {      		
       switch (pointerInfo.type) {
       case BABYLON.PointerEventTypes.POINTERDOWN:
@@ -169,10 +181,16 @@ async function createScene() {
       }
   });
 
+  scene.onKeyboardObservable.add((kbInfo) => {
+    switch(kbInfo.type){
+      case BABYLON.KeyboardEventTypes.KEYDOWN:
+        ballMovement(kbInfo.event.key);
+    }
+  });
+
   // // Create a new instance of StartGame with generalPins -- need gui to be added
   let game = new StartNewGame(setPins, scene);
-
-
+  havokPlugin.onCollisionEndedObservable.add((ev) => rollCollisionHandler(ev, game));
   createAnimations(camera, scene, game);
 
 
