@@ -5,6 +5,7 @@ import { scoreboardValueDisplay } from "./renderScoreBoard";
 // import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 const handleStartGame = (advancedTexture) => {
   advancedTexture.dispose();
+  scoreboardValueDisplay.updateText('0');
   scoreboardDisplay.isVisible = true;
   scoreboardValueDisplay.isVisible = true;
 };
