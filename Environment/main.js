@@ -1,6 +1,6 @@
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders";
-
+ 
 import { startMenuGUI } from "./startMenuGUI";
 import { rollCollisionHandler } from "./Game_Logic/gameCollisionHandler";
 import { StartNewGame } from "./Game_Logic/newGameDataStructure";
@@ -10,7 +10,7 @@ import { createAnimations } from "./Animation";
 import { createBowlingLane } from "./BowlingLane";
 import { createAim } from "./Aim";
 import { createBowlingBall, createBowlingPins } from "./BowlingBallAndPins";
-import { renderScoreBoard } from "./renderScoreBoard";
+import { renderScoreBoard,scoreboardValueDisplay } from "./renderScoreBoard";
 
 const canvas = document.getElementById("renderCanvas");
 export let engine = new BABYLON.Engine(canvas);
@@ -126,7 +126,8 @@ async function createScene() {
             bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
             bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
             bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
-          }, 5000);
+            scoreboardValueDisplay.updateText(trueCount.toString());
+          }, 5000)
         }
         return;
     
