@@ -1,10 +1,7 @@
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders";
-
-import { startMenuGUI } from "./startMenuGUI";
 import { rollCollisionHandler } from "./Game_Logic/gameCollisionHandler";
-import { StartNewGame } from "./Game_Logic/newGameDataStructure";
-import { circleOfConfusionPixelShader } from "@babylonjs/core/Shaders/circleOfConfusion.fragment";
+import { StartNewGame } from "./Game_Logic/gameDataStructure";
 import { scoreBoardGUI } from "./scoreBoard";
 import { createEnvironment } from "./Environment";
 import { createAnimations } from "./Animation";
@@ -103,13 +100,13 @@ async function createScene() {
         if(bowlingBallPosition.z < -63){
           bowlingAggregate.body.applyImpulse(new BABYLON.Vector3(-(aim.rotation.y)*550 , 0, ballSpeed), bowling_ball.getAbsolutePosition());
           game.ballIsRolled = true;
-        }
-          window.globalShootmusic.play();
           ballMoved = true;
+        }
         }
         camera.attachControl(canvas, true);
         startingPoint = null;
         if(ballMoved){
+          window.globalShootmusic.play();
           setTimeout(() => {
             setPins.forEach((pin, pinIndex) => {
               pin.dispose();
@@ -199,18 +196,22 @@ async function createScene() {
 
   // // Create a new instance of StartGame with generalPins -- need gui to be added
   let game = new StartNewGame(setPins, scene);
-  havokPlugin.onCollisionEndedObservable.add((ev) => rollCollisionHandler(ev, game));
   createAnimations(camera, scene, game);
   createMusic();
   renderScoreBoard(scene);
+  havokPlugin.onCollisionEndedObservable.add((ev) => rollCollisionHandler(ev, game, scene, window));
   return scene;
 }
 
 const createMusic = () => {
-  window.globalShootmusic = new BABYLON.Sound("rollMusic", "./Audio/rollingball.mp3", null, {
-  loop: true,
-  autoplay: true,
-});
+    window.globalShootmusic = new BABYLON.Sound("rollMusic", "./Audio/rollingball.mp3", null, {
+    loop: true,
+    autoplay: true,
+  });
+  window.globalHitMusic = new BABYLON.Sound("hitMusic", "./Audio/hit.mp3", null, {
+    loop: true,
+    autoplay: true,
+  });
 }
 
 createScene().then((scene) => {
