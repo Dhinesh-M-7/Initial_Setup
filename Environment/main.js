@@ -11,10 +11,10 @@ import { circleOfConfusionPixelShader } from "@babylonjs/core/Shaders/circleOfCo
 const canvas = document.getElementById("renderCanvas");
 export let engine = new BABYLON.Engine(canvas);
 export let scene;
+
 async function createScene() {
   scene = new BABYLON.Scene(engine);
-  createMusic();
-  window.globalScenemusic();
+
 
 
   const havokInstance = await HavokPhysics();
@@ -55,7 +55,10 @@ async function createScene() {
   let [bowling_ball, bowlingAggregate] = createBowlingBall(bowlingBallResult);
   aim.parent = bowling_ball;
 
+  
+
   createEnvironment();
+
   const lane = createBowlingLane();
 
   let setPins = createBowlingPins(bowlingPinResult);
@@ -89,8 +92,9 @@ async function createScene() {
       const ballSpeed = (-(bowlingBallPosition.z) - 6) * 10;
       if (bowlingBallPosition.z < -63)
         bowlingAggregate.body.applyImpulse(new BABYLON.Vector3(-(aim.rotation.y) * 550, 0, ballSpeed), bowling_ball.getAbsolutePosition());
+      window.globalShootmusic.play();
       camera.attachControl(canvas, true);
-      Shootmusic.play();
+
       startingPoint = null;
       setTimeout(() => {
         setPins.forEach((pin, pinIndex) => {
@@ -173,18 +177,20 @@ async function createScene() {
 
   createAnimations(camera, scene, game);
 
+  createMusic();
+
 
   return scene;
 }
 
 const createMusic = () => {
-  window.globalScenemusic = new BABYLON.Sound("Music", "./Audio/stranger_things.mp3", null, {
-    loop: true,
-    autoplay: true,
-  });
+  console.log("Creating scene music...");
+  window.
+ 
+ glo //Scenemusic.play();
   window.globalShootmusic = new BABYLON.Sound("rollMusic", "./Audio/rollingball.mp3", null, {
-    loop: false,
-    autoplay: false
+    loop: true,
+    autoplay: true
   });
 }
 
