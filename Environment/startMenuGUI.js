@@ -10,7 +10,6 @@ const handleStartGame = (advancedTexture, game) => {
   game.initializeFrames();
   game.initializePins();
   console.log(game);
-
 };
 
 /*Not working  */
