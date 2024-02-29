@@ -1,48 +1,18 @@
-export const rollCollisionHandler = (ev, game, scene, window) => {
-    const pin = ev.collidedAgainst.transformNode;
-    const pinVpin = ev.collider.transformNode;
-    if((pinVpin.name==='bowlingBall') && pin.name.startsWith('pin-')){
+export const rollCollisionHandler = (ev) => {
+    const pin1 = ev.collidedAgainst.transformNode;
+    const pin2 = ev.collider.transformNode;
+    const pin1Name = pin1.name;
+    const pin2Name = pin2.name;
+
+    if(pin1Name === 'bowlingBall' && pin2Name.slice(0,3) === 'pin'){
         window.globalHitMusic.play();
     }
-
-    if ((pinVpin.name === 'lane' || pinVpin.name === 'bowlingBall') && pin.name.startsWith('pin-')) {
-        const pinIndex = game.pinsArray.findIndex((it) => it.pinId === pin.id);
-        const pinVpinIndex = game.pinsArray.findIndex((it) => it.pinId === pinVpin.id);
-        if (pinIndex !== -1) {
-            game.pinsArray[pinIndex].isHit = true;
-        }
-        if (pinVpinIndex !== -1) {
-            game.pinsArray[pinVpinIndex].isHit = true;
-        }
-    } else if (pinVpin.name.startsWith('pin-')) {
-        const pinIndex = game.pinsArray.findIndex((it) => it.pinId === pin.id);
-        const pinVpinIndex = game.pinsArray.findIndex((it) => it.pinId === pinVpin.id);
-        if (pinIndex !== -1) {
-            game.pinsArray[pinIndex].isHit = true;
-        }
-        if (pinVpinIndex !== -1) {
-            game.pinsArray[pinVpinIndex].isHit = true;
-        }
-    } else {
-        return;
+    
+    if(pin1Name.slice(0,3) == "pin"){
+        return pin1Name[4];
     }
 
-    const pinIndex = game.pinsArray.findIndex((it) => {
-        return it.pinId === pin.id
-    });
-    const pinVpinIndex = game.pinsArray.findIndex((it) => 
-    {
-        return it.pinId === pinVpin.id
-    });
-  
-    if (pinIndex !== -1) {
-        game.pinsArray[pinIndex].isHit = true;
+    if( pin2Name.slice(0,3) == "pin"){
+        return pin2Name[4];
     }
-    if (pinVpinIndex !== -1) {
-        game.pinsArray[pinVpinIndex].isHit = true;
-    }   
-    console.log(pin.name, 'hits', pinVpin.name);
-    console.log(pin.position, ' hits ', pinVpin.position);
-
-    // console.log(game.pinsArray[pinIndex]);
 }
