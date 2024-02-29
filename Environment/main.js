@@ -12,6 +12,7 @@ import { createAnimations } from "./Animation";
 import { createBowlingLane } from "./BowlingLane";
 import { createAim } from "./Aim";
 import { createBowlingBall, createBowlingPins } from "./BowlingBallAndPins";
+// import { j } from "vite/dist/node/types.d-jgA8ss1A";
 
 const canvas = document.getElementById("renderCanvas");
 export let engine = new BABYLON.Engine(canvas);
@@ -107,18 +108,12 @@ async function createScene() {
             bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
             bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
             bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
-            // viewPositionSetPins(setPins);
           }, 3000);
         }
         return;
       }
   }
 
-  const viewPositionSetPins = (setPins) => {
-    setPins.forEach((pin) => {
-      console.log(pin.id, pin.position);
-    })
-  }
 
   const pointerMove = () => {
       if (!startingPoint) {
@@ -195,9 +190,8 @@ async function createScene() {
 
   // // Create a new instance of StartGame with generalPins -- need gui to be added
   let game = new StartNewGame(setPins, scene);
-
-
-  //createAnimations(camera, scene, game);
+  havokPlugin.onCollisionEndedObservable.add((ev) => rollCollisionHandler(ev, game));
+  createAnimations(camera, scene, game);
 
 
   return scene;
