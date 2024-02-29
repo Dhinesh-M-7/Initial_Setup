@@ -90,28 +90,35 @@ async function createScene() {
       const bowlingBallPosition = bowling_ball.absolutePosition;
       if (startingPoint) {
         const ballSpeed= (-(bowlingBallPosition.z)-6)*10;
-        if(bowlingBallPosition.z < -63)
+        if(bowlingBallPosition.z < -63){
           bowlingAggregate.body.applyImpulse(new BABYLON.Vector3(-(aim.rotation.y)*550 , 0, ballSpeed), bowling_ball.getAbsolutePosition());
+          game.ballIsRolled = true;
+        }
         camera.attachControl(canvas, true);
         startingPoint = null;
-        setTimeout(() => {
-          setPins.forEach((pin, pinIndex) => {
-            pin.dispose();
-          });
-          setPins = createBowlingPins(bowlingPinResult);
-          bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
-          bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
-          bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
-          bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
-          // viewPositionSetPins(setPins);
-        }, 3000);
+        if (game.ballIsRolled){
+          setTimeout(() => {
+            setPins.forEach((pin, pinIndex) => {
+              pin.dispose();
+            });
+            setPins = createBowlingPins(bowlingPinResult);
+            bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
+            bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
+            bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
+            bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
+            
+            const fallenPins = game.pinsArray.filter((pin) => pin.isHit == true);
+            console.log(fallenPins.length);
+            //push the fallen pins to gui
+
+            //push the score to gui
+            game.initializePins();
+            game.ballIsRolled = false;
+
+          }, 5000);
+        }
         return;
       }
-  }
-const viewPositionSetPins = (setPins) => {
-    setPins.forEach((pin) => {
-      console.log(pin.id, pin.position);
-    })
   }
   const pointerMove = () => {
       if (!startingPoint) {
