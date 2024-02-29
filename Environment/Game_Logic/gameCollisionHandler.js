@@ -1,9 +1,9 @@
 export const rollCollisionHandler = (ev, game) => {
     const pin = ev.collidedAgainst.transformNode;
+    const pinVpin = ev.collider.transformNode;
     if(pin.name == 'lane' || pin.name == 'bowlingBall' || pin.name == 'cube'){
         return;
     }
-    const pinVpin = ev.collider.transformNode;
     if(pinVpin.name =='lane' || pinVpin.name == 'bowlingBall' || pinVpin == 'cube'){
         return;
     }
@@ -21,8 +21,8 @@ export const rollCollisionHandler = (ev, game) => {
     if (pinVpinIndex !== -1) {
         game.pinsArray[pinVpinIndex].isHit = true;
     }
-
-    console.log(game.pinsArray[pinIndex]);
+    console.log(pinVpin.id, ' hits ', pin.id)
+    console.log(game.pinsArray)
 }
 
 /* function isPinFell(value){
