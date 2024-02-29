@@ -19,6 +19,12 @@ export let engine = new BABYLON.Engine(canvas);
 export let scene; 
 async function createScene() {
   scene = new BABYLON.Scene(engine);
+
+  const music = new BABYLON.Sound("Music", "./Audio/stranger_things.mp3", scene, null, {
+    loop: true,
+    autoplay: true,
+    
+  });
   
  
   const havokInstance = await HavokPhysics();
@@ -94,6 +100,7 @@ async function createScene() {
         const ballSpeed = (-(bowlingBallPosition.z)-6)*10;
         if(bowlingBallPosition.z < -63){
           bowlingAggregate.body.applyImpulse(new BABYLON.Vector3(-(aim.rotation.y)*550 , 0, ballSpeed), bowling_ball.getAbsolutePosition());
+          window.globalShootmusic.play();
           ballMoved = true;
         }
         camera.attachControl(canvas, true);
@@ -193,8 +200,17 @@ async function createScene() {
   havokPlugin.onCollisionEndedObservable.add((ev) => rollCollisionHandler(ev, game));
   createAnimations(camera, scene, game);
 
+  createMusic();
+
 
   return scene;
+}
+
+const createMusic = () => {
+  window.globalShootmusic = new BABYLON.Sound("rollMusic", "./Audio/rollingball.mp3", null, {
+  loop: true,
+  autoplay: true,
+});
 }
 
  
