@@ -83,6 +83,7 @@ export const createAnimations = (camera, scene) => {
       1,
       () => {
         startMenuGUI(scene);
+        //Calling the GUI at the end of animation
       }
     );
   };
