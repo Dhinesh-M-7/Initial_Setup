@@ -3,20 +3,17 @@ import { scoreboardDisplay } from "./renderScoreBoard";
 import { scoreboardValueDisplay } from "./renderScoreBoard";
 
 // import { StartNewGame } from "./Game_Logic/newGameDataStructure";
-const handleStartGame = (advancedTexture, game) => {
+const handleStartGame = (advancedTexture) => {
   advancedTexture.dispose();
   scoreboardDisplay.isVisible = true;
   scoreboardValueDisplay.isVisible = true;
-  game.initializeFrames();
-  game.initializePins();
-  console.log(game);
 };
 
 const handleExitGame = (advancedTexture) => {
   window.close();
 };
 
-export async function startMenuGUI(scene, game) {
+export async function startMenuGUI(scene) {
   // Create the advanced texture
   let advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI(
     "GUI",
@@ -39,7 +36,7 @@ export async function startMenuGUI(scene, game) {
 
   // Add event handlers to the buttons
   startGameButton.onPointerClickObservable.add(function () {
-    handleStartGame(advancedTexture, game);
+    handleStartGame(advancedTexture);
   });
 
   exitGameButton.onPointerClickObservable.add(function () {

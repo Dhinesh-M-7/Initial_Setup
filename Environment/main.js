@@ -195,11 +195,11 @@ async function createScene() {
   });
 
   // // Create a new instance of StartGame with generalPins -- need gui to be added
-  let game = new StartNewGame(setPins, scene);
-  createAnimations(camera, scene, game);
+  // let game = new StartNewGame(setPins, scene);
+  createAnimations(camera, scene);
   createMusic();
   renderScoreBoard(scene);
-  havokPlugin.onCollisionEndedObservable.add((ev) => rollCollisionHandler(ev, game, scene, window));
+  havokPlugin.onCollisionEndedObservable.add((ev) => rollCollisionHandler(ev, scene, window));
   return scene;
 }
 
