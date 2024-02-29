@@ -1,6 +1,8 @@
 import * as BABYLON from "@babylonjs/core";
 
 export const createEnvironment = () => {
+
+
   const ground = BABYLON.MeshBuilder.CreateGround("ground", {
     width: 100,
     height: 200,
@@ -28,6 +30,14 @@ export const createEnvironment = () => {
   const leftWallMat = new BABYLON.StandardMaterial("back-wall-material");
   leftWallMat.diffuseTexture = new BABYLON.Texture("Images/Neon-sidewall.jpg");
   leftWall.material = leftWallMat;
+  const leftWallAggregate = new BABYLON.PhysicsAggregate(
+    leftWall,
+    BABYLON.PhysicsShapeType.BOX,
+    {
+      mass: 0,
+      restitution: 0.25,
+    }
+  );
 
   const rightWall = new BABYLON.MeshBuilder.CreatePlane("plane", {
     height: 50,
@@ -39,6 +49,13 @@ export const createEnvironment = () => {
   const rightWallMat = new BABYLON.StandardMaterial("back-wall-material");
   rightWallMat.diffuseTexture = new BABYLON.Texture("Images/Neon-sidewall.jpg");
   rightWall.material = rightWallMat;
+  const rightWallAggregate = new BABYLON.PhysicsAggregate(
+    rightWall,
+    BABYLON.PhysicsShapeType.BOX,
+    {
+      mass: 0,
+      restitution: 0.25,
+    });
 
   //Wall right behind the pins(left as a black screen)
   const backWall1 = new BABYLON.MeshBuilder.CreatePlane("plane", {
@@ -61,6 +78,14 @@ export const createEnvironment = () => {
   const backWall2Mat = new BABYLON.StandardMaterial();
   backWall2Mat.diffuseTexture = new BABYLON.Texture("Images/Backwall.jpg");
   backWall2.material = backWall2Mat;
+  const backWall2Aggregate = new BABYLON.PhysicsAggregate(
+    backWall2,
+    BABYLON.PhysicsShapeType.BOX,
+    {
+      mass: 0,
+      restitution: 0.25,
+    }
+  );
 
   //Walls on sides of backWall1(No texture needed only color)
   const backWall3 = new BABYLON.MeshBuilder.CreatePlane("plane", {
@@ -114,4 +139,7 @@ export const createEnvironment = () => {
     "Images/Neon-backsidewall.jpg"
   );
   backWall5.material = backWall5Mat;
+
+
+
 };
