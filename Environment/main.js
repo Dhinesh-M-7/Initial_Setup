@@ -118,7 +118,7 @@ async function createScene() {
         if(game.ballIsRolled === true){
           window.globalShootmusic.play();
           setTimeout(() => {
-            setPins.forEach((pin, pinIndex) => {
+            setPins.forEach((pin) => {
               pin.dispose();
             });
             const currentRollScore = game.gameScoreCalculation();
@@ -126,7 +126,7 @@ async function createScene() {
             updateGameScores(game, currentRollScore, overallScore);
             
             setPins = createBowlingPins(bowlingPinResult);
-
+            
             bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
             bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
             bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
