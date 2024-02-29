@@ -12,12 +12,11 @@ import { createBowlingBall, createBowlingPins } from "./BowlingBallAndPins";
 import { renderScoreBoard,scoreboardValueDisplay } from "./renderScoreBoard";
 
 const canvas = document.getElementById("renderCanvas");
-export let engine = new BABYLON.Engine(canvas);
-export let scene;
+const engine = new BABYLON.Engine(canvas);
 
 async function createScene() {
   let booleanArray = new Array(10).fill(false);
-  scene = new BABYLON.Scene(engine);
+  const scene = new BABYLON.Scene(engine);
 
 
   const music = new BABYLON.Sound("Music", "./Audio/stranger_things.mp3", scene, null, {
