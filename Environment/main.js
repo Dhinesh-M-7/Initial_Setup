@@ -18,12 +18,16 @@ async function createScene() {
   let booleanArray = new Array(10).fill(false);
   const scene = new BABYLON.Scene(engine);
 
-
-  const music = new BABYLON.Sound("Music", "./Audio/stranger_things.mp3", scene, null, {
-    loop: true,
-    autoplay: true,
-    
-  });
+  const music = new BABYLON.Sound(
+    "Music",
+    "./Audio/stranger_things.mp3",
+    scene,
+    null,
+    {
+      loop: true,
+      autoplay: true,
+    }
+  );
 
   const havokInstance = await HavokPhysics();
   const havokPlugin = new BABYLON.HavokPlugin(true, havokInstance);
@@ -34,7 +38,7 @@ async function createScene() {
   );
   camera.setTarget(new BABYLON.Vector3(0, 0, 0));
   camera.attachControl(true);
-  camera.inputs.clear();
+  //camera.inputs.clear();
 
   const light = new BABYLON.HemisphericLight(
     "light",
