@@ -116,7 +116,7 @@ async function createScene() {
             bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
             bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
             bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
-          }, 3000);
+          }, 5000);
         }
         return;
     
