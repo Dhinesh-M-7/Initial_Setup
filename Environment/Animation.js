@@ -1,7 +1,7 @@
 import * as BABYLON from "@babylonjs/core"
 import { startMenuGUI } from "./startMenuGUI";
 
-export const createAnimations = (camera, scene, game) => {
+export const createAnimations = (camera, scene) => {
     const frameRate = 60;
    
     const movement = new BABYLON.Animation(
@@ -82,8 +82,8 @@ export const createAnimations = (camera, scene, game) => {
       false,
       1,
       () => {
-        console.log(game);
-        startMenuGUI(scene, game);
+        startMenuGUI(scene);
+        //Calling the GUI at the end of animation
       }
     );
   };

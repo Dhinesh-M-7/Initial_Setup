@@ -3,29 +3,30 @@ import "@babylonjs/loaders";
  
 import { startMenuGUI } from "./startMenuGUI";
 import { rollCollisionHandler } from "./Game_Logic/gameCollisionHandler";
-import { StartNewGame } from "./Game_Logic/newGameDataStructure";
-import { scoreBoardGUI } from "./scoreBoard";
 import { createEnvironment } from "./Environment";
 import { createAnimations } from "./Animation";
 import { createBowlingLane } from "./BowlingLane";
 import { createAim } from "./Aim";
 import { createBowlingBall, createBowlingPins } from "./BowlingBallAndPins";
-import { renderScoreBoard,scoreboardValueDisplay } from "./renderScoreBoard";
+import { renderScoreBoard,scoreboardValueDisplay,scoreboardDisplay } from "./renderScoreBoard";
 
 const canvas = document.getElementById("renderCanvas");
-export let engine = new BABYLON.Engine(canvas);
-export let scene;
+const engine = new BABYLON.Engine(canvas);
 
 async function createScene() {
   let booleanArray = new Array(10).fill(false);
-  scene = new BABYLON.Scene(engine);
+  const scene = new BABYLON.Scene(engine);
 
-
-  const music = new BABYLON.Sound("Music", "./Audio/stranger_things.mp3", scene, null, {
-    loop: true,
-    autoplay: true,
-    
-  });
+  const music = new BABYLON.Sound(
+    "Music",
+    "./Audio/stranger_things.mp3",
+    scene,
+    null,
+    {
+      loop: true,
+      autoplay: true,
+    }
+  );
 
   const havokInstance = await HavokPhysics();
   const havokPlugin = new BABYLON.HavokPlugin(true, havokInstance);
@@ -35,8 +36,8 @@ async function createScene() {
     new BABYLON.Vector3(0, 25, -100)
   );
   camera.setTarget(new BABYLON.Vector3(0, 0, 0));
-  camera.attachControl(true);
   camera.inputs.clear();
+
 
   const light = new BABYLON.HemisphericLight(
     "light",
@@ -82,16 +83,14 @@ async function createScene() {
     return null;
   };
 
+  let rollCount = 0;
+  let totalScore = 0;
+  
+
   const pointerDown = (mesh) => {
     currentMesh = mesh;
     aim.isVisible = true;
     startingPoint = getLanePosition();
-    if (startingPoint) {
-      // we need to disconnect camera from canvas
-      setTimeout(() => {
-        camera.detachControl(canvas);
-      }, 0);
-    }
   };
 
   const pointerUp = () => {
@@ -103,11 +102,16 @@ async function createScene() {
         if(bowlingBallPosition.z < -63){
           bowlingAggregate.body.applyImpulse(new BABYLON.Vector3(-(aim.rotation.y)*550 , 0, ballSpeed), bowling_ball.getAbsolutePosition());
           window.globalShootmusic.play();
+          setTimeout(function () {
+            window.globalShootmusic.stop();
+          }, 1500);
           ballMoved = true;
+        }
         }
         camera.attachControl(canvas, true);
         startingPoint = null;
         if(ballMoved){
+          window.globalShootmusic.play();
           setTimeout(() => {
             setPins.forEach((pin, pinIndex) => {
               pin.dispose();
@@ -119,20 +123,28 @@ async function createScene() {
               trueCount++;
             }
             });
-            console.log(trueCount);
+            totalScore += trueCount;
             booleanArray = Array(10).fill(false);
             setPins = createBowlingPins(bowlingPinResult);
             bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
             bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
             bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
             bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
-            scoreboardValueDisplay.updateText(trueCount.toString());
+            scoreboardValueDisplay.updateText(totalScore.toString());
+            rollCount++;
+            if(rollCount % 5 === 0){
+              setTimeout(() => {
+                totalScore = 0;
+                scoreboardDisplay.isVisible=false;
+                scoreboardValueDisplay.isVisible=false;
+                startMenuGUI(scene);
+              }, 1000)
+            }
           }, 5000)
         }
         return;
     
     }
-  };
 
   const pointerMove = () => {
     if (!startingPoint) {
@@ -209,26 +221,28 @@ async function createScene() {
     }
   });
 
-  // Create a new instance of StartGame with generalPins -- need gui to be added
-  let game = new StartNewGame(setPins, scene);
+  // // Create a new instance of StartGame with generalPins -- need gui to be added
   havokPlugin.onCollisionEndedObservable.add((ev) => {
-    const value = rollCollisionHandler(ev, game);
+    const value = rollCollisionHandler(ev, window);
     booleanArray[value] = true;
   });
-  
-  createAnimations(camera, scene, game);
-
+  createAnimations(camera, scene);
   createMusic();
   renderScoreBoard(scene);
-
+  havokPlugin.onCollisionEndedObservable.add((ev) => rollCollisionHandler(ev, scene, window));
+  console.log(scene.currentMesh);
   return scene;
 }
 
 const createMusic = () => {
-  window.globalShootmusic = new BABYLON.Sound("rollMusic", "./Audio/rollingball.mp3", null, {
-  loop: true,
-  autoplay: true,
-});
+    window.globalShootmusic = new BABYLON.Sound("rollMusic", "./Audio/rollingball.mp3", null, {
+    loop: true,
+    autoplay: true,
+  });
+  window.globalHitMusic = new BABYLON.Sound("hitMusic", "./Audio/hit.mp3", null, {
+    loop: true,
+    autoplay: true,
+  });
 }
 
 createScene().then((scene) => {
