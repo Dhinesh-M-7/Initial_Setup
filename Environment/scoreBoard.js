@@ -9,7 +9,7 @@ export function scoreBoardGUI(scene, positionCoordinates, visibility, value) {
   let anchor = new BABYLON.AbstractMesh("anchor", scene);
   let manager = new GUI3DManager(scene);
   let button = new Button3D("reset");
-
+    
   manager.addControl(button);
   button.linkToTransformNode(anchor);
   button.position.x = positionCoordinates[0];
@@ -17,7 +17,7 @@ export function scoreBoardGUI(scene, positionCoordinates, visibility, value) {
   button.position.z = positionCoordinates[2];
   button.scaling = new BABYLON.Vector3(32, 15, 30);
   button.isVisible = visibility;
-  // button.color = "navyblue";
+  button.color = "navyblue";
 
   let text1 = new TextBlock();
   text1.text = value;
