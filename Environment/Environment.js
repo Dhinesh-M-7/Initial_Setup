@@ -1,8 +1,5 @@
 import * as BABYLON from "@babylonjs/core";
 
-
-
-
 export const createEnvironment = () => {
   const ground = BABYLON.MeshBuilder.CreateGround("ground", {
     width: 100,
@@ -11,6 +8,15 @@ export const createEnvironment = () => {
   const groundMat = new BABYLON.StandardMaterial("ground-mat");
   groundMat.diffuseTexture = new BABYLON.Texture("Images/Neon-floor.jpg");
   ground.material = groundMat;
+
+  const groundAggregate = new BABYLON.PhysicsAggregate(
+    ground,
+    BABYLON.PhysicsShapeType.BOX,
+    {
+      mass: 0,
+      restitution: 0.25,
+    }
+  );
 
   const leftWall = new BABYLON.MeshBuilder.CreatePlane("plane", {
     height: 50,
@@ -67,6 +73,14 @@ export const createEnvironment = () => {
   const backWall3Mat = new BABYLON.StandardMaterial();
   backWall3Mat.diffuseColor = new BABYLON.Color4(0, 0, 0, 0);
   backWall3.material = backWall3Mat;
+  const backWall3Aggregate = new BABYLON.PhysicsAggregate(
+    backWall3,
+    BABYLON.PhysicsShapeType.BOX,
+    {
+      mass: 0,
+      restitution: 0.25,
+    }
+  );
 
   const backWall4 = new BABYLON.MeshBuilder.CreatePlane("plane", {
     height: 15,
@@ -78,6 +92,14 @@ export const createEnvironment = () => {
   const backWall4Mat = new BABYLON.StandardMaterial();
   backWall4Mat.diffuseColor = new BABYLON.Color4(0, 0, 0, 0);
   backWall4.material = backWall4Mat;
+  const backWall4Aggregate = new BABYLON.PhysicsAggregate(
+    backWall4,
+    BABYLON.PhysicsShapeType.BOX,
+    {
+      mass: 0,
+      restitution: 0.25,
+    }
+  );
 
   //Wall at the back of the camera
   const backWall5 = new BABYLON.MeshBuilder.CreatePlane("plane", {
