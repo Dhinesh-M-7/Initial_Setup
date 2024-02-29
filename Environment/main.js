@@ -3,7 +3,6 @@ import "@babylonjs/loaders";
  
 import { startMenuGUI } from "./startMenuGUI";
 import { rollCollisionHandler } from "./Game_Logic/gameCollisionHandler";
-import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 import { scoreBoardGUI } from "./scoreBoard";
 import { createEnvironment } from "./Environment";
 import { createAnimations } from "./Animation";
@@ -87,7 +86,6 @@ async function createScene() {
     aim.isVisible = true;
     startingPoint = getLanePosition();
     if (startingPoint) {
-      // we need to disconnect camera from canvas
       setTimeout(() => {
         camera.detachControl(canvas);
       }, 0);
@@ -103,11 +101,16 @@ async function createScene() {
         if(bowlingBallPosition.z < -63){
           bowlingAggregate.body.applyImpulse(new BABYLON.Vector3(-(aim.rotation.y)*550 , 0, ballSpeed), bowling_ball.getAbsolutePosition());
           window.globalShootmusic.play();
+          setTimeout(function () {
+            window.globalShootmusic.stop();
+          }, 1500);
           ballMoved = true;
+        }
         }
         camera.attachControl(canvas, true);
         startingPoint = null;
         if(ballMoved){
+          window.globalShootmusic.play();
           setTimeout(() => {
             setPins.forEach((pin, pinIndex) => {
               pin.dispose();
@@ -119,7 +122,6 @@ async function createScene() {
               trueCount++;
             }
             });
-            console.log(trueCount);
             booleanArray = Array(10).fill(false);
             setPins = createBowlingPins(bowlingPinResult);
             bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
@@ -132,7 +134,6 @@ async function createScene() {
         return;
     
     }
-  };
 
   const pointerMove = () => {
     if (!startingPoint) {
@@ -207,25 +208,27 @@ async function createScene() {
   });
 
   // // Create a new instance of StartGame with generalPins -- need gui to be added
-  let game = new StartNewGame(setPins, scene);
   havokPlugin.onCollisionEndedObservable.add((ev) => {
-    const value = rollCollisionHandler(ev, game);
+    const value = rollCollisionHandler(ev, window);
     booleanArray[value] = true;
   });
   
-  createAnimations(camera, scene, game);
-
+  createAnimations(camera, scene);
   createMusic();
   renderScoreBoard(scene);
-
+  havokPlugin.onCollisionEndedObservable.add((ev) => rollCollisionHandler(ev, scene, window));
   return scene;
 }
 
 const createMusic = () => {
-  window.globalShootmusic = new BABYLON.Sound("rollMusic", "./Audio/rollingball.mp3", null, {
-  loop: true,
-  autoplay: true,
-});
+    window.globalShootmusic = new BABYLON.Sound("rollMusic", "./Audio/rollingball.mp3", null, {
+    loop: true,
+    autoplay: true,
+  });
+  window.globalHitMusic = new BABYLON.Sound("hitMusic", "./Audio/hit.mp3", null, {
+    loop: true,
+    autoplay: true,
+  });
 }
 
 createScene().then((scene) => {
