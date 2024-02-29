@@ -7,6 +7,10 @@ const handleStartGame = (advancedTexture, game) => {
 
 };
 
+const handleExitGame=()=>{
+  window.close();
+}
+
 /*Not working  */
 // const handleExitGame = (advancedTexture) => {
 //   advancedTexture.dispose();
@@ -45,7 +49,7 @@ export async function startMenuGUI(scene, game) {
   });
 
   exitGameButton.onPointerClickObservable.add(function () {
-    handleExitGame(advancedTexture);
+    handleExitGame();
   });
 
   infoButton.onPointerClickObservable.add(function () {

@@ -210,6 +210,7 @@ const createMusic = () => {
   window.globalShootmusic = new BABYLON.Sound("rollMusic", "./Audio/rollingball.mp3", null, {
   loop: true,
   autoplay: true,
+  
 });
 }
 
