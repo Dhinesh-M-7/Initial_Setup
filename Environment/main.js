@@ -1,6 +1,7 @@
 
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders";
+
 import {startMenuGUI} from "./startMenuGUI";
 import { rollCollisionHandler } from "./Game_Logic/gameCollisionHandler";
 import { StartNewGame } from "./Game_Logic/newGameDataStructure";
@@ -19,7 +20,7 @@ async function createScene() {
  
   const camera = new BABYLON.UniversalCamera(
     "camera",
-    new BABYLON.Vector3(0, 30, -110)
+    new BABYLON.Vector3(0, 25, -100)
   );
   camera.setTarget(new BABYLON.Vector3(0, 0, 0));
   camera.attachControl(true);
@@ -27,9 +28,9 @@ async function createScene() {
  
   const light = new BABYLON.HemisphericLight(
     "light",
-    new BABYLON.Vector3(0, 10, -10)
+    new BABYLON.Vector3(0, 10, 0)
   );
-  light.intensity = 0.7;
+  light.intensity = 1.2;
   light.lightmapMode = BABYLON.Light.FALLOFF_PHYSICAL;
  
   scene.enablePhysics(new BABYLON.Vector3(0, -9.8, 0), havokPlugin);
@@ -166,7 +167,10 @@ async function createScene() {
   // // Create a new instance of StartGame with generalPins -- need gui to be added
   let game = new StartNewGame(setPins, scene);
 
+
   createAnimations(camera, scene, game);
+
+
   return scene;
 }
 
@@ -375,6 +379,18 @@ const createEnvironment = () => {
   const backWall4Mat = new BABYLON.StandardMaterial();
   backWall4Mat.diffuseColor = new BABYLON.Color4(0, 0, 0, 0);
   backWall4.material = backWall4Mat;
+
+  //Wall at the back of the camera
+  const backWall5 = new BABYLON.MeshBuilder.CreatePlane("plane",{
+    height: 50,
+    width: 100
+  });
+  backWall5.rotation.y = Math.PI;
+  backWall5.position.y = 25;
+  backWall5.position.z = -100;
+  const backWall5Mat = new BABYLON.StandardMaterial();
+  backWall5Mat.diffuseTexture = new BABYLON.Texture("Images/Neon-backsidewall.jpg");
+  backWall5.material = backWall5Mat;
 };
  
 const createAnimations = (camera, scene, game) => {
@@ -417,7 +433,7 @@ const createAnimations = (camera, scene, game) => {
  
   movement_keys.push({
     frame: 14 * frameRate,
-    value: new BABYLON.Vector3(0, 30, -110),
+    value: new BABYLON.Vector3(0, 25, -100),
   });
  
   movement.setKeys(movement_keys);
