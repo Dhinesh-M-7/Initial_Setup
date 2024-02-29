@@ -28,6 +28,7 @@ export const createEnvironment = () => {
   const leftWallMat = new BABYLON.StandardMaterial("back-wall-material");
   leftWallMat.diffuseTexture = new BABYLON.Texture("Images/Neon-sidewall.jpg");
   leftWall.material = leftWallMat;
+  const leftWallAggregate = 
 
   const rightWall = new BABYLON.MeshBuilder.CreatePlane("plane", {
     height: 50,
@@ -61,6 +62,14 @@ export const createEnvironment = () => {
   const backWall2Mat = new BABYLON.StandardMaterial();
   backWall2Mat.diffuseTexture = new BABYLON.Texture("Images/Backwall.jpg");
   backWall2.material = backWall2Mat;
+  const backWall2Aggregate = new BABYLON.PhysicsAggregate(
+    backWall2,
+    BABYLON.PhysicsShapeType.BOX,
+    {
+      mass: 0,
+      restitution: 0.25,
+    }
+  );
 
   //Walls on sides of backWall1(No texture needed only color)
   const backWall3 = new BABYLON.MeshBuilder.CreatePlane("plane", {

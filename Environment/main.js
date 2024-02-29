@@ -1,23 +1,23 @@
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders";
-
+ 
 import { startMenuGUI } from "./startMenuGUI";
 import { rollCollisionHandler } from "./Game_Logic/gameCollisionHandler";
 import { StartNewGame } from "./Game_Logic/newGameDataStructure";
-import { circleOfConfusionPixelShader } from "@babylonjs/core/Shaders/circleOfConfusion.fragment";
 import { scoreBoardGUI } from "./scoreBoard";
 import { createEnvironment } from "./Environment";
 import { createAnimations } from "./Animation";
 import { createBowlingLane } from "./BowlingLane";
 import { createAim } from "./Aim";
 import { createBowlingBall, createBowlingPins } from "./BowlingBallAndPins";
-import { renderScoreBoard } from "./renderScoreBoard";
+import { renderScoreBoard,scoreboardValueDisplay } from "./renderScoreBoard";
 
 const canvas = document.getElementById("renderCanvas");
 export let engine = new BABYLON.Engine(canvas);
 export let scene;
 
 async function createScene() {
+  let booleanArray = new Array(10).fill(false);
   scene = new BABYLON.Scene(engine);
 
 
@@ -32,7 +32,7 @@ async function createScene() {
 
   const camera = new BABYLON.UniversalCamera(
     "camera",
-    new BABYLON.Vector3(0, 25, -100)
+    new BABYLON.Vector3(0, 30, -100)
   );
   camera.setTarget(new BABYLON.Vector3(0, 0, 0));
   camera.attachControl(true);
@@ -112,12 +112,22 @@ async function createScene() {
             setPins.forEach((pin, pinIndex) => {
               pin.dispose();
             });
+            let trueCount = 0;
+
+            booleanArray.forEach((value) => {
+            if (value === true) {
+              trueCount++;
+            }
+            });
+            console.log(trueCount);
+            booleanArray = Array(10).fill(false);
             setPins = createBowlingPins(bowlingPinResult);
             bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
             bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
             bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
             bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
-          }, 5000);
+            scoreboardValueDisplay.updateText(trueCount.toString());
+          }, 5000)
         }
         return;
     
@@ -198,9 +208,11 @@ async function createScene() {
 
   // // Create a new instance of StartGame with generalPins -- need gui to be added
   let game = new StartNewGame(setPins, scene);
-  havokPlugin.onCollisionEndedObservable.add((ev) =>
-    rollCollisionHandler(ev, game)
-  );
+  havokPlugin.onCollisionEndedObservable.add((ev) => {
+    const value = rollCollisionHandler(ev, game);
+    booleanArray[value] = true;
+  });
+  
   createAnimations(camera, scene, game);
 
   createMusic();
