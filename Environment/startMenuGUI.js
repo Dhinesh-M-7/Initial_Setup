@@ -7,10 +7,10 @@ const handleStartGame = (advancedTexture, game) => {
   advancedTexture.dispose();
   scoreboardDisplay.isVisible = true;
   scoreboardValueDisplay.isVisible = true;
-  console.log(game);
   game.initializeFrames();
   game.initializePins();
   console.log(game);
+
 };
 
 /*Not working  */

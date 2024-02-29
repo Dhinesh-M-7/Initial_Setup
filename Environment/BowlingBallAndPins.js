@@ -12,7 +12,7 @@ export const createBowlingBall = (bowlingBallResult, scene) => {
       { mass: 1, restitution: 0.45, friction: 0.75}, scene
     )
     bowling_aggregator.body.disablePreStep = false;
-    console.log(bowling_aggregator);
+    bowling_aggregator.body.setCollisionCallbackEnabled(true);
     return [bowling_ball, bowling_aggregator];
   };
 
