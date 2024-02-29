@@ -1,7 +1,12 @@
 import { AdvancedDynamicTexture } from "@babylonjs/gui";
-
-const handleStartGame = (advancedTexture) => {
+// import { StartNewGame } from "./Game_Logic/newGameDataStructure";
+const handleStartGame = (advancedTexture, game) => {
   advancedTexture.dispose();
+  console.log(game);
+  game.initializeFrames();
+  game.initializePins();
+  console.log(game);
+
 };
 
 /*Not working  */
@@ -15,7 +20,7 @@ const handleStartGame = (advancedTexture) => {
 //   }
 // };
 
-export async function startMenuGUI(scene) {
+export async function startMenuGUI(scene, game) {
   // Create the advanced texture
   let advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI(
     "GUI",
@@ -38,7 +43,7 @@ export async function startMenuGUI(scene) {
 
   // Add event handlers to the buttons
   startGameButton.onPointerClickObservable.add(function () {
-    handleStartGame(advancedTexture);
+    handleStartGame(advancedTexture, game);
   });
 
   exitGameButton.onPointerClickObservable.add(function () {
