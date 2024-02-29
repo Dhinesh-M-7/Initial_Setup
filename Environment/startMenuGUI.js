@@ -1,26 +1,20 @@
 import { AdvancedDynamicTexture } from "@babylonjs/gui";
+import { scoreboardDisplay } from "./renderScoreBoard";
+import { scoreboardValueDisplay } from "./renderScoreBoard";
+
 // import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 const handleStartGame = (advancedTexture, game) => {
   advancedTexture.dispose();
+  scoreboardDisplay.isVisible = true;
+  scoreboardValueDisplay.isVisible = true;
   game.initializeFrames();
   game.initializePins();
-
+  console.log(game);
 };
 
-const handleExitGame=()=>{
+const handleExitGame = (advancedTexture) => {
   window.close();
-}
-
-/*Not working  */
-// const handleExitGame = (advancedTexture) => {
-//   advancedTexture.dispose();
-//   if (scene) {
-//     scene.dispose();
-//   }
-//   if (engine) {
-//     engine.dispose();
-//   }
-// };
+};
 
 export async function startMenuGUI(scene, game) {
   // Create the advanced texture
