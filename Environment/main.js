@@ -32,7 +32,7 @@ async function createScene() {
 
   const camera = new BABYLON.UniversalCamera(
     "camera",
-    new BABYLON.Vector3(0, 30, -100)
+    new BABYLON.Vector3(0, 25, -100)
   );
   camera.setTarget(new BABYLON.Vector3(0, 0, 0));
   camera.attachControl(true);
@@ -143,12 +143,15 @@ async function createScene() {
       return;
     }
 
-    let aimAngle = current.x * 0.1;
+    let aimAngle = (bowling_ball.position.x + current.x) * 0.1;
 
     if (aimAngle > 0.15) aimAngle = 0.15;
     else if (aimAngle < -0.15) aimAngle = -0.15;
 
+    console.log(bowling_ball.position.x);
+
     aim.rotation.y = aimAngle;
+    console.log(aimAngle);
 
     const diff = current.subtract(startingPoint);
     diff.x = 0;
@@ -206,7 +209,7 @@ async function createScene() {
     }
   });
 
-  // // Create a new instance of StartGame with generalPins -- need gui to be added
+  // Create a new instance of StartGame with generalPins -- need gui to be added
   let game = new StartNewGame(setPins, scene);
   havokPlugin.onCollisionEndedObservable.add((ev) => {
     const value = rollCollisionHandler(ev, game);
