@@ -1,4 +1,5 @@
 import { GUI3DManager } from "@babylonjs/gui/3D/gui3DManager";
+import { Rectangle } from "@babylonjs/gui";
 import { TextBlock } from "@babylonjs/gui";
 import { Button3D } from "@babylonjs/gui";
 
@@ -16,7 +17,7 @@ export function scoreBoardGUI(scene, positionCoordinates, visibility, value) {
   button.position.z = positionCoordinates[2];
   button.scaling = new BABYLON.Vector3(32, 15, 30);
   button.isVisible = visibility;
-  button.color = "blue";
+  // button.color = "navyblue";
 
   let text1 = new TextBlock();
   text1.text = value;

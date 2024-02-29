@@ -12,10 +12,9 @@ const handleStartGame = (advancedTexture, game) => {
   console.log(game);
 };
 
-// const handleExitGame = (advancedTexture) => {
-//   // advancedTexture.dispose();
-//   scoreboardValueDisplay.updateText(10);
-// };
+const handleExitGame = (advancedTexture) => {
+  window.close();
+};
 
 export async function startMenuGUI(scene, game) {
   // Create the advanced texture
