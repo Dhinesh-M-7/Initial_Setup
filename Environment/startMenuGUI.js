@@ -1,9 +1,15 @@
 import { AdvancedDynamicTexture } from "@babylonjs/gui";
+import { scoreboardDisplay } from "./renderScoreBoard";
+import { scoreboardValueDisplay } from "./renderScoreBoard";
+
 // import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 const handleStartGame = (advancedTexture, game) => {
   advancedTexture.dispose();
+  scoreboardDisplay.isVisible = true;
+  scoreboardValueDisplay.isVisible = true;
   game.initializeFrames();
   game.initializePins();
+  console.log(game);
 
 };
 
