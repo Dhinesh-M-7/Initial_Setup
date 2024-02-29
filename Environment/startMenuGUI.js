@@ -10,18 +10,11 @@ const handleStartGame = (advancedTexture, game) => {
   game.initializeFrames();
   game.initializePins();
   console.log(game);
-
 };
 
-/*Not working  */
 // const handleExitGame = (advancedTexture) => {
-//   advancedTexture.dispose();
-//   if (scene) {
-//     scene.dispose();
-//   }
-//   if (engine) {
-//     engine.dispose();
-//   }
+//   // advancedTexture.dispose();
+//   scoreboardValueDisplay.updateText(10);
 // };
 
 export async function startMenuGUI(scene, game) {

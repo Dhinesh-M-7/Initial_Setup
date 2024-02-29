@@ -29,7 +29,7 @@ async function createScene() {
   );
   camera.setTarget(new BABYLON.Vector3(0, 0, 0));
   camera.attachControl(true);
-  //camera.inputs.clear();
+  camera.inputs.clear();
 
   const light = new BABYLON.HemisphericLight(
     "light",

@@ -24,5 +24,8 @@ export function scoreBoardGUI(scene, positionCoordinates, visibility, value) {
   text1.fontSize = 35;
   button.content = text1;
 
+  button.updateText = function (newValue) {
+    text1.text = newValue;
+  };
   return button;
 }
