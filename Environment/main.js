@@ -11,12 +11,11 @@ import { createAnimations } from "./Animation";
 import { createBowlingLane } from "./BowlingLane";
 import { createAim } from "./Aim";
 import { createBowlingBall, createBowlingPins } from "./BowlingBallAndPins";
+import { renderScoreBoard } from "./renderScoreBoard";
 
 const canvas = document.getElementById("renderCanvas");
 export let engine = new BABYLON.Engine(canvas);
 export let scene;
-export let scoreboardDisplay;
-export let scoreboardValueDisplay;
 
 async function createScene() {
   scene = new BABYLON.Scene(engine);
@@ -179,10 +178,10 @@ async function createScene() {
   let game = new StartNewGame(setPins, scene);
 
   createAnimations(camera, scene, game);
+  renderScoreBoard(scene);
   return scene;
 }
 
- 
 createScene().then((scene) => {
   engine.runRenderLoop(function () {
     if (scene) {

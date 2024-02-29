@@ -1,6 +1,6 @@
 import { AdvancedDynamicTexture } from "@babylonjs/gui";
-import { scoreboardDisplay } from "./main";
-import { scoreboardValueDisplay } from "./main";
+import { scoreboardDisplay } from "./renderScoreBoard";
+import { scoreboardValueDisplay } from "./renderScoreBoard";
 
 // import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 const handleStartGame = (advancedTexture, game) => {
