@@ -59,6 +59,7 @@ function createExitButton(scene) {
   return [exitButton, exitPlane];
 }
 
+
 const handleStartGame = (startPlane, infoPlane, exitPlane, game) => {
   game.initializeFrames();
   startPlane.dispose();
@@ -66,6 +67,7 @@ const handleStartGame = (startPlane, infoPlane, exitPlane, game) => {
   exitPlane.dispose();
   overallScoreBoardDisplay.updateText("Overall\nScore: 0");
   currentRollScoreBoardDisplay.updateText("Current\nScore: 0");
+
   overallScoreBoardDisplay.isVisible = true;
   currentRollScoreBoardDisplay.isVisible = true;
 };

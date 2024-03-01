@@ -21,6 +21,9 @@ export class StartNewGame {
             return {pinId: pin.id, pinPosition: pin.position, isHit: false}
         });
     }
+    updateToNewGame(newGame){
+        Object.assign(this, newGame);
+    }
     gameScoreCalculation(){
         const fallenPins = this.pinsArray.filter((pin) => pin.isHit === true);
         this.frames[this.currentFrameIndex].downPins = fallenPins;
