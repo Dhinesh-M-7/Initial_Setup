@@ -1,6 +1,8 @@
 import * as BABYLON from "@babylonjs/core";
 
 export const createEnvironment = () => {
+
+
   const ground = BABYLON.MeshBuilder.CreateGround("ground", {
     width: 100,
     height: 200,
