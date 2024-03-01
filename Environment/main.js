@@ -21,7 +21,6 @@ const canvas = document.getElementById("renderCanvas");
 const engine = new BABYLON.Engine(canvas);
 
 async function createScene() {
-  let booleanArray = new Array(10).fill(false);
   const scene = new BABYLON.Scene(engine);
 
   const music = new BABYLON.Sound(
@@ -44,6 +43,7 @@ async function createScene() {
   );
   camera.setTarget(new BABYLON.Vector3(0, 0, 0));
   camera.inputs.clear();
+  camera.attachControl();
 
   const light = new BABYLON.HemisphericLight(
     "light",
@@ -83,21 +83,22 @@ async function createScene() {
 
   const updateGameScores = (game, currentRollScore, overallScore) => {
     if (game.frames[game.currentFrameIndex - 1].bonus === "strike") {
-      if (currentRollScoreBoardDisplay.isVisible === true) {
-        particles(new BABYLON.Vector3(13, 18, -30));
-        particles(new BABYLON.Vector3(-13, 18, -30));
-      }
+      particles(new BABYLON.Vector3(13, 18, -30));
+      particles(new BABYLON.Vector3(-13, 18, -30));
       currentRollScoreBoardDisplay.updateText(
         "Strike!!!\n" + currentRollScore.toString()
       );
-    } else
+    } 
+    else{
       currentRollScoreBoardDisplay.updateText(
         "Current\nScore: " + currentRollScore.toString()
       );
+    }
     overallScoreBoardDisplay.updateText(
       "Overall\nScore: " + overallScore.toString()
     );
-  };
+  }
+
 
   const getLanePosition = () => {
     const pickinfo = scene.pick(scene.pointerX, scene.pointerY, (mesh) => {
@@ -122,23 +123,25 @@ async function createScene() {
 
   }
   scene.onPointerObservable.add((pointerInfo) => {
-    switch (pointerInfo.type) {
-      case BABYLON.PointerEventTypes.POINTERDOWN:
-        if (
-          pointerInfo.pickInfo.hit &&
-          pointerInfo.pickInfo.pickedMesh == bowling_ball
-        ) {
-          aim.isVisible = true;
-          [currentMesh, startingPoint] = pointerDown(pointerInfo.pickInfo.pickedMesh, getLanePosition);
-        }
-        break;
-      case BABYLON.PointerEventTypes.POINTERUP:
-        aim.isVisible = false;
-        [startingPoint, currentMesh] = pointerUp(startingPoint, aim, game, meshObject, updateGameScores, bowlingPinResult, createBowlingPins, scene);
-        break;
-      case BABYLON.PointerEventTypes.POINTERMOVE:
-        startingPoint = pointerMove(startingPoint, getLanePosition, meshObject, aim, currentMesh);
-        break;
+    if(game.isGameStarted === true){
+      switch (pointerInfo.type) {
+        case BABYLON.PointerEventTypes.POINTERDOWN:
+          if (
+            pointerInfo.pickInfo.hit &&
+            pointerInfo.pickInfo.pickedMesh == bowling_ball
+          ) {
+            aim.isVisible = true;
+            [currentMesh, startingPoint] = pointerDown(pointerInfo.pickInfo.pickedMesh, getLanePosition);
+          }
+          break;
+        case BABYLON.PointerEventTypes.POINTERUP:
+          aim.isVisible = false;
+          [startingPoint, currentMesh] = pointerUp(startingPoint, aim, game, meshObject, updateGameScores, bowlingPinResult, createBowlingPins, scene);
+          break;
+        case BABYLON.PointerEventTypes.POINTERMOVE:
+          startingPoint = pointerMove(startingPoint, getLanePosition, meshObject, aim, currentMesh);
+          break;
+      }
     }
   });
 
@@ -191,4 +194,4 @@ createScene().then((scene) => {
 });
 window.addEventListener("resize", function () {
   engine.resize();
-});
+})
