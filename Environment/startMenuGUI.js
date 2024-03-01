@@ -5,8 +5,10 @@ import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 
 // import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 const handleStartGame = (advancedTexture, game) => {
-  // game = new StartNewGame(game.generalPins);
-  game.initializeFrames();
+  // game = new StartNewGame(game.generalPins); //won't work as it creates a new instance instead of altering the current one
+  const newGame = new StartNewGame(game.generalPins);
+  game.updateToNewGame(newGame);
+  // game.initializeFrames();
   advancedTexture.dispose();
   overallScoreBoardDisplay.updateText('Overall\nScore: 0');
   currentRollScoreBoardDisplay.updateText('Current\nScore: 0');
