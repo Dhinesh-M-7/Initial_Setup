@@ -8,7 +8,7 @@ import { createAnimations } from "./Game_Environment/animation";
 import { createBowlingLane } from "./Game_Environment/bowlingLane";
 import { createAim } from "./aim";
 import { createBowlingBall, createBowlingPins } from "./bowlingBallAndPins";
-import{particles} from "./Game_Environment/particles";
+import { particles } from "./Game_Environment/particles";
 import {
   renderScoreBoard,
   currentRollScoreBoardDisplay,
@@ -88,10 +88,9 @@ async function createScene() {
     return null;
   };
 
-
   const updateGameScores = (game, currentRollScore, overallScore) => {
     if (game.frames[game.currentFrameIndex - 1].bonus === "strike") {
-      if(currentRollScoreBoardDisplay.isVisible === true){
+      if (currentRollScoreBoardDisplay.isVisible === true) {
         particles(new BABYLON.Vector3(13, 18, -30));
         particles(new BABYLON.Vector3(-13, 18, -30));
       }
