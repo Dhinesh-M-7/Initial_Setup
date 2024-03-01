@@ -2,7 +2,7 @@ import * as BABYLON from "@babylonjs/core"
 import { startMenuGUI } from "./startMenuGUI";
 
 export const createAnimations = (camera, scene, game) => {
-    const frameRate = 60;
+    const frameRate = 30;
    
     const movement = new BABYLON.Animation(
       "movement",
