@@ -98,7 +98,6 @@ async function createScene() {
       currentRollScoreBoardDisplay.updateText(
         "Strike!!!\n" + currentRollScore.toString()
       );
-
     } else
       currentRollScoreBoardDisplay.updateText(
         "Current\nScore: " + currentRollScore.toString()
@@ -107,7 +106,6 @@ async function createScene() {
       "Overall\nScore: " + overallScore.toString()
     );
   };
-
 
   const pointerDown = (mesh) => {
     currentMesh = mesh;
@@ -271,7 +269,6 @@ const createMusic = () => {
     }
   );
 };
-
 
 createScene().then((scene) => {
   engine.runRenderLoop(function () {
