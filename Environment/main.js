@@ -1,14 +1,18 @@
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders";
- 
+
 import { startMenuGUI } from "./startMenuGUI";
 import { rollCollisionHandler } from "./Game_Logic/gameCollisionHandler";
-import { createEnvironment } from "./Environment";
-import { createAnimations } from "./Animation";
-import { createBowlingLane } from "./BowlingLane";
-import { createAim } from "./Aim";
-import { createBowlingBall, createBowlingPins } from "./BowlingBallAndPins";
-import { renderScoreBoard, currentRollScoreBoardDisplay, overallScoreBoardDisplay } from "./renderScoreBoard";
+import { createEnvironment } from "./Game_Environment/environment";
+import { createAnimations } from "./Game_Environment/animation";
+import { createBowlingLane } from "./Game_Environment/bowlingLane";
+import { createAim } from "./aim";
+import { createBowlingBall, createBowlingPins } from "./bowlingBallAndPins";
+import {
+  renderScoreBoard,
+  currentRollScoreBoardDisplay,
+  overallScoreBoardDisplay,
+} from "./renderScoreBoard";
 import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 
 const canvas = document.getElementById("renderCanvas");
@@ -38,7 +42,6 @@ async function createScene() {
   );
   camera.setTarget(new BABYLON.Vector3(0, 0, 0));
   camera.inputs.clear();
-
 
   const light = new BABYLON.HemisphericLight(
     "light",
@@ -85,13 +88,18 @@ async function createScene() {
   };
 
   const updateGameScores = (game, currentRollScore, overallScore) => {
-    if(game.frames[game.currentFrameIndex-1].bonus === 'strike'){
-      currentRollScoreBoardDisplay.updateText('Strike!!!\n' + currentRollScore.toString());
-    }
-    else currentRollScoreBoardDisplay.updateText('Current\nScore: ' + currentRollScore.toString());
-    overallScoreBoardDisplay.updateText('Overall\nScore: ' + overallScore.toString());
-  }
-  
+    if (game.frames[game.currentFrameIndex - 1].bonus === "strike") {
+      currentRollScoreBoardDisplay.updateText(
+        "Strike!!!\n" + currentRollScore.toString()
+      );
+    } else
+      currentRollScoreBoardDisplay.updateText(
+        "Current\nScore: " + currentRollScore.toString()
+      );
+    overallScoreBoardDisplay.updateText(
+      "Overall\nScore: " + overallScore.toString()
+    );
+  };
 
   const pointerDown = (mesh) => {
     currentMesh = mesh;
@@ -100,51 +108,54 @@ async function createScene() {
   };
 
   const pointerUp = () => {
-      aim.isVisible = false;
-      const bowlingBallPosition = bowling_ball.absolutePosition;
-      if (startingPoint) {
-        const ballSpeed = (-(bowlingBallPosition.z)-6)*10;
-        if(bowlingBallPosition.z < -63){
-          bowlingAggregate.body.applyImpulse(new BABYLON.Vector3(-(aim.rotation.y)*550 , 0, ballSpeed), bowling_ball.getAbsolutePosition());
-          window.globalShootmusic.play();
-          setTimeout(function () {
-            window.globalShootmusic.stop();
-          }, 1500);
-          game.ballIsRolled = true;
-        }
-        }
-        camera.attachControl(canvas, true);
-        startingPoint = null;
-        if(game.ballIsRolled === true){
-          setTimeout(() => {
-            setPins.forEach((pin) => {
-              pin.dispose();
-            });
-            const currentRollScore = game.gameScoreCalculation();
-            const overallScore = game.totalScoreCalculation();
-            updateGameScores(game, currentRollScore, overallScore);
-            
-            setPins = createBowlingPins(bowlingPinResult);
-            
-            bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
-            bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
-            bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
-            bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
-            
-            game.ballIsRolled = false;
-            game.initializePins();
-
-            if(game.currentFrameIndex >= 5){
-              setTimeout(() => {
-                overallScoreBoardDisplay.isVisible=false;
-                currentRollScoreBoardDisplay.isVisible=false;
-                startMenuGUI(scene, game);
-              }, 1000)
-            }
-          }, 5000)
-        }
-        return;
+    aim.isVisible = false;
+    const bowlingBallPosition = bowling_ball.absolutePosition;
+    if (startingPoint) {
+      const ballSpeed = (-bowlingBallPosition.z - 6) * 10;
+      if (bowlingBallPosition.z < -63) {
+        bowlingAggregate.body.applyImpulse(
+          new BABYLON.Vector3(-aim.rotation.y * 550, 0, ballSpeed),
+          bowling_ball.getAbsolutePosition()
+        );
+        window.globalShootmusic.play();
+        setTimeout(function () {
+          window.globalShootmusic.stop();
+        }, 1500);
+        game.ballIsRolled = true;
+      }
     }
+    camera.attachControl(canvas, true);
+    startingPoint = null;
+    if (game.ballIsRolled === true) {
+      setTimeout(() => {
+        setPins.forEach((pin) => {
+          pin.dispose();
+        });
+        const currentRollScore = game.gameScoreCalculation();
+        const overallScore = game.totalScoreCalculation();
+        updateGameScores(game, currentRollScore, overallScore);
+
+        setPins = createBowlingPins(bowlingPinResult);
+
+        bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
+        bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
+        bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
+        bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
+
+        game.ballIsRolled = false;
+        game.initializePins();
+
+        if (game.currentFrameIndex >= 5) {
+          setTimeout(() => {
+            overallScoreBoardDisplay.isVisible = false;
+            currentRollScoreBoardDisplay.isVisible = false;
+            startMenuGUI(scene, game);
+          }, 1000);
+        }
+      }, 5000);
+    }
+    return;
+  };
 
   const pointerMove = () => {
     if (!startingPoint) {
@@ -219,7 +230,9 @@ async function createScene() {
   createAnimations(camera, scene, game);
   createMusic();
   renderScoreBoard(scene);
-  havokPlugin.onCollisionEndedObservable.add((ev) => rollCollisionHandler(ev, scene, window, game));
+  havokPlugin.onCollisionEndedObservable.add((ev) =>
+    rollCollisionHandler(ev, scene, window, game)
+  );
 
   scene.onKeyboardObservable.add((kbInfo) => {
     switch (kbInfo.type) {
@@ -231,15 +244,25 @@ async function createScene() {
 }
 
 const createMusic = () => {
-    window.globalShootmusic = new BABYLON.Sound("rollMusic", "./Audio/rollingball.mp3", null, {
-    loop: true,
-    autoplay: true,
-  });
-  window.globalHitMusic = new BABYLON.Sound("hitMusic", "./Audio/hit.mp3", null, {
-    loop: true,
-    autoplay: true,
-  });
-}
+  window.globalShootmusic = new BABYLON.Sound(
+    "rollMusic",
+    "./Audio/rollingball.mp3",
+    null,
+    {
+      loop: true,
+      autoplay: true,
+    }
+  );
+  window.globalHitMusic = new BABYLON.Sound(
+    "hitMusic",
+    "./Audio/hit.mp3",
+    null,
+    {
+      loop: true,
+      autoplay: true,
+    }
+  );
+};
 
 createScene().then((scene) => {
   engine.runRenderLoop(function () {
