@@ -1,5 +1,4 @@
 import { GUI3DManager } from "@babylonjs/gui/3D/gui3DManager";
-import { Rectangle } from "@babylonjs/gui";
 import { TextBlock } from "@babylonjs/gui";
 import { Button3D } from "@babylonjs/gui";
 

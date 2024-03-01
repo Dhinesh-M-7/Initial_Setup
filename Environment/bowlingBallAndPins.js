@@ -40,7 +40,7 @@ export const createBowlingPins = (bowlingPinResult, scene) => {
     const setPins = pinPositions.map(function (position, idx) {
         const pin = new BABYLON.InstancedMesh("pin-" + idx, bowlingPin);
         pin.position = position;
-        const pinAggregate = new BABYLON.PhysicsAggregate(pin, BABYLON.PhysicsShapeType.CONVEX_HULL, { mass: 1, restitution: 0.1,friction:1.6 }, scene);
+        const pinAggregate = new BABYLON.PhysicsAggregate(pin, BABYLON.PhysicsShapeType.CONVEX_HULL, { mass: 0.25, restitution: 0.1,friction:1.6 }, scene);
         pinAggregate.body.setCollisionCallbackEnabled(true);
         return pin;
     });

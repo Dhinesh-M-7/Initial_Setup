@@ -1,6 +1,6 @@
 import * as BABYLON  from "@babylonjs/core"
 
-export const particles = () => {
+export const particles = (position) => {
   const particleSystem = new BABYLON.ParticleSystem("particles", 2000);
 
   particleSystem.particleTexture = new BABYLON.Texture("Images/flare.png");
@@ -21,9 +21,11 @@ export const particles = () => {
   particleSystem.minEmitPower = 1;
   particleSystem.maxEmitPower = 3;
   particleSystem.updateSpeed = 0.005;
-  particleSystem.emitter = new BABYLON.Vector3(13, 18, -30);
+  particleSystem.emitter = position;
 
   particleSystem.start();
 
   particleSystem.targetStopDuration = 0.6;
+
+  return particleSystem;
 }

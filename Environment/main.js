@@ -43,6 +43,7 @@ async function createScene() {
   );
   camera.setTarget(new BABYLON.Vector3(0, 0, 0));
   camera.inputs.clear();
+  camera.attachControl();
 
   const light = new BABYLON.HemisphericLight(
     "light",
@@ -91,7 +92,10 @@ async function createScene() {
 
   const updateGameScores = (game, currentRollScore, overallScore) => {
     if (game.frames[game.currentFrameIndex - 1].bonus === "strike") {
-      particles();
+      if(currentRollScoreBoardDisplay.isVisible === true){
+        particles(new BABYLON.Vector3(13, 18, -30));
+        particles(new BABYLON.Vector3(-13, 18, -30));
+      }
       currentRollScoreBoardDisplay.updateText(
         "Strike!!!\n" + currentRollScore.toString()
       );
