@@ -87,7 +87,6 @@ async function createScene() {
     return null;
   };
 
-
   const particles = () => {
     const particleSystem = new BABYLON.ParticleSystem("particles", 2000);
 
@@ -98,7 +97,7 @@ async function createScene() {
     //particleSystem.emitter = new BABYLON.Vector3(4, 0.5, 0);
 
     particleSystem.color1 = new BABYLON.Color4(0.7, 0.8, 1.0, 1.0);
-    particleSystem.color2 = new BABYLON.Color4(0.9, 0.1, .1, 1.0);
+    particleSystem.color2 = new BABYLON.Color4(0.9, 0.1, 0.1, 1.0);
     particleSystem.colorDead = new BABYLON.Color4(0.412, 0.529, 0, 1);
     particleSystem.minSize = 0.05;
     particleSystem.maxSize = 0.8;
@@ -118,7 +117,7 @@ async function createScene() {
     particleSystem.start();
 
     particleSystem.targetStopDuration = 0.6;
-  }
+  };
 
   const updateGameScores = (game, currentRollScore, overallScore) => {
     if (game.frames[game.currentFrameIndex - 1].bonus === "strike") {
@@ -126,7 +125,6 @@ async function createScene() {
       currentRollScoreBoardDisplay.updateText(
         "Strike!!!\n" + currentRollScore.toString()
       );
-
     } else
       currentRollScoreBoardDisplay.updateText(
         "Current\nScore: " + currentRollScore.toString()
@@ -135,7 +133,6 @@ async function createScene() {
       "Overall\nScore: " + overallScore.toString()
     );
   };
-
 
   const pointerDown = (mesh) => {
     currentMesh = mesh;
@@ -299,7 +296,6 @@ const createMusic = () => {
     }
   );
 };
-
 
 createScene().then((scene) => {
   engine.runRenderLoop(function () {
