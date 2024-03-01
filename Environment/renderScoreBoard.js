@@ -1,10 +1,10 @@
 import { scoreBoardGUI } from "./scoreBoard";
-export let scoreboardDisplay;
-export let scoreboardValueDisplay;
+export let overallScoreBoardDisplay;
+export let currentRollScoreBoardDisplay;
 
 export function renderScoreBoard(scene) {
   let scoreBoardpositionCoordinates = [-32.5, 7.5, 100];
-  scoreboardDisplay = scoreBoardGUI(
+  overallScoreBoardDisplay = scoreBoardGUI(
     scene,
     scoreBoardpositionCoordinates,
     false,
@@ -12,10 +12,10 @@ export function renderScoreBoard(scene) {
   );
 
   let scoreBoardValuepositionCoordinates = [32.5, 7.5, 100];
-  scoreboardValueDisplay = scoreBoardGUI(
+  currentRollScoreBoardDisplay = scoreBoardGUI(
     scene,
     scoreBoardValuepositionCoordinates,
     false,
-    0
+    "Current Score"
   );
 }

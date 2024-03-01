@@ -1,18 +1,19 @@
-export const rollCollisionHandler = (ev) => {
-    const pin1 = ev.collidedAgainst.transformNode;
-    const pin2 = ev.collider.transformNode;
-    const pin1Name = pin1.name;
-    const pin2Name = pin2.name;
+export const rollCollisionHandler = (ev, scene, window, game) => {
+    const collidedAgainstMesh = ev.collidedAgainst.transformNode;
+    const colliderMesh = ev.collider.transformNode;
+    const collidedAgainstMeshName = collidedAgainstMesh.name;
+    const colliderMeshName = colliderMesh.name;
 
-    if(pin1Name === 'bowlingBall' && pin2Name.slice(0,3) === 'pin'){
+    if(colliderMeshName === 'bowlingBall' && collidedAgainstMeshName.slice(0,3) === 'pin'){
+        // console.log('hit');
         window.globalHitMusic.play();
     }
     
-    if(pin1Name.slice(0,3) == "pin"){
-        return pin1Name[4];
+    if(collidedAgainstMeshName.slice(0,3) == "pin"){
+        game.pinsArray[collidedAgainstMeshName[4]].isHit = true;
     }
 
-    if( pin2Name.slice(0,3) == "pin"){
-        return pin2Name[4];
+    if( colliderMeshName.slice(0,3) == "pin"){
+        game.pinsArray[colliderMeshName[4]].isHit = true;
     }
 }

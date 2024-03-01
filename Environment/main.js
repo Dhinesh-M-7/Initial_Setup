@@ -8,7 +8,8 @@ import { createAnimations } from "./Animation";
 import { createBowlingLane } from "./BowlingLane";
 import { createAim } from "./Aim";
 import { createBowlingBall, createBowlingPins } from "./BowlingBallAndPins";
-import { renderScoreBoard,scoreboardValueDisplay,scoreboardDisplay } from "./renderScoreBoard";
+import { renderScoreBoard, currentRollScoreBoardDisplay, overallScoreBoardDisplay } from "./renderScoreBoard";
+import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 
 const canvas = document.getElementById("renderCanvas");
 const engine = new BABYLON.Engine(canvas);
@@ -83,8 +84,13 @@ async function createScene() {
     return null;
   };
 
-  let rollCount = 0;
-  let totalScore = 0;
+  const updateGameScores = (game, currentRollScore, overallScore) => {
+    if(game.frames[game.currentFrameIndex-1].bonus === 'strike'){
+      currentRollScoreBoardDisplay.updateText('Strike!!!\n' + currentRollScore.toString());
+    }
+    else currentRollScoreBoardDisplay.updateText('Current\nScore: ' + currentRollScore.toString());
+    overallScoreBoardDisplay.updateText('Overall\nScore: ' + overallScore.toString());
+  }
   
 
   const pointerDown = (mesh) => {
@@ -94,7 +100,6 @@ async function createScene() {
   };
 
   const pointerUp = () => {
-      let ballMoved = false;
       aim.isVisible = false;
       const bowlingBallPosition = bowling_ball.absolutePosition;
       if (startingPoint) {
@@ -105,45 +110,40 @@ async function createScene() {
           setTimeout(function () {
             window.globalShootmusic.stop();
           }, 1500);
-          ballMoved = true;
+          game.ballIsRolled = true;
         }
         }
         camera.attachControl(canvas, true);
         startingPoint = null;
-        if(ballMoved){
-          window.globalShootmusic.play();
+        if(game.ballIsRolled === true){
           setTimeout(() => {
-            setPins.forEach((pin, pinIndex) => {
+            setPins.forEach((pin) => {
               pin.dispose();
             });
-            let trueCount = 0;
-
-            booleanArray.forEach((value) => {
-            if (value === true) {
-              trueCount++;
-            }
-            });
-            totalScore += trueCount;
-            booleanArray = Array(10).fill(false);
+            const currentRollScore = game.gameScoreCalculation();
+            const overallScore = game.totalScoreCalculation();
+            updateGameScores(game, currentRollScore, overallScore);
+            
             setPins = createBowlingPins(bowlingPinResult);
+            
             bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
             bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
             bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
             bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
-            scoreboardValueDisplay.updateText(totalScore.toString());
-            rollCount++;
-            if(rollCount % 5 === 0){
+            
+            game.ballIsRolled = false;
+            game.initializePins();
+
+            if(game.currentFrameIndex >= 5){
               setTimeout(() => {
-                totalScore = 0;
-                scoreboardDisplay.isVisible=false;
-                scoreboardValueDisplay.isVisible=false;
-                startMenuGUI(scene);
+                overallScoreBoardDisplay.isVisible=false;
+                currentRollScoreBoardDisplay.isVisible=false;
+                startMenuGUI(scene, game);
               }, 1000)
             }
           }, 5000)
         }
         return;
-    
     }
 
   const pointerMove = () => {
@@ -214,23 +214,19 @@ async function createScene() {
     }
   });
 
+  // Create a new instance of StartGame with generalPins -- need gui to be added
+  let game = new StartNewGame(setPins);
+  createAnimations(camera, scene, game);
+  createMusic();
+  renderScoreBoard(scene);
+  havokPlugin.onCollisionEndedObservable.add((ev) => rollCollisionHandler(ev, scene, window, game));
+
   scene.onKeyboardObservable.add((kbInfo) => {
     switch (kbInfo.type) {
       case BABYLON.KeyboardEventTypes.KEYDOWN:
         ballMovement(kbInfo.event.key);
     }
   });
-
-  // // Create a new instance of StartGame with generalPins -- need gui to be added
-  havokPlugin.onCollisionEndedObservable.add((ev) => {
-    const value = rollCollisionHandler(ev, window);
-    booleanArray[value] = true;
-  });
-  createAnimations(camera, scene);
-  createMusic();
-  renderScoreBoard(scene);
-  havokPlugin.onCollisionEndedObservable.add((ev) => rollCollisionHandler(ev, scene, window));
-  console.log(scene.currentMesh);
   return scene;
 }
 

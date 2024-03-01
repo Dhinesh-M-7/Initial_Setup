@@ -1,25 +1,31 @@
 import { AdvancedDynamicTexture } from "@babylonjs/gui";
-import { scoreboardDisplay } from "./renderScoreBoard";
-import { scoreboardValueDisplay } from "./renderScoreBoard";
+import { overallScoreBoardDisplay, currentRollScoreBoardDisplay } from "./renderScoreBoard";
 import { infoGUI } from "./infoGUI";
+import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 
 // import { StartNewGame } from "./Game_Logic/newGameDataStructure";
-const handleStartGame = (advancedTexture) => {
+const handleStartGame = (advancedTexture, game) => {
+  // console.log(game.generalPins);
+  // game = new StartNewGame(game.generalPins);
+  game.initializeFrames();
   advancedTexture.dispose();
-  scoreboardValueDisplay.updateText('0');
-  scoreboardDisplay.isVisible = true;
-  scoreboardValueDisplay.isVisible = true;
+  overallScoreBoardDisplay.updateText('Overall\nScore: 0');
+  currentRollScoreBoardDisplay.updateText('Current\nScore: 0');
+  overallScoreBoardDisplay.isVisible = true;
+  currentRollScoreBoardDisplay.isVisible = true;
+
 };
 
 const handleExitGame = (advancedTexture) => {
-  window.close();
+  var customWindow = window.open('', '_self', '');
+  customWindow.close();
 };
 
 const handleInfo = (scene) => {
   infoGUI(scene);
 };
 
-export async function startMenuGUI(scene) {
+export async function startMenuGUI(scene, game) {
   // Create the advanced texture
   let advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI(
     "GUI",
@@ -42,7 +48,7 @@ export async function startMenuGUI(scene) {
 
   // Add event handlers to the buttons
   startGameButton.onPointerClickObservable.add(function () {
-    handleStartGame(advancedTexture);
+    handleStartGame(advancedTexture, game);
   });
 
   exitGameButton.onPointerClickObservable.add(function () {
