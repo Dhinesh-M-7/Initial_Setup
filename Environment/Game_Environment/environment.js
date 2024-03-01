@@ -133,7 +133,7 @@ export const createEnvironment = () => {
   laneProtector2.rotation.y = Math.PI / 2;
   laneProtector2.isVisible = false;
 
-  const laneProtector22Agg = new BABYLON.PhysicsAggregate(
+  const laneProtector2Agg = new BABYLON.PhysicsAggregate(
     laneProtector2,
     BABYLON.PhysicsShapeType.BOX,
     {
