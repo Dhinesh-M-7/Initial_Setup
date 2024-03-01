@@ -1,6 +1,8 @@
 import * as BABYLON from "@babylonjs/core";
 
 export const createEnvironment = () => {
+
+
   const ground = BABYLON.MeshBuilder.CreateGround("ground", {
     width: 100,
     height: 200,
@@ -9,14 +11,6 @@ export const createEnvironment = () => {
   groundMat.diffuseTexture = new BABYLON.Texture("Images/Neon-floor.jpg");
   ground.material = groundMat;
 
-  const groundAggregate = new BABYLON.PhysicsAggregate(
-    ground,
-    BABYLON.PhysicsShapeType.BOX,
-    {
-      mass: 0,
-      restitution: 0.25,
-    }
-  );
 
   const leftWall = new BABYLON.MeshBuilder.CreatePlane("plane", {
     height: 50,
@@ -28,14 +22,6 @@ export const createEnvironment = () => {
   const leftWallMat = new BABYLON.StandardMaterial("back-wall-material");
   leftWallMat.diffuseTexture = new BABYLON.Texture("Images/Neon-sidewall.jpg");
   leftWall.material = leftWallMat;
-  const leftWallAggregate = new BABYLON.PhysicsAggregate(
-    leftWall,
-    BABYLON.PhysicsShapeType.BOX,
-    {
-      mass: 0,
-      restitution: 0.25,
-    }
-  );
 
   const rightWall = new BABYLON.MeshBuilder.CreatePlane("plane", {
     height: 50,
@@ -47,13 +33,6 @@ export const createEnvironment = () => {
   const rightWallMat = new BABYLON.StandardMaterial("back-wall-material");
   rightWallMat.diffuseTexture = new BABYLON.Texture("Images/Neon-sidewall.jpg");
   rightWall.material = rightWallMat;
-  const rightWallAggregate = new BABYLON.PhysicsAggregate(
-    rightWall,
-    BABYLON.PhysicsShapeType.BOX,
-    {
-      mass: 0,
-      restitution: 0.25,
-    });
 
   //Wall right behind the pins(left as a black screen)
   const backWall1 = new BABYLON.MeshBuilder.CreatePlane("plane", {
@@ -96,14 +75,6 @@ export const createEnvironment = () => {
   const backWall3Mat = new BABYLON.StandardMaterial();
   backWall3Mat.diffuseColor = new BABYLON.Color4(0, 0, 0, 0);
   backWall3.material = backWall3Mat;
-  const backWall3Aggregate = new BABYLON.PhysicsAggregate(
-    backWall3,
-    BABYLON.PhysicsShapeType.BOX,
-    {
-      mass: 0,
-      restitution: 0.25,
-    }
-  );
 
   const backWall4 = new BABYLON.MeshBuilder.CreatePlane("plane", {
     height: 15,
@@ -115,14 +86,6 @@ export const createEnvironment = () => {
   const backWall4Mat = new BABYLON.StandardMaterial();
   backWall4Mat.diffuseColor = new BABYLON.Color4(0, 0, 0, 0);
   backWall4.material = backWall4Mat;
-  const backWall4Aggregate = new BABYLON.PhysicsAggregate(
-    backWall4,
-    BABYLON.PhysicsShapeType.BOX,
-    {
-      mass: 0,
-      restitution: 0.25,
-    }
-  );
 
   //Wall at the back of the camera
   const backWall5 = new BABYLON.MeshBuilder.CreatePlane("plane", {
@@ -137,4 +100,45 @@ export const createEnvironment = () => {
     "Images/Neon-backsidewall.jpg"
   );
   backWall5.material = backWall5Mat;
+
+
+  //Adding invisible planes at the sides of bowling lane to prevent pins from leaving the lane.
+  
+  const laneProtector1 = new BABYLON.MeshBuilder.CreatePlane("laneProtector", {
+    height: 50,
+    width: 200
+  });
+  laneProtector1.position.x = -15;
+  laneProtector1.position.y = 28;
+  laneProtector1.rotation.y = -Math.PI / 2;
+  laneProtector1.isVisible = false;
+
+  const laneProtector1Agg = new BABYLON.PhysicsAggregate(
+    laneProtector1,
+    BABYLON.PhysicsShapeType.BOX,
+    {
+      mass: 0,
+      restitution: 0.25,
+    }
+  );
+
+
+  const laneProtector2
+   = new BABYLON.MeshBuilder.CreatePlane("laneProtector", {
+    height: 50,
+    width: 200
+  });
+  laneProtector2.position.x = 15;
+  laneProtector2.position.y = 28;
+  laneProtector2.rotation.y = Math.PI / 2;
+  laneProtector2.isVisible = false;
+
+  const laneProtector22Agg = new BABYLON.PhysicsAggregate(
+    laneProtector2,
+    BABYLON.PhysicsShapeType.BOX,
+    {
+      mass: 0,
+      restitution: 0.25,
+    }
+  );
 };

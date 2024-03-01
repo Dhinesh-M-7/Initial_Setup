@@ -41,21 +41,18 @@ export const createBowlingLane = () => {
     laneRightMat.diffuseTexture = new BABYLON.Texture("Images/Neon-floor.jpg");
     laneRight.material = laneRightMat;
   
-    const laneAggregate = new BABYLON.PhysicsAggregate(
-      lane,
-      BABYLON.PhysicsShapeType.BOX,
-      { mass: 0 }
-    );
-    const laneLeftAggregate = new BABYLON.PhysicsAggregate(
-      laneLeft,
-      BABYLON.PhysicsShapeType.BOX,
-      { mass: 0 }
-    );
-    const laneRightAggregate = new BABYLON.PhysicsAggregate(
-      laneRight,
-      BABYLON.PhysicsShapeType.BOX,
-      { mass: 0 }
-    );
+    
+    
+
+
+
+    const creatingPhysicsAggregate = (Mesh) => {
+      return new BABYLON.PhysicsAggregate(Mesh, BABYLON.PhysicsShapeType.BOX, { mass: 0 });
+    };
+
+    const laneAggregate=creatingPhysicsAggregate(lane);
+    const laneLeftAggregate=creatingPhysicsAggregate(laneLeft);
+    const laneRightAggregate=creatingPhysicsAggregate(laneRight);
   
     return lane;
   };

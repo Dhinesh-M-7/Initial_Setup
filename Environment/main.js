@@ -8,6 +8,7 @@ import { createAnimations } from "./Game_Environment/animation";
 import { createBowlingLane } from "./Game_Environment/bowlingLane";
 import { createAim } from "./aim";
 import { createBowlingBall, createBowlingPins } from "./bowlingBallAndPins";
+import{particles} from "./Game_Environment/particles";
 import {
   renderScoreBoard,
   currentRollScoreBoardDisplay,
@@ -87,11 +88,14 @@ async function createScene() {
     return null;
   };
 
+
   const updateGameScores = (game, currentRollScore, overallScore) => {
     if (game.frames[game.currentFrameIndex - 1].bonus === "strike") {
+      particles();
       currentRollScoreBoardDisplay.updateText(
         "Strike!!!\n" + currentRollScore.toString()
       );
+
     } else
       currentRollScoreBoardDisplay.updateText(
         "Current\nScore: " + currentRollScore.toString()
@@ -100,6 +104,7 @@ async function createScene() {
       "Overall\nScore: " + overallScore.toString()
     );
   };
+
 
   const pointerDown = (mesh) => {
     currentMesh = mesh;
@@ -259,6 +264,7 @@ const createMusic = () => {
     }
   );
 };
+
 
 createScene().then((scene) => {
   engine.runRenderLoop(function () {

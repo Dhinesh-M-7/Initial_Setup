@@ -3,6 +3,8 @@ import { overallScoreBoardDisplay, currentRollScoreBoardDisplay } from "./render
 import { infoGUI } from "./infoGUI";
 import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 
+
+
 // import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 const handleStartGame = (advancedTexture, game) => {
   // game = new StartNewGame(game.generalPins); //won't work as it creates a new instance instead of altering the current one
@@ -53,12 +55,14 @@ export async function startMenuGUI(scene, game) {
   });
 
   exitGameButton.onPointerClickObservable.add(function () {
-    handleExitGame(advancedTexture);
+    handleExitGame();
   });
 
   infoButton.onPointerClickObservable.add(function () {
     handleInfo(scene);
   });
+
+
 
   // Return the advanced texture
   return advancedTexture;
