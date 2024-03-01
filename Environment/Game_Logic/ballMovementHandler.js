@@ -12,7 +12,7 @@ export const pointerDown = (mesh, getLanePosition) => {
   };
 
 export const pointerUp = (startingPoint, aim, game, meshObject, updateGameScores, bowlingPinResult, createBowlingPins, scene) => {
-    const bowlingBallPosition = meshObject.bowling_ball.absolutePosition;
+  const bowlingBallPosition = meshObject.bowling_ball.absolutePosition;
     if (startingPoint) {
       const ballSpeed = (-bowlingBallPosition.z - 6) * 10;
       if (bowlingBallPosition.z < -63) {
@@ -33,9 +33,6 @@ export const pointerUp = (startingPoint, aim, game, meshObject, updateGameScores
         meshObject.setPins.forEach((pin) => {
           pin.dispose();
         });
-        const currentRollScore = game.gameScoreCalculation();
-        const overallScore = game.totalScoreCalculation();
-        updateGameScores(game, currentRollScore, overallScore);
   
         meshObject.setPins = createBowlingPins(bowlingPinResult);
   
@@ -44,16 +41,21 @@ export const pointerUp = (startingPoint, aim, game, meshObject, updateGameScores
         meshObject.bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
         meshObject.bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
   
-        game.ballIsRolled = false;
-        game.initializePins();
-  
         if (game.currentFrameIndex >= 5) {
+          game.isGameStarted = false
           setTimeout(() => {
             overallScoreBoardDisplay.isVisible = false;
             currentRollScoreBoardDisplay.isVisible = false;
             startMenuGUI(scene, game);
           }, 500);
+        } else {
+          const currentRollScore = game.gameScoreCalculation();
+          const overallScore = game.totalScoreCalculation();
+          console.log(currentRollScore, overallScore, updateGameScores);
+          updateGameScores(game, currentRollScore, overallScore);
         }
+        game.ballIsRolled = false;
+        game.initializePins();
       }, 5000);
     }
     return [startingPoint, null];
@@ -75,11 +77,8 @@ export const pointerMove = (startingPoint, getLanePosition, meshObject, aim, cur
   
     if (aimAngle > 0.15) aimAngle = 0.15;
     else if (aimAngle < -0.15) aimAngle = -0.15;
-  
-    console.log(meshObject.bowling_ball.position.x);
-  
+    
     aim.rotation.y = aimAngle;
-    console.log(aimAngle);
   
     const diff = current.subtract(startingPoint);
     diff.x = 0;
