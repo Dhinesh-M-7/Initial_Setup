@@ -3,16 +3,13 @@ import "@babylonjs/loaders";
 
 import { startMenuGUI } from "./startMenuGUI";
 import { rollCollisionHandler } from "./Game_Logic/gameCollisionHandler";
+import { pointerDown, pointerUp, pointerMove } from "./Game_Logic/ballMovementHandler";
 import { createEnvironment } from "./Game_Environment/environment";
 import { createAnimations } from "./Game_Environment/animation";
 import { createBowlingLane } from "./Game_Environment/bowlingLane";
 import { createAim } from "./aim";
 import { createBowlingBall, createBowlingPins } from "./bowlingBallAndPins";
-import {
-  renderScoreBoard,
-  currentRollScoreBoardDisplay,
-  overallScoreBoardDisplay,
-} from "./renderScoreBoard";
+import {renderScoreBoard, currentRollScoreBoardDisplay, overallScoreBoardDisplay,} from "./renderScoreBoard";
 import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 
 const canvas = document.getElementById("renderCanvas");
@@ -73,7 +70,9 @@ async function createScene() {
   const lane = createBowlingLane();
 
   let setPins = createBowlingPins(bowlingPinResult);
-
+  
+  let meshObject = {bowling_ball, bowlingAggregate, setPins};
+  console.log(meshObject);
   let startingPoint;
   let currentMesh;
 
@@ -91,100 +90,14 @@ async function createScene() {
     );
   };
 
-  const pointerDown = (mesh) => {
-    currentMesh = mesh;
-    aim.isVisible = true;
-    startingPoint = getLanePosition();
-  };
-
-  const pointerUp = () => {
-    aim.isVisible = false;
-    const bowlingBallPosition = bowling_ball.absolutePosition;
-    if (startingPoint) {
-      const ballSpeed = (-bowlingBallPosition.z - 6) * 10;
-      if (bowlingBallPosition.z < -63) {
-        bowlingAggregate.body.applyImpulse(
-          new BABYLON.Vector3(-aim.rotation.y * 550, 0, ballSpeed),
-          bowling_ball.getAbsolutePosition()
-        );
-        window.globalShootmusic.play();
-        setTimeout(function () {
-          window.globalShootmusic.stop();
-        }, 1500);
-        game.ballIsRolled = true;
-      }
+  const getLanePosition = () => {
+    const pickinfo = scene.pick(scene.pointerX, scene.pointerY, (mesh) => {
+      return mesh == lane;
+    });
+    if (pickinfo.hit) {
+      return pickinfo.pickedPoint;
     }
-    camera.attachControl(canvas, true);
-    startingPoint = null;
-    if (game.ballIsRolled === true) {
-      setTimeout(() => {
-        setPins.forEach((pin) => {
-          pin.dispose();
-        });
-        const currentRollScore = game.gameScoreCalculation();
-        const overallScore = game.totalScoreCalculation();
-        updateGameScores(game, currentRollScore, overallScore);
-
-        setPins = createBowlingPins(bowlingPinResult);
-
-        bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
-        bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
-        bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
-        bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
-
-        game.ballIsRolled = false;
-        game.initializePins();
-
-        if (game.currentFrameIndex >= 5) {
-          setTimeout(() => {
-            overallScoreBoardDisplay.isVisible = false;
-            currentRollScoreBoardDisplay.isVisible = false;
-            startMenuGUI(scene, game);
-          }, 1000);
-        }
-      }, 5000);
-    }
-    return;
-  };
-
-  const pointerMove = () => {
-    if (!startingPoint) {
-      return;
-    }
-    const current = getLanePosition();
-    if (!current) {
-      return;
-    }
-
-    let aimAngle = (bowling_ball.position.x + current.x) * 0.1;
-
-    if (aimAngle > 0.15) aimAngle = 0.15;
-    else if (aimAngle < -0.15) aimAngle = -0.15;
-
-    console.log(bowling_ball.position.x);
-
-    aim.rotation.y = aimAngle;
-    console.log(aimAngle);
-
-    const diff = current.subtract(startingPoint);
-    diff.x = 0;
-
-    // Define the limits for z movement
-    const minZ = -67; // Minimum z value
-    const maxZ = -62; // Maximum z value
-
-    const newZ = currentMesh.position.z + diff.z;
-
-    // Check if the new position exceeds the limits
-    if (newZ < minZ) {
-      diff.z = minZ - currentMesh.position.z;
-    } else if (newZ > maxZ) {
-      diff.z = maxZ - currentMesh.position.z;
-    }
-
-    currentMesh.position.addInPlace(diff);
-
-    startingPoint = current;
+    return null;
   };
 
   const ballMovement = (pressedArrow) => {
@@ -203,14 +116,17 @@ async function createScene() {
           pointerInfo.pickInfo.hit &&
           pointerInfo.pickInfo.pickedMesh == bowling_ball
         ) {
-          [currentMesh, startingPoint] = pointerDown(pointerInfo.pickInfo.pickedMesh);
+          aim.isVisible = true;
+          [currentMesh, startingPoint] = pointerDown(pointerInfo.pickInfo.pickedMesh, getLanePosition);
+          console.log(currentMesh);
         }
         break;
       case BABYLON.PointerEventTypes.POINTERUP:
-        pointerUp();
+        aim.isVisible = false;
+        [startingPoint, currentMesh] = pointerUp(startingPoint, aim, game, meshObject, updateGameScores, bowlingPinResult, createBowlingPins, scene);
         break;
       case BABYLON.PointerEventTypes.POINTERMOVE:
-        pointerMove();
+        startingPoint = pointerMove(startingPoint, getLanePosition, meshObject, aim, currentMesh);
         break;
     }
   });
@@ -230,6 +146,7 @@ async function createScene() {
         ballMovement(kbInfo.event.key);
     }
   });
+
   return scene;
 }
 
