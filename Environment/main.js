@@ -9,7 +9,12 @@ import { createAnimations } from "./Game_Environment/animation";
 import { createBowlingLane } from "./Game_Environment/bowlingLane";
 import { createAim } from "./aim";
 import { createBowlingBall, createBowlingPins } from "./bowlingBallAndPins";
-import {renderScoreBoard, currentRollScoreBoardDisplay, overallScoreBoardDisplay,} from "./renderScoreBoard";
+import { particles } from "./Game_Environment/particles";
+import {
+  renderScoreBoard,
+  currentRollScoreBoardDisplay,
+  overallScoreBoardDisplay,
+} from "./renderScoreBoard";
 import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 
 const canvas = document.getElementById("renderCanvas");
@@ -78,6 +83,10 @@ async function createScene() {
 
   const updateGameScores = (game, currentRollScore, overallScore) => {
     if (game.frames[game.currentFrameIndex - 1].bonus === "strike") {
+      if (currentRollScoreBoardDisplay.isVisible === true) {
+        particles(new BABYLON.Vector3(13, 18, -30));
+        particles(new BABYLON.Vector3(-13, 18, -30));
+      }
       currentRollScoreBoardDisplay.updateText(
         "Strike!!!\n" + currentRollScore.toString()
       );
@@ -109,6 +118,9 @@ async function createScene() {
     }
   };
 
+  if (false) {
+
+  }
   scene.onPointerObservable.add((pointerInfo) => {
     switch (pointerInfo.type) {
       case BABYLON.PointerEventTypes.POINTERDOWN:
@@ -118,7 +130,6 @@ async function createScene() {
         ) {
           aim.isVisible = true;
           [currentMesh, startingPoint] = pointerDown(pointerInfo.pickInfo.pickedMesh, getLanePosition);
-          console.log(currentMesh);
         }
         break;
       case BABYLON.PointerEventTypes.POINTERUP:
@@ -133,7 +144,7 @@ async function createScene() {
 
   // Create a new instance of StartGame with generalPins -- need gui to be added
   let game = new StartNewGame(setPins);
-  //createAnimations(camera, scene, game);
+  createAnimations(camera, scene, game);
   createMusic();
   renderScoreBoard(scene);
   havokPlugin.onCollisionEndedObservable.add((ev) =>
