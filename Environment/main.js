@@ -3,12 +3,16 @@ import "@babylonjs/loaders";
 
 import { startMenuGUI } from "./startMenuGUI";
 import { rollCollisionHandler } from "./Game_Logic/gameCollisionHandler";
-import { createEnvironment } from "./Environment";
-import { createAnimations } from "./Animation";
-import { createBowlingLane } from "./BowlingLane";
-import { createAim } from "./Aim";
-import { createBowlingBall, createBowlingPins } from "./BowlingBallAndPins";
-import { renderScoreBoard, currentRollScoreBoardDisplay, overallScoreBoardDisplay } from "./renderScoreBoard";
+import { createEnvironment } from "./Game_Environment/environment";
+import { createAnimations } from "./Game_Environment/animation";
+import { createBowlingLane } from "./Game_Environment/bowlingLane";
+import { createAim } from "./aim";
+import { createBowlingBall, createBowlingPins } from "./bowlingBallAndPins";
+import {
+  renderScoreBoard,
+  currentRollScoreBoardDisplay,
+  overallScoreBoardDisplay,
+} from "./renderScoreBoard";
 import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 
 const canvas = document.getElementById("renderCanvas");
@@ -38,7 +42,6 @@ async function createScene() {
   );
   camera.setTarget(new BABYLON.Vector3(0, 0, 0));
   camera.inputs.clear();
-
 
   const light = new BABYLON.HemisphericLight(
     "light",
@@ -84,19 +87,10 @@ async function createScene() {
     return null;
   };
 
-  const updateGameScores = (game, currentRollScore, overallScore) => {
-    if (game.frames[game.currentFrameIndex - 1].bonus === 'strike') {
-      currentRollScoreBoardDisplay.updateText('Strike!!!\n' + currentRollScore.toString());
-      particleflare();
-    }
-    else currentRollScoreBoardDisplay.updateText('Current\nScore: ' + currentRollScore.toString());
-    overallScoreBoardDisplay.updateText('Overall\nScore: ' + overallScore.toString());
-  }
 
-  const particleflare = () => {
-    const particleSystem = new BABYLON.ParticleSystem("particles", 200);
+  const particles = () => {
+    const particleSystem = new BABYLON.ParticleSystem("particles", 2000);
 
-    //Texture of each particle
     particleSystem.particleTexture = new BABYLON.Texture("Images/flare.png");
 
     // Position where the particles are emiited from
@@ -105,32 +99,42 @@ async function createScene() {
 
     particleSystem.color1 = new BABYLON.Color4(0.7, 0.8, 1.0, 1.0);
     particleSystem.color2 = new BABYLON.Color4(0.9, 0.1, .1, 1.0);
-    particleSystem.colorDead = new BABYLON.Color4(0, 0.5, 1, 0.0);
+    particleSystem.colorDead = new BABYLON.Color4(0.412, 0.529, 0, 1);
     particleSystem.minSize = 0.05;
-    particleSystem.maxSize = 0.4;
+    particleSystem.maxSize = 0.8;
     particleSystem.minLifeTime = 0.3;
     particleSystem.maxLifeTime = 1.5;
-    particleSystem.emitRate = 1500;
+    particleSystem.emitRate = 5000;
     particleSystem.gravity = new BABYLON.Vector3(0, -9.81, 0);
-    particleSystem.direction1 = new BABYLON.Vector3(-7, 8, 3);
-    particleSystem.direction2 = new BABYLON.Vector3(7, -8, -3);
+    particleSystem.direction1 = new BABYLON.Vector3(-10, 8, 30);
+    particleSystem.direction2 = new BABYLON.Vector3(10, -8, -3);
     particleSystem.minAngularSpeed = 0;
     particleSystem.maxAngularSpeed = Math.PI;
     particleSystem.minEmitPower = 1;
     particleSystem.maxEmitPower = 3;
     particleSystem.updateSpeed = 0.005;
-    particleSystem.emitter = new BABYLON.Vector3(1, -1, -1);
-    particleSystem.startDelay = 1500;
-
-
-
+    particleSystem.emitter = new BABYLON.Vector3(13, 18, -30);
 
     particleSystem.start();
 
-
     particleSystem.targetStopDuration = 0.6;
-
   }
+
+  const updateGameScores = (game, currentRollScore, overallScore) => {
+    if (game.frames[game.currentFrameIndex - 1].bonus === "strike") {
+      particles();
+      currentRollScoreBoardDisplay.updateText(
+        "Strike!!!\n" + currentRollScore.toString()
+      );
+
+    } else
+      currentRollScoreBoardDisplay.updateText(
+        "Current\nScore: " + currentRollScore.toString()
+      );
+    overallScoreBoardDisplay.updateText(
+      "Overall\nScore: " + overallScore.toString()
+    );
+  };
 
 
   const pointerDown = (mesh) => {
@@ -143,9 +147,12 @@ async function createScene() {
     aim.isVisible = false;
     const bowlingBallPosition = bowling_ball.absolutePosition;
     if (startingPoint) {
-      const ballSpeed = (-(bowlingBallPosition.z) - 6) * 10;
+      const ballSpeed = (-bowlingBallPosition.z - 6) * 10;
       if (bowlingBallPosition.z < -63) {
-        bowlingAggregate.body.applyImpulse(new BABYLON.Vector3(-(aim.rotation.y) * 550, 0, ballSpeed), bowling_ball.getAbsolutePosition());
+        bowlingAggregate.body.applyImpulse(
+          new BABYLON.Vector3(-aim.rotation.y * 550, 0, ballSpeed),
+          bowling_ball.getAbsolutePosition()
+        );
         window.globalShootmusic.play();
         setTimeout(function () {
           window.globalShootmusic.stop();
@@ -179,12 +186,12 @@ async function createScene() {
             overallScoreBoardDisplay.isVisible = false;
             currentRollScoreBoardDisplay.isVisible = false;
             startMenuGUI(scene, game);
-          }, 1000)
+          }, 1000);
         }
-      }, 5000)
+      }, 5000);
     }
     return;
-  }
+  };
 
   const pointerMove = () => {
     if (!startingPoint) {
@@ -256,10 +263,12 @@ async function createScene() {
 
   // Create a new instance of StartGame with generalPins -- need gui to be added
   let game = new StartNewGame(setPins);
-  //createAnimations(camera, scene, game);
+  createAnimations(camera, scene, game);
   createMusic();
   renderScoreBoard(scene);
-  havokPlugin.onCollisionEndedObservable.add((ev) => rollCollisionHandler(ev, scene, window, game));
+  havokPlugin.onCollisionEndedObservable.add((ev) =>
+    rollCollisionHandler(ev, scene, window, game)
+  );
 
   scene.onKeyboardObservable.add((kbInfo) => {
     switch (kbInfo.type) {
@@ -271,15 +280,25 @@ async function createScene() {
 }
 
 const createMusic = () => {
-  window.globalShootmusic = new BABYLON.Sound("rollMusic", "./Audio/rollingball.mp3", null, {
-    loop: true,
-    autoplay: true,
-  });
-  window.globalHitMusic = new BABYLON.Sound("hitMusic", "./Audio/hit.mp3", null, {
-    loop: true,
-    autoplay: true,
-  });
-}
+  window.globalShootmusic = new BABYLON.Sound(
+    "rollMusic",
+    "./Audio/rollingball.mp3",
+    null,
+    {
+      loop: true,
+      autoplay: true,
+    }
+  );
+  window.globalHitMusic = new BABYLON.Sound(
+    "hitMusic",
+    "./Audio/hit.mp3",
+    null,
+    {
+      loop: true,
+      autoplay: true,
+    }
+  );
+};
 
 
 createScene().then((scene) => {
