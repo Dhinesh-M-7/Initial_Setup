@@ -136,9 +136,7 @@ async function createScene() {
         setPins.forEach((pin) => {
           pin.dispose();
         });
-        const currentRollScore = game.gameScoreCalculation();
-        const overallScore = game.totalScoreCalculation();
-        updateGameScores(game, currentRollScore, overallScore);
+        
 
         setPins = createBowlingPins(bowlingPinResult);
 
@@ -147,8 +145,7 @@ async function createScene() {
         bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
         bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
 
-        game.ballIsRolled = false;
-        game.initializePins();
+        
 
         if (game.currentFrameIndex >= 5) {
           setTimeout(() => {
@@ -157,6 +154,13 @@ async function createScene() {
             startMenuGUI(scene, game);
           }, 1000);
         }
+        else{
+          const currentRollScore = game.gameScoreCalculation();
+          const overallScore = game.totalScoreCalculation();
+          updateGameScores(game, currentRollScore, overallScore);
+        }
+        game.ballIsRolled = false;
+        game.initializePins();
       }, 5000);
     }
     return;
