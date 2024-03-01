@@ -92,7 +92,7 @@ async function createScene() {
 
   const updateGameScores = (game, currentRollScore, overallScore) => {
     if (game.frames[game.currentFrameIndex - 1].bonus === "strike") {
-      if(currentRollScoreBoardDisplay.isVisible === true){
+      if(isDisplayVisible(overallScoreBoardDisplay, currentRollScoreBoardDisplay)){
         particles(new BABYLON.Vector3(13, 18, -30));
         particles(new BABYLON.Vector3(-13, 18, -30));
       }
@@ -108,6 +108,10 @@ async function createScene() {
     );
   };
 
+  const isDisplayVisible = (display1, display2) =>{
+    return display1.isVisible && display2.isVisible;
+  }
+
   const pointerDown = (mesh) => {
     currentMesh = mesh;
     aim.isVisible = true;
@@ -115,7 +119,6 @@ async function createScene() {
   };
 
   const pointerUp = () => {
-    console.log(game);
     aim.isVisible = false;
     const bowlingBallPosition = bowling_ball.absolutePosition;
     if (startingPoint) {
@@ -139,9 +142,6 @@ async function createScene() {
         setPins.forEach((pin) => {
           pin.dispose();
         });
-        const currentRollScore = game.gameScoreCalculation();
-        const overallScore = game.totalScoreCalculation();
-        updateGameScores(game, currentRollScore, overallScore);
 
         setPins = createBowlingPins(bowlingPinResult);
 
@@ -150,9 +150,6 @@ async function createScene() {
         bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
         bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
 
-        game.ballIsRolled = false;
-        game.initializePins();
-
         if (game.currentFrameIndex >= 5) {
           setTimeout(() => {
             overallScoreBoardDisplay.isVisible = false;
@@ -160,6 +157,15 @@ async function createScene() {
             startMenuGUI(scene, game);
           }, 1000);
         }
+        else {
+          const currentRollScore = game.gameScoreCalculation();
+          const overallScore = game.totalScoreCalculation();
+          console.log(currentRollScore, overallScore);
+          updateGameScores(game, currentRollScore, overallScore);
+        }
+        game.ballIsRolled = false;
+        game.initializePins();
+
       }, 5000);
     }
     return;
@@ -243,6 +249,7 @@ async function createScene() {
         ballMovement(kbInfo.event.key);
     }
   });
+  startMenuGUI(scene, game);
   return scene;
 }
 

@@ -6,6 +6,7 @@ export class StartNewGame {
         this.generalPins = generalPins;
         this.pinsArray = [];
         this.totalScore = 0;
+        this.isGameStarted = false;
         this.initializeFrames();
     }
     initializeFrames() {

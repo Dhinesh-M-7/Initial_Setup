@@ -61,13 +61,12 @@ function createExitButton(scene) {
 
 
 const handleStartGame = (startPlane, infoPlane, exitPlane, game) => {
-  game.initializeFrames();
   startPlane.dispose();
   infoPlane.dispose();
   exitPlane.dispose();
   overallScoreBoardDisplay.updateText("Overall\nScore: 0");
   currentRollScoreBoardDisplay.updateText("Current\nScore: 0");
-  game.updateToNewGame(newGame);
+  const newGame = new StartNewGame(game.generalPins);
   game.updateToNewGame(newGame);
 
   overallScoreBoardDisplay.isVisible = true;
