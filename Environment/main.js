@@ -83,27 +83,22 @@ async function createScene() {
 
   const updateGameScores = (game, currentRollScore, overallScore) => {
     if (game.frames[game.currentFrameIndex - 1].bonus === "strike") {
-      if(isDisplayVisible(overallScoreBoardDisplay, currentRollScoreBoardDisplay)){
-        if (currentRollScoreBoardDisplay.isVisible === true) {
-          particles(new BABYLON.Vector3(13, 18, -30));
-          particles(new BABYLON.Vector3(-13, 18, -30));
-        }
-        currentRollScoreBoardDisplay.updateText(
-          "Strike!!!\n" + currentRollScore.toString()
-        );
-      } else
-        currentRollScoreBoardDisplay.updateText(
-          "Current\nScore: " + currentRollScore.toString()
-        );
-      overallScoreBoardDisplay.updateText(
-        "Overall\nScore: " + overallScore.toString()
+      particles(new BABYLON.Vector3(13, 18, -30));
+      particles(new BABYLON.Vector3(-13, 18, -30));
+      currentRollScoreBoardDisplay.updateText(
+        "Strike!!!\n" + currentRollScore.toString()
+      );
+    } 
+    else{
+      currentRollScoreBoardDisplay.updateText(
+        "Current\nScore: " + currentRollScore.toString()
       );
     }
-  };
-
-  const isDisplayVisible = (display1, display2) =>{
-    return display1.isVisible && display2.isVisible;
+    overallScoreBoardDisplay.updateText(
+      "Overall\nScore: " + overallScore.toString()
+    );
   }
+
 
   const getLanePosition = () => {
     const pickinfo = scene.pick(scene.pointerX, scene.pointerY, (mesh) => {
@@ -128,23 +123,25 @@ async function createScene() {
 
   }
   scene.onPointerObservable.add((pointerInfo) => {
-    switch (pointerInfo.type) {
-      case BABYLON.PointerEventTypes.POINTERDOWN:
-        if (
-          pointerInfo.pickInfo.hit &&
-          pointerInfo.pickInfo.pickedMesh == bowling_ball
-        ) {
-          aim.isVisible = true;
-          [currentMesh, startingPoint] = pointerDown(pointerInfo.pickInfo.pickedMesh, getLanePosition);
-        }
-        break;
-      case BABYLON.PointerEventTypes.POINTERUP:
-        aim.isVisible = false;
-        [startingPoint, currentMesh] = pointerUp(startingPoint, aim, game, meshObject, updateGameScores, bowlingPinResult, createBowlingPins, scene);
-        break;
-      case BABYLON.PointerEventTypes.POINTERMOVE:
-        startingPoint = pointerMove(startingPoint, getLanePosition, meshObject, aim, currentMesh);
-        break;
+    if(game.isGameStarted === true){
+      switch (pointerInfo.type) {
+        case BABYLON.PointerEventTypes.POINTERDOWN:
+          if (
+            pointerInfo.pickInfo.hit &&
+            pointerInfo.pickInfo.pickedMesh == bowling_ball
+          ) {
+            aim.isVisible = true;
+            [currentMesh, startingPoint] = pointerDown(pointerInfo.pickInfo.pickedMesh, getLanePosition);
+          }
+          break;
+        case BABYLON.PointerEventTypes.POINTERUP:
+          aim.isVisible = false;
+          [startingPoint, currentMesh] = pointerUp(startingPoint, aim, game, meshObject, updateGameScores, bowlingPinResult, createBowlingPins, scene);
+          break;
+        case BABYLON.PointerEventTypes.POINTERMOVE:
+          startingPoint = pointerMove(startingPoint, getLanePosition, meshObject, aim, currentMesh);
+          break;
+      }
     }
   });
 
