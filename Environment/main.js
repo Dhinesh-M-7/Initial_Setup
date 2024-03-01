@@ -74,16 +74,6 @@ async function createScene() {
   let startingPoint;
   let currentMesh;
 
-  const getLanePosition = () => {
-    const pickinfo = scene.pick(scene.pointerX, scene.pointerY, (mesh) => {
-      return mesh == lane;
-    });
-    if (pickinfo.hit) {
-      return pickinfo.pickedPoint;
-    }
-    return null;
-  };
-
   const updateGameScores = (game, currentRollScore, overallScore) => {
     if(game.frames[game.currentFrameIndex-1].bonus === 'strike'){
       currentRollScoreBoardDisplay.updateText('Strike!!!\n' + currentRollScore.toString());
@@ -92,12 +82,6 @@ async function createScene() {
     overallScoreBoardDisplay.updateText('Overall\nScore: ' + overallScore.toString());
   }
   
-
-  const pointerDown = (mesh) => {
-    currentMesh = mesh;
-    aim.isVisible = true;
-    startingPoint = getLanePosition();
-  };
 
   const pointerUp = () => {
       aim.isVisible = false;
@@ -202,7 +186,7 @@ async function createScene() {
           pointerInfo.pickInfo.hit &&
           pointerInfo.pickInfo.pickedMesh == bowling_ball
         ) {
-          pointerDown(pointerInfo.pickInfo.pickedMesh);
+          [currentMesh, startingPoint] = pointerDown(pointerInfo.pickInfo.pickedMesh);
         }
         break;
       case BABYLON.PointerEventTypes.POINTERUP:
@@ -216,7 +200,7 @@ async function createScene() {
 
   // Create a new instance of StartGame with generalPins -- need gui to be added
   let game = new StartNewGame(setPins);
-  createAnimations(camera, scene, game);
+  //createAnimations(camera, scene, game);
   createMusic();
   renderScoreBoard(scene);
   havokPlugin.onCollisionEndedObservable.add((ev) => rollCollisionHandler(ev, scene, window, game));
@@ -251,3 +235,19 @@ createScene().then((scene) => {
 window.addEventListener("resize", function () {
   engine.resize();
 });
+
+const getLanePosition = () => {
+  const pickinfo = scene.pick(scene.pointerX, scene.pointerY, (mesh) => {
+    return mesh == lane;
+  });
+  if (pickinfo.hit) {
+    return pickinfo.pickedPoint;
+  }
+  return null;
+};
+
+const pointerDown = (mesh) => {
+  aim.isVisible = true;
+  let startingPoint = getLanePosition();
+  return [mesh, startingPoint];
+};
