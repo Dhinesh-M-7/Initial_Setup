@@ -1,8 +1,6 @@
 import * as BABYLON from "@babylonjs/core";
 
 export const createEnvironment = () => {
-
-
   const ground = BABYLON.MeshBuilder.CreateGround("ground", {
     width: 100,
     height: 200,
@@ -34,29 +32,29 @@ export const createEnvironment = () => {
   rightWallMat.diffuseTexture = new BABYLON.Texture("Images/Neon-sidewall.jpg");
   rightWall.material = rightWallMat;
 
-  //Wall right behind the pins(left as a black screen)
-  const backWall1 = new BABYLON.MeshBuilder.CreatePlane("plane", {
+  //Place where the pins fall after getting hit by the bowling ball
+  const pinDeck = new BABYLON.MeshBuilder.CreatePlane("pinDeck", {
     height: 15,
     width: 30,
   });
-  backWall1.position.y = 7.5;
-  backWall1.position.z = 100;
-  const backWall1Mat = new BABYLON.StandardMaterial();
-  backWall1Mat.diffuseColor = new BABYLON.Color4(0, 0, 0, 0);
-  backWall1.material = backWall1Mat;
+  pinDeck.position.y = 7.5;
+  pinDeck.position.z = 100;
+  const pinDeckMat = new BABYLON.StandardMaterial();
+  pinDeckMat.diffuseColor = new BABYLON.Color4(0, 0, 0, 0);
+  pinDeck.material = pinDeckMat;
 
-  //Wall where the texture has to be applied
-  const backWall2 = new BABYLON.MeshBuilder.CreatePlane("plane", {
+  //Background wall where the game image is displayed
+  const backgroundWall = new BABYLON.MeshBuilder.CreatePlane("plane", {
     height: 35,
     width: 100,
   });
-  backWall2.position.y = 32.5;
-  backWall2.position.z = 100;
-  const backWall2Mat = new BABYLON.StandardMaterial();
-  backWall2Mat.diffuseTexture = new BABYLON.Texture("Images/Backwall.jpg");
-  backWall2.material = backWall2Mat;
-  const backWall2Aggregate = new BABYLON.PhysicsAggregate(
-    backWall2,
+  backgroundWall.position.y = 32.5;
+  backgroundWall.position.z = 100;
+  const backgroundWallMat = new BABYLON.StandardMaterial();
+  backgroundWallMat.diffuseTexture = new BABYLON.Texture("Images/Backwall.jpg");
+  backgroundWall.material = backgroundWallMat;
+  const backgroundWallAggregate = new BABYLON.PhysicsAggregate(
+    backgroundWall,
     BABYLON.PhysicsShapeType.BOX,
     {
       mass: 0,
@@ -65,23 +63,22 @@ export const createEnvironment = () => {
   );
 
 
-  //Wall at the back of the camera
-  const backWall5 = new BABYLON.MeshBuilder.CreatePlane("plane", {
+  //Wall behind the camera
+  const cameraWall = new BABYLON.MeshBuilder.CreatePlane("plane", {
     height: 50,
     width: 100,
   });
-  backWall5.rotation.y = Math.PI;
-  backWall5.position.y = 25;
-  backWall5.position.z = -100;
-  const backWall5Mat = new BABYLON.StandardMaterial();
-  backWall5Mat.diffuseTexture = new BABYLON.Texture(
+  cameraWall.rotation.y = Math.PI;
+  cameraWall.position.y = 25;
+  cameraWall.position.z = -100;
+  const cameraWallMat = new BABYLON.StandardMaterial();
+  cameraWallMat.diffuseTexture = new BABYLON.Texture(
     "Images/Neon-backsidewall.jpg"
   );
-  backWall5.material = backWall5Mat;
+  cameraWall.material = cameraWallMat;
 
 
   //Adding invisible planes at the sides of bowling lane to prevent pins from leaving the lane.
-  
   const laneProtector1 = new BABYLON.MeshBuilder.CreatePlane("laneProtector", {
     height: 50,
     width: 300
