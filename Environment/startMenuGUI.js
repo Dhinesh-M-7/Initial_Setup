@@ -59,7 +59,6 @@ function createExitButton(scene) {
   return [exitButton, exitPlane];
 }
 
-
 const handleStartGame = (startPlane, infoPlane, exitPlane, game) => {
   startPlane.dispose();
   infoPlane.dispose();

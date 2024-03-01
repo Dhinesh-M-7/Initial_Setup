@@ -3,12 +3,13 @@ import "@babylonjs/loaders";
 
 import { startMenuGUI } from "./startMenuGUI";
 import { rollCollisionHandler } from "./Game_Logic/gameCollisionHandler";
+import { pointerDown, pointerUp, pointerMove } from "./Game_Logic/ballMovementHandler";
 import { createEnvironment } from "./Game_Environment/environment";
 import { createAnimations } from "./Game_Environment/animation";
 import { createBowlingLane } from "./Game_Environment/bowlingLane";
 import { createAim } from "./aim";
 import { createBowlingBall, createBowlingPins } from "./bowlingBallAndPins";
-import{particles} from "./Game_Environment/particles";
+import { particles } from "./Game_Environment/particles";
 import {
   renderScoreBoard,
   currentRollScoreBoardDisplay,
@@ -20,7 +21,6 @@ const canvas = document.getElementById("renderCanvas");
 const engine = new BABYLON.Engine(canvas);
 
 async function createScene() {
-  let booleanArray = new Array(10).fill(false);
   const scene = new BABYLON.Scene(engine);
 
   const music = new BABYLON.Sound(
@@ -75,9 +75,35 @@ async function createScene() {
   const lane = createBowlingLane();
 
   let setPins = createBowlingPins(bowlingPinResult);
-
+  
+  let meshObject = {bowling_ball, bowlingAggregate, setPins};
+  console.log(meshObject);
   let startingPoint;
   let currentMesh;
+
+  const updateGameScores = (game, currentRollScore, overallScore) => {
+    if (game.frames[game.currentFrameIndex - 1].bonus === "strike") {
+      if(isDisplayVisible(overallScoreBoardDisplay, currentRollScoreBoardDisplay)){
+        if (currentRollScoreBoardDisplay.isVisible === true) {
+          particles(new BABYLON.Vector3(13, 18, -30));
+          particles(new BABYLON.Vector3(-13, 18, -30));
+        }
+        currentRollScoreBoardDisplay.updateText(
+          "Strike!!!\n" + currentRollScore.toString()
+        );
+      } else
+        currentRollScoreBoardDisplay.updateText(
+          "Current\nScore: " + currentRollScore.toString()
+        );
+      overallScoreBoardDisplay.updateText(
+        "Overall\nScore: " + overallScore.toString()
+      );
+    }
+  };
+
+  const isDisplayVisible = (display1, display2) =>{
+    return display1.isVisible && display2.isVisible;
+  }
 
   const getLanePosition = () => {
     const pickinfo = scene.pick(scene.pointerX, scene.pointerY, (mesh) => {
@@ -89,124 +115,6 @@ async function createScene() {
     return null;
   };
 
-
-  const updateGameScores = (game, currentRollScore, overallScore) => {
-    if (game.frames[game.currentFrameIndex - 1].bonus === "strike") {
-      if(isDisplayVisible(overallScoreBoardDisplay, currentRollScoreBoardDisplay)){
-        particles(new BABYLON.Vector3(13, 18, -30));
-        particles(new BABYLON.Vector3(-13, 18, -30));
-      }
-      currentRollScoreBoardDisplay.updateText(
-        "Strike!!!\n" + currentRollScore.toString()
-      );
-    } else
-      currentRollScoreBoardDisplay.updateText(
-        "Current\nScore: " + currentRollScore.toString()
-      );
-    overallScoreBoardDisplay.updateText(
-      "Overall\nScore: " + overallScore.toString()
-    );
-  };
-
-  const isDisplayVisible = (display1, display2) =>{
-    return display1.isVisible && display2.isVisible;
-  }
-
-  const pointerDown = (mesh) => {
-    currentMesh = mesh;
-    aim.isVisible = true;
-    startingPoint = getLanePosition();
-  };
-
-  const pointerUp = () => {
-    aim.isVisible = false;
-    const bowlingBallPosition = bowling_ball.absolutePosition;
-    if (startingPoint) {
-      const ballSpeed = (-bowlingBallPosition.z - 6) * 10;
-      if (bowlingBallPosition.z < -63) {
-        bowlingAggregate.body.applyImpulse(
-          new BABYLON.Vector3(-aim.rotation.y * 550, 0, ballSpeed),
-          bowling_ball.getAbsolutePosition()
-        );
-        window.globalShootmusic.play();
-        setTimeout(function () {
-          window.globalShootmusic.stop();
-        }, 1500);
-        game.ballIsRolled = true;
-      }
-    }
-    camera.attachControl(canvas, true);
-    startingPoint = null;
-    if (game.ballIsRolled === true) {
-      setTimeout(() => {
-        setPins.forEach((pin) => {
-          pin.dispose();
-        });
-
-        setPins = createBowlingPins(bowlingPinResult);
-
-        bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
-        bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
-        bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
-        bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
-
-        if (game.currentFrameIndex >= 5) {
-          game.isGameStarted = false;
-          setTimeout(() => {
-            overallScoreBoardDisplay.isVisible = false;
-            currentRollScoreBoardDisplay.isVisible = false;
-            startMenuGUI(scene, game);
-          }, 1000);
-        }
-        else {
-          const currentRollScore = game.gameScoreCalculation();
-          const overallScore = game.totalScoreCalculation();
-          console.log(currentRollScore, overallScore);
-          updateGameScores(game, currentRollScore, overallScore);
-        }
-        game.ballIsRolled = false;
-        game.initializePins();
-
-      }, 5000);
-    }
-    return;
-  };
-
-  const pointerMove = () => {
-    if (!startingPoint) {
-      return;
-    }
-    const current = getLanePosition();
-    if (!current) {
-      return;
-    }
-
-    let aimAngle = (bowling_ball.position.x + current.x) * 0.1;
-
-    if (aimAngle > 0.15) aimAngle = 0.15;
-    else if (aimAngle < -0.15) aimAngle = -0.15;
-    aim.rotation.y = aimAngle;
-    const diff = current.subtract(startingPoint);
-    diff.x = 0;
-
-    // Define the limits for z movement
-    const minZ = -67; // Minimum z value
-    const maxZ = -62; // Maximum z value
-
-    const newZ = currentMesh.position.z + diff.z;
-
-    // Check if the new position exceeds the limits
-    if (newZ < minZ) {
-      diff.z = minZ - currentMesh.position.z;
-    } else if (newZ > maxZ) {
-      diff.z = maxZ - currentMesh.position.z;
-    }
-
-    currentMesh.position.addInPlace(diff);
-
-    startingPoint = current;
-  };
-
   const ballMovement = (pressedArrow) => {
     if (bowling_ball.position.x <= 8 && bowling_ball.position.x >= -8) {
       if (pressedArrow == "ArrowLeft" && bowling_ball.position.x != 8)
@@ -216,9 +124,33 @@ async function createScene() {
     }
   };
 
+  if (false) {
+
+  }
+  scene.onPointerObservable.add((pointerInfo) => {
+    switch (pointerInfo.type) {
+      case BABYLON.PointerEventTypes.POINTERDOWN:
+        if (
+          pointerInfo.pickInfo.hit &&
+          pointerInfo.pickInfo.pickedMesh == bowling_ball
+        ) {
+          aim.isVisible = true;
+          [currentMesh, startingPoint] = pointerDown(pointerInfo.pickInfo.pickedMesh, getLanePosition);
+        }
+        break;
+      case BABYLON.PointerEventTypes.POINTERUP:
+        aim.isVisible = false;
+        [startingPoint, currentMesh] = pointerUp(startingPoint, aim, game, meshObject, updateGameScores, bowlingPinResult, createBowlingPins, scene);
+        break;
+      case BABYLON.PointerEventTypes.POINTERMOVE:
+        startingPoint = pointerMove(startingPoint, getLanePosition, meshObject, aim, currentMesh);
+        break;
+    }
+  });
+
   // Create a new instance of StartGame with generalPins -- need gui to be added
   let game = new StartNewGame(setPins);
-  // createAnimations(camera, scene, game);
+  createAnimations(camera, scene, game);
   createMusic();
   renderScoreBoard(scene);
   havokPlugin.onCollisionEndedObservable.add((ev) =>
@@ -229,30 +161,6 @@ async function createScene() {
     switch (kbInfo.type) {
       case BABYLON.KeyboardEventTypes.KEYDOWN:
         ballMovement(kbInfo.event.key);
-    }
-  });
-  startMenuGUI(scene, game);
-  console.log(game);
-
-
-  scene.onPointerObservable.add((pointerInfo) => {
-    if(game.isGameStarted === true){
-      switch (pointerInfo.type) {
-        case BABYLON.PointerEventTypes.POINTERDOWN:
-          if (
-            pointerInfo.pickInfo.hit &&
-            pointerInfo.pickInfo.pickedMesh == bowling_ball
-          ) {
-            pointerDown(pointerInfo.pickInfo.pickedMesh);
-          }
-          break;
-        case BABYLON.PointerEventTypes.POINTERUP:
-          pointerUp();
-          break;
-        case BABYLON.PointerEventTypes.POINTERMOVE:
-          pointerMove();
-          break;
-      }
     }
   });
 
@@ -289,4 +197,4 @@ createScene().then((scene) => {
 });
 window.addEventListener("resize", function () {
   engine.resize();
-});
+})
