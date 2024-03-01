@@ -116,7 +116,6 @@ async function createScene() {
         camera.attachControl(canvas, true);
         startingPoint = null;
         if(game.ballIsRolled === true){
-          window.globalShootmusic.play();
           setTimeout(() => {
             setPins.forEach((pin) => {
               pin.dispose();

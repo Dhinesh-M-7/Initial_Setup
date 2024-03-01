@@ -1,9 +1,12 @@
 import { AdvancedDynamicTexture } from "@babylonjs/gui";
 import { overallScoreBoardDisplay, currentRollScoreBoardDisplay } from "./renderScoreBoard";
 import { infoGUI } from "./infoGUI";
+import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 
 // import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 const handleStartGame = (advancedTexture, game) => {
+  // console.log(game.generalPins);
+  // game = new StartNewGame(game.generalPins);
   game.initializeFrames();
   advancedTexture.dispose();
   overallScoreBoardDisplay.updateText('Overall\nScore: 0');
