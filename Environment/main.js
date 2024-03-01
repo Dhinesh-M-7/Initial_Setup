@@ -1,6 +1,6 @@
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders";
- 
+
 import { startMenuGUI } from "./startMenuGUI";
 import { rollCollisionHandler } from "./Game_Logic/gameCollisionHandler";
 import { createEnvironment } from "./Environment";
@@ -8,7 +8,8 @@ import { createAnimations } from "./Animation";
 import { createBowlingLane } from "./BowlingLane";
 import { createAim } from "./Aim";
 import { createBowlingBall, createBowlingPins } from "./BowlingBallAndPins";
-import { renderScoreBoard,scoreboardValueDisplay,scoreboardDisplay } from "./renderScoreBoard";
+import { renderScoreBoard, currentRollScoreBoardDisplay, overallScoreBoardDisplay } from "./renderScoreBoard";
+import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 
 const canvas = document.getElementById("renderCanvas");
 const engine = new BABYLON.Engine(canvas);
@@ -83,9 +84,54 @@ async function createScene() {
     return null;
   };
 
-  let rollCount = 0;
-  let totalScore = 0;
-  
+  const updateGameScores = (game, currentRollScore, overallScore) => {
+    if (game.frames[game.currentFrameIndex - 1].bonus === 'strike') {
+      currentRollScoreBoardDisplay.updateText('Strike!!!\n' + currentRollScore.toString());
+      particleflare();
+    }
+    else currentRollScoreBoardDisplay.updateText('Current\nScore: ' + currentRollScore.toString());
+    overallScoreBoardDisplay.updateText('Overall\nScore: ' + overallScore.toString());
+  }
+
+  const particleflare = () => {
+    const particleSystem = new BABYLON.ParticleSystem("particles", 200);
+
+    //Texture of each particle
+    particleSystem.particleTexture = new BABYLON.Texture("Images/flare.png");
+
+    // Position where the particles are emiited from
+
+    //particleSystem.emitter = new BABYLON.Vector3(4, 0.5, 0);
+
+    particleSystem.color1 = new BABYLON.Color4(0.7, 0.8, 1.0, 1.0);
+    particleSystem.color2 = new BABYLON.Color4(0.9, 0.1, .1, 1.0);
+    particleSystem.colorDead = new BABYLON.Color4(0, 0.5, 1, 0.0);
+    particleSystem.minSize = 0.05;
+    particleSystem.maxSize = 0.4;
+    particleSystem.minLifeTime = 0.3;
+    particleSystem.maxLifeTime = 1.5;
+    particleSystem.emitRate = 1500;
+    particleSystem.gravity = new BABYLON.Vector3(0, -9.81, 0);
+    particleSystem.direction1 = new BABYLON.Vector3(-7, 8, 3);
+    particleSystem.direction2 = new BABYLON.Vector3(7, -8, -3);
+    particleSystem.minAngularSpeed = 0;
+    particleSystem.maxAngularSpeed = Math.PI;
+    particleSystem.minEmitPower = 1;
+    particleSystem.maxEmitPower = 3;
+    particleSystem.updateSpeed = 0.005;
+    particleSystem.emitter = new BABYLON.Vector3(1, -1, -1);
+    particleSystem.startDelay = 1500;
+
+
+
+
+    particleSystem.start();
+
+
+    particleSystem.targetStopDuration = 0.6;
+
+  }
+
 
   const pointerDown = (mesh) => {
     currentMesh = mesh;
@@ -94,57 +140,51 @@ async function createScene() {
   };
 
   const pointerUp = () => {
-      let ballMoved = false;
-      aim.isVisible = false;
-      const bowlingBallPosition = bowling_ball.absolutePosition;
-      if (startingPoint) {
-        const ballSpeed = (-(bowlingBallPosition.z)-6)*10;
-        if(bowlingBallPosition.z < -63){
-          bowlingAggregate.body.applyImpulse(new BABYLON.Vector3(-(aim.rotation.y)*550 , 0, ballSpeed), bowling_ball.getAbsolutePosition());
-          window.globalShootmusic.play();
-          setTimeout(function () {
-            window.globalShootmusic.stop();
-          }, 1500);
-          ballMoved = true;
-        }
-        }
-        camera.attachControl(canvas, true);
-        startingPoint = null;
-        if(ballMoved){
-          window.globalShootmusic.play();
-          setTimeout(() => {
-            setPins.forEach((pin, pinIndex) => {
-              pin.dispose();
-            });
-            let trueCount = 0;
-
-            booleanArray.forEach((value) => {
-            if (value === true) {
-              trueCount++;
-            }
-            });
-            totalScore += trueCount;
-            booleanArray = Array(10).fill(false);
-            setPins = createBowlingPins(bowlingPinResult);
-            bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
-            bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
-            bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
-            bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
-            scoreboardValueDisplay.updateText(totalScore.toString());
-            rollCount++;
-            if(rollCount % 5 === 0){
-              setTimeout(() => {
-                totalScore = 0;
-                scoreboardDisplay.isVisible=false;
-                scoreboardValueDisplay.isVisible=false;
-                startMenuGUI(scene);
-              }, 1000)
-            }
-          }, 5000)
-        }
-        return;
-    
+    aim.isVisible = false;
+    const bowlingBallPosition = bowling_ball.absolutePosition;
+    if (startingPoint) {
+      const ballSpeed = (-(bowlingBallPosition.z) - 6) * 10;
+      if (bowlingBallPosition.z < -63) {
+        bowlingAggregate.body.applyImpulse(new BABYLON.Vector3(-(aim.rotation.y) * 550, 0, ballSpeed), bowling_ball.getAbsolutePosition());
+        window.globalShootmusic.play();
+        setTimeout(function () {
+          window.globalShootmusic.stop();
+        }, 1500);
+        game.ballIsRolled = true;
+      }
     }
+    camera.attachControl(canvas, true);
+    startingPoint = null;
+    if (game.ballIsRolled === true) {
+      setTimeout(() => {
+        setPins.forEach((pin) => {
+          pin.dispose();
+        });
+        const currentRollScore = game.gameScoreCalculation();
+        const overallScore = game.totalScoreCalculation();
+        updateGameScores(game, currentRollScore, overallScore);
+
+        setPins = createBowlingPins(bowlingPinResult);
+
+        bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
+        bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
+        bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
+        bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
+
+        game.ballIsRolled = false;
+        game.initializePins();
+
+        if (game.currentFrameIndex >= 5) {
+          setTimeout(() => {
+            overallScoreBoardDisplay.isVisible = false;
+            currentRollScoreBoardDisplay.isVisible = false;
+            startMenuGUI(scene, game);
+          }, 1000)
+        }
+      }, 5000)
+    }
+    return;
+  }
 
   const pointerMove = () => {
     if (!startingPoint) {
@@ -214,28 +254,24 @@ async function createScene() {
     }
   });
 
+  // Create a new instance of StartGame with generalPins -- need gui to be added
+  let game = new StartNewGame(setPins);
+  //createAnimations(camera, scene, game);
+  createMusic();
+  renderScoreBoard(scene);
+  havokPlugin.onCollisionEndedObservable.add((ev) => rollCollisionHandler(ev, scene, window, game));
+
   scene.onKeyboardObservable.add((kbInfo) => {
     switch (kbInfo.type) {
       case BABYLON.KeyboardEventTypes.KEYDOWN:
         ballMovement(kbInfo.event.key);
     }
   });
-
-  // // Create a new instance of StartGame with generalPins -- need gui to be added
-  havokPlugin.onCollisionEndedObservable.add((ev) => {
-    const value = rollCollisionHandler(ev, window);
-    booleanArray[value] = true;
-  });
-  createAnimations(camera, scene);
-  createMusic();
-  renderScoreBoard(scene);
-  havokPlugin.onCollisionEndedObservable.add((ev) => rollCollisionHandler(ev, scene, window));
-  console.log(scene.currentMesh);
   return scene;
 }
 
 const createMusic = () => {
-    window.globalShootmusic = new BABYLON.Sound("rollMusic", "./Audio/rollingball.mp3", null, {
+  window.globalShootmusic = new BABYLON.Sound("rollMusic", "./Audio/rollingball.mp3", null, {
     loop: true,
     autoplay: true,
   });
@@ -244,19 +280,7 @@ const createMusic = () => {
     autoplay: true,
   });
 }
-window.addEventListener('keydown', function (e) {
-  var key = e.key;
-  if (key === 80)// p key
-  {
-      togglePause();
-  }
-  });
 
-
-function togglePause() {
- console.log("pause");
-
-}
 
 createScene().then((scene) => {
   engine.runRenderLoop(function () {
