@@ -38,6 +38,5 @@ export class StartNewGame {
     totalScoreCalculation(){
         this.totalScore += this.frames[this.currentFrameIndex-1].score;
         return this.totalScore;
-        // console.log(this.frames);
     }
   }

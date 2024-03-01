@@ -151,6 +151,7 @@ async function createScene() {
         bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
 
         if (game.currentFrameIndex >= 5) {
+          game.isGameStarted = false;
           setTimeout(() => {
             overallScoreBoardDisplay.isVisible = false;
             currentRollScoreBoardDisplay.isVisible = false;
@@ -215,25 +216,6 @@ async function createScene() {
     }
   };
 
-  scene.onPointerObservable.add((pointerInfo) => {
-    switch (pointerInfo.type) {
-      case BABYLON.PointerEventTypes.POINTERDOWN:
-        if (
-          pointerInfo.pickInfo.hit &&
-          pointerInfo.pickInfo.pickedMesh == bowling_ball
-        ) {
-          pointerDown(pointerInfo.pickInfo.pickedMesh);
-        }
-        break;
-      case BABYLON.PointerEventTypes.POINTERUP:
-        pointerUp();
-        break;
-      case BABYLON.PointerEventTypes.POINTERMOVE:
-        pointerMove();
-        break;
-    }
-  });
-
   // Create a new instance of StartGame with generalPins -- need gui to be added
   let game = new StartNewGame(setPins);
   // createAnimations(camera, scene, game);
@@ -250,6 +232,30 @@ async function createScene() {
     }
   });
   startMenuGUI(scene, game);
+  console.log(game);
+
+
+  scene.onPointerObservable.add((pointerInfo) => {
+    if(game.isGameStarted === true){
+      switch (pointerInfo.type) {
+        case BABYLON.PointerEventTypes.POINTERDOWN:
+          if (
+            pointerInfo.pickInfo.hit &&
+            pointerInfo.pickInfo.pickedMesh == bowling_ball
+          ) {
+            pointerDown(pointerInfo.pickInfo.pickedMesh);
+          }
+          break;
+        case BABYLON.PointerEventTypes.POINTERUP:
+          pointerUp();
+          break;
+        case BABYLON.PointerEventTypes.POINTERMOVE:
+          pointerMove();
+          break;
+      }
+    }
+  });
+
   return scene;
 }
 
