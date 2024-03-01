@@ -5,7 +5,6 @@ import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 
 // import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 const handleStartGame = (advancedTexture, game) => {
-  // console.log(game.generalPins);
   // game = new StartNewGame(game.generalPins);
   game.initializeFrames();
   advancedTexture.dispose();

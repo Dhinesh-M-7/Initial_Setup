@@ -120,6 +120,7 @@ async function createScene() {
             setPins.forEach((pin) => {
               pin.dispose();
             });
+            console.log(game);
             const currentRollScore = game.gameScoreCalculation();
             const overallScore = game.totalScoreCalculation();
             updateGameScores(game, currentRollScore, overallScore);
@@ -159,12 +160,7 @@ async function createScene() {
 
     if (aimAngle > 0.15) aimAngle = 0.15;
     else if (aimAngle < -0.15) aimAngle = -0.15;
-
-    console.log(bowling_ball.position.x);
-
     aim.rotation.y = aimAngle;
-    console.log(aimAngle);
-
     const diff = current.subtract(startingPoint);
     diff.x = 0;
 
