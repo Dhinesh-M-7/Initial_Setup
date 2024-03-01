@@ -1,10 +1,10 @@
 import * as BABYLON  from "@babylonjs/core"
-
+ 
 export const particles = (position) => {
   const particleSystem = new BABYLON.ParticleSystem("particles", 2000);
-
+ 
   particleSystem.particleTexture = new BABYLON.Texture("Images/flare.png");
-
+ 
   particleSystem.color1 = new BABYLON.Color4(0.7, 0.8, 1.0, 1.0);
   particleSystem.color2 = new BABYLON.Color4(0.9, 0.1, .1, 1.0);
   particleSystem.colorDead = new BABYLON.Color4(0.412, 0.529, 0, 1);
@@ -22,10 +22,11 @@ export const particles = (position) => {
   particleSystem.maxEmitPower = 3;
   particleSystem.updateSpeed = 0.005;
   particleSystem.emitter = position;
-
+ 
   particleSystem.start();
-
+ 
   particleSystem.targetStopDuration = 0.6;
-
+ 
   return particleSystem;
 }
+ 

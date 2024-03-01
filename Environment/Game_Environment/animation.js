@@ -1,6 +1,21 @@
 import * as BABYLON from "@babylonjs/core";
 import { startMenuGUI } from "../startMenuGUI";
 
+//Defining frame number and values for camera movement and rotation
+const movementFrames = [0, 1, 5, 6, 13, 14];
+const movementValues = [
+  new BABYLON.Vector3(0, 20, -120),
+  new BABYLON.Vector3(0, 10, -100),
+  new BABYLON.Vector3(0, 10, 60),
+  new BABYLON.Vector3(0, 30, 50),
+  new BABYLON.Vector3(0, 30, -100),
+  new BABYLON.Vector3(0, 25, -100),
+];
+
+const rotationFrames = [0, 5, 9, 13];
+const rotationValues = [0, 0, Math.PI, 2 * Math.PI];
+
+//creating a camera animation with the data above
 export const createAnimations = (camera, scene, game) => {
   const frameRate = 30;
 
@@ -14,35 +29,12 @@ export const createAnimations = (camera, scene, game) => {
   );
   const movement_keys = [];
 
-  movement_keys.push({
-    frame: 0,
-    value: new BABYLON.Vector3(0, 20, -120),
-  });
-
-  movement_keys.push({
-    frame: 1 * frameRate,
-    value: new BABYLON.Vector3(0, 10, -100),
-  });
-
-  movement_keys.push({
-    frame: 5 * frameRate,
-    value: new BABYLON.Vector3(0, 10, 60),
-  });
-
-  movement_keys.push({
-    frame: 6 * frameRate,
-    value: new BABYLON.Vector3(0, 30, 50),
-  });
-
-  movement_keys.push({
-    frame: 13 * frameRate,
-    value: new BABYLON.Vector3(0, 30, -100),
-  });
-
-  movement_keys.push({
-    frame: 14 * frameRate,
-    value: new BABYLON.Vector3(0, 25, -100),
-  });
+  for (let frameId = 0; frameId < movementFrames.length; frameId++) {
+    movement_keys.push({
+      frame: movementFrames[frameId] * frameRate, // Multiply frame by frameRate
+      value: movementValues[frameId],
+    });
+  }
 
   movement.setKeys(movement_keys);
 
@@ -56,23 +48,17 @@ export const createAnimations = (camera, scene, game) => {
   );
   const rotate_keys = [];
 
-  rotate_keys.push({
-    frame: 0,
-    value: 0,
-  });
-  rotate_keys.push({
-    frame: 5 * frameRate,
-    value: 0,
-  });
-  rotate_keys.push({
-    frame: 9 * frameRate,
-    value: Math.PI,
-  });
-  rotate_keys.push({
-    frame: 13 * frameRate,
-    value: 2 * Math.PI,
-  });
+  for (let frameId = 0; frameId < rotationFrames.length; frameId++) {
+    rotate_keys.push({
+      frame: rotationFrames[frameId] * frameRate, // Multiply frame by frameRate
+      value: rotationValues[frameId],
+    });
+  }
+
   rotation.setKeys(rotate_keys);
+
+
+  //Starting the animation on the scene
   scene.beginDirectAnimation(
     camera,
     [movement, rotation],
