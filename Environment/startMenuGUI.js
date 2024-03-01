@@ -9,7 +9,8 @@ import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 const handleStartGame = (advancedTexture, game) => {
   // console.log(game.generalPins);
   // game = new StartNewGame(game.generalPins);
-  game.initializeFrames();
+  const newGame = new StartNewGame(game.generalPins);
+  game.updateToNewGame(newGame);
   advancedTexture.dispose();
   overallScoreBoardDisplay.updateText('Overall\nScore: 0');
   currentRollScoreBoardDisplay.updateText('Current\nScore: 0');
