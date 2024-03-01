@@ -109,7 +109,7 @@ export const createEnvironment = () => {
   laneProtector1.position.x = -15;
   laneProtector1.position.y = 28;
   laneProtector1.rotation.y = -Math.PI / 2;
-  //laneProtector1.isVisible = false;
+  laneProtector1.isVisible = false;
 
   const laneProtector1Agg = new BABYLON.PhysicsAggregate(
     laneProtector1,
@@ -129,7 +129,7 @@ export const createEnvironment = () => {
   laneProtector2.position.x = 15;
   laneProtector2.position.y = 28;
   laneProtector2.rotation.y = Math.PI / 2;
-  //laneProtector2.isVisible = false;
+  laneProtector2.isVisible = false;
 
   const laneProtector22Agg = new BABYLON.PhysicsAggregate(
     laneProtector2,
