@@ -1,15 +1,15 @@
 import { GUI3DManager } from "@babylonjs/gui/3D/gui3DManager";
-import { Rectangle } from "@babylonjs/gui";
 import { TextBlock } from "@babylonjs/gui";
 import { Button3D } from "@babylonjs/gui";
-
+import { AdvancedDynamicTexture } from "@babylonjs/gui";
+import { createOwnPlane, createButton } from "./createButtonForGUI";
 import * as BABYLON from "@babylonjs/core";
 
 export function scoreBoardGUI(scene, positionCoordinates, visibility, value) {
   let anchor = new BABYLON.AbstractMesh("anchor", scene);
   let manager = new GUI3DManager(scene);
   let button = new Button3D("reset");
-    
+
   manager.addControl(button);
   button.linkToTransformNode(anchor);
   button.position.x = positionCoordinates[0];
