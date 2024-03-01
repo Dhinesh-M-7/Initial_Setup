@@ -64,28 +64,6 @@ export const createEnvironment = () => {
     }
   );
 
-  //Walls on sides of backWall1(No texture needed only color)
-  const backWall3 = new BABYLON.MeshBuilder.CreatePlane("plane", {
-    height: 15,
-    width: 35,
-  });
-  backWall3.position.x = -32.5;
-  backWall3.position.y = 7.5;
-  backWall3.position.z = 100;
-  const backWall3Mat = new BABYLON.StandardMaterial();
-  backWall3Mat.diffuseColor = new BABYLON.Color4(0, 0, 0, 0);
-  backWall3.material = backWall3Mat;
-
-  const backWall4 = new BABYLON.MeshBuilder.CreatePlane("plane", {
-    height: 15,
-    width: 35,
-  });
-  backWall4.position.x = 32.5;
-  backWall4.position.y = 7.5;
-  backWall4.position.z = 100;
-  const backWall4Mat = new BABYLON.StandardMaterial();
-  backWall4Mat.diffuseColor = new BABYLON.Color4(0, 0, 0, 0);
-  backWall4.material = backWall4Mat;
 
   //Wall at the back of the camera
   const backWall5 = new BABYLON.MeshBuilder.CreatePlane("plane", {
@@ -106,10 +84,10 @@ export const createEnvironment = () => {
   
   const laneProtector1 = new BABYLON.MeshBuilder.CreatePlane("laneProtector", {
     height: 50,
-    width: 200
+    width: 300
   });
   laneProtector1.position.x = -15;
-  laneProtector1.position.y = 28;
+  laneProtector1.position.y = 25;
   laneProtector1.rotation.y = -Math.PI / 2;
   laneProtector1.isVisible = false;
 
@@ -126,10 +104,10 @@ export const createEnvironment = () => {
   const laneProtector2
    = new BABYLON.MeshBuilder.CreatePlane("laneProtector", {
     height: 50,
-    width: 200
+    width: 300
   });
   laneProtector2.position.x = 15;
-  laneProtector2.position.y = 28;
+  laneProtector2.position.y = 25;
   laneProtector2.rotation.y = Math.PI / 2;
   laneProtector2.isVisible = false;
 
