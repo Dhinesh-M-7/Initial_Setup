@@ -27,5 +27,8 @@ export function scoreBoardGUI(scene, positionCoordinates, visibility, value) {
   button.updateText = function (newValue) {
     text1.text = newValue;
   };
+  button.appendText = function(addValue) {
+    text1.text += addValue;
+  }
   return button;
 }

@@ -68,11 +68,10 @@ const handleStartGame = (startPlane, infoPlane, exitPlane, game) => {
   currentRollScoreBoardDisplay.updateText("Current\nScore: 0");
   overallScoreBoardDisplay.isVisible = true;
   currentRollScoreBoardDisplay.isVisible = true;
-
-  const newGame = new StartNewGame(game.generalPins);
+  const newGame = new StartNewGame(game.generalPins, game.players)
+  // const newGame = new StartNewGame(game.generalPins, ['dhinesh', 'michael', 'monisha', 'arjun', 'karthik']);
   newGame.isGameStarted = true;
   game.updateToNewGame(newGame);
-  console.log(game);
 };
 
 const handleExitGame = () => {

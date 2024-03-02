@@ -41,10 +41,10 @@ export const pointerUp = (
   //startingPoint = null;
   if (game.ballIsRolled === true) {
     setTimeout(() => {
+      console.log(game.entireFrames);
       meshObject.setPins.forEach((pin) => {
         pin.dispose();
       });
-
       meshObject.setPins = createBowlingPins(bowlingPinResult);
 
       meshObject.bowlingAggregate.body.setLinearVelocity(
@@ -55,11 +55,10 @@ export const pointerUp = (
       );
       meshObject.bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
       meshObject.bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
-      const currentRollScore = game.gameScoreCalculation();
-      const overallScore = game.totalScoreCalculation();
-      console.log(currentRollScore, overallScore, updateGameScores);
-      updateGameScores(game, currentRollScore, overallScore);
-      if (game.currentFrameIndex === 5) {
+
+      updateGameScores(game);
+
+      if (game.currentFrameIndex === game.totalAttempts-1 && game.currentPlayerIndex === game.players.length-1) {
         game.isGameStarted = false;
         setTimeout(() => {
           overallScoreBoardDisplay.isVisible = false;
@@ -67,6 +66,7 @@ export const pointerUp = (
           startMenuGUI(scene, game);
         }, 1500);
       }
+      game.switchPlayer();
       game.ballIsRolled = false;
       game.initializePins();
     }, 5000);

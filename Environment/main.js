@@ -1,7 +1,6 @@
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders";
 
-import { startMenuGUI } from "./startMenuGUI";
 import { rollCollisionHandler } from "./Game_Logic/gameCollisionHandler";
 import { pointerDown, pointerUp, pointerMove } from "./Game_Logic/ballMovementHandler";
 import { createEnvironment } from "./Game_Environment/environment";
@@ -81,21 +80,18 @@ async function createScene() {
   let startingPoint;
   let currentMesh;
 
-  const updateGameScores = (game, currentRollScore, overallScore) => {
-    if (game.frames[game.currentFrameIndex - 1].bonus === "strike") {
+  const updateGameScores = (game) => {
+    const currentRollScore = game.gameScoreCalculation();
+    const overallScore = game.totalScoreCalculation();
+    currentRollScoreBoardDisplay.updateText("Attempt - " + (game.currentFrameIndex+1).toString());
+    if (game.entireFrames[game.currentPlayerIndex][game.currentFrameIndex].bonus === "strike") {
       particles(new BABYLON.Vector3(13, 18, -30));
       particles(new BABYLON.Vector3(-13, 18, -30));
-      currentRollScoreBoardDisplay.updateText(
-        "Strike!!!\n" + currentRollScore.toString()
-      );
+      currentRollScoreBoardDisplay.appendText("\n!!!Strike!!!");
     } 
-    else{
-      currentRollScoreBoardDisplay.updateText(
-        "Current\nScore: " + currentRollScore.toString()
-      );
-    }
+    currentRollScoreBoardDisplay.appendText("\nCurrent: "+ currentRollScore.toString());
     overallScoreBoardDisplay.updateText(
-      "Overall\nScore: " + overallScore.toString()
+      game.players[game.currentPlayerIndex] + "\nOverall: " + overallScore.toString()
     );
   }
 
@@ -119,9 +115,6 @@ async function createScene() {
     }
   };
 
-  if (false) {
-
-  }
   scene.onPointerObservable.add((pointerInfo) => {
     if(game.isGameStarted === true){
       switch (pointerInfo.type) {
@@ -146,7 +139,7 @@ async function createScene() {
   });
 
   // Create a new instance of StartGame with generalPins -- need gui to be added
-  let game = new StartNewGame(setPins);
+  let game = new StartNewGame(setPins, ['Player 1', 'Player 2']);
   createAnimations(camera, scene, game);
   createMusic();
   renderScoreBoard(scene);
