@@ -1,31 +1,44 @@
-import { AdvancedDynamicTexture } from "@babylonjs/gui";
+import * as BABYLON from "@babylonjs/core"
+import { AdvancedDynamicTexture, Button } from "@babylonjs/gui";
+import { startMenuGUI } from "./startMenuGUI";
 
-const handleCloseButton = (infoAdvancedTexture) => {
-  infoAdvancedTexture.dispose();
+//handling the close button click
+const handleCloseButton = (informationPlane, buttonPlane, scene, game) => {
+    informationPlane.dispose();
+    buttonPlane.dispose();
+    startMenuGUI(scene, game)
 };
-export async function infoGUI(scene) {
-  let infoAdvancedTexture = AdvancedDynamicTexture.CreateFullscreenUI(
-    "GUI",
-    true,
-    scene
-  );
 
-  // Load the GUI from the snippet asynchronously
-  try {
-    await infoAdvancedTexture.parseFromSnippetAsync("8RIKCR#10");
-    console.log("INFOGUI loaded successfully");
-  } catch (error) {
-    console.error("Error loading GUI:", error);
-  }
+export function infoGUI(scene, game) {
+    //creating a plane for displaying the rules and regulations
+    const informationPlane = new BABYLON.MeshBuilder.CreatePlane("infoPlane",{
+        height: 10,
+        width:20
+    });
+    informationPlane.position = new BABYLON.Vector3(0, 22, -75)
 
-  // Get the buttons from the GUI
-  let closeButton = infoAdvancedTexture.getControlByName("closeButton");
+    const informationPlaneMat = new BABYLON.StandardMaterial();
+    informationPlaneMat.diffuseTexture = new BABYLON.Texture("Images/Info.jpg");
+    informationPlane.material = informationPlaneMat;
 
-  // Add event handlers to the buttons
-  closeButton.onPointerClickObservable.add(function () {
-    handleCloseButton(infoAdvancedTexture);
-  });
+    //creating a gui plane for placing the close button
+    const buttonPlane = new BABYLON.MeshBuilder.CreatePlane("buttonPlane",{
+        height: 1,
+        width:3
+    });
+    buttonPlane.position = new BABYLON.Vector3(0, 16, -75)
+    buttonPlane.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+    const advancedTexture = AdvancedDynamicTexture.CreateForMesh(buttonPlane);
 
-  // Return the advanced texture
-  return infoAdvancedTexture;
+    const closeButton = Button.CreateSimpleButton("close-button", "CLOSE");
+    closeButton.width = 3;
+    closeButton.height = 1;
+    closeButton.color = "white";
+    closeButton.fontSize = 250;
+    closeButton.background = "red";
+    closeButton.thickness = 2
+    closeButton.onPointerUpObservable.add(function() {
+        handleCloseButton(informationPlane, buttonPlane, scene, game);
+    });
+    advancedTexture.addControl(closeButton);
 }
