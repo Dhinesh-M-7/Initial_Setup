@@ -80,8 +80,11 @@ const handleExitGame = () => {
   customWindow.close();
 };
 
-const handleInfo = (scene) => {
-  infoGUI(scene);
+const handleInfo = (startPlane, infoPlane, exitPlane, scene, game) => {
+  startPlane.dispose();
+  infoPlane.dispose();
+  exitPlane.dispose();
+  infoGUI(scene, game);
 };
 
 export function startMenuGUI(scene, game) {
@@ -98,7 +101,7 @@ export function startMenuGUI(scene, game) {
   });
 
   infoButton.onPointerUpObservable.add(function () {
-    handleInfo(scene);
+    handleInfo(startPlane, infoPlane, exitPlane, scene, game);
   });
   return { startGameButton, infoButton, exitGameButton };
 }
