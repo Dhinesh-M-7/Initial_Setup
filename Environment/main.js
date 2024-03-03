@@ -1,10 +1,14 @@
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders";
 
-import { startMenuGUI } from "./startMenuGUI";
 import { rollCollisionHandler } from "./Game_Logic/gameCollisionHandler";
-import { pointerDown, pointerUp, pointerMove } from "./Game_Logic/ballMovementHandler";
+import {
+  pointerDown,
+  pointerUp,
+  pointerMove,
+} from "./Game_Logic/ballMovementHandler";
 import { createEnvironment } from "./Game_Environment/environment";
+import { createLights, createGameMusic, createRollSound } from "./Game_Environment/lightsAndMusic";
 import { createAnimations } from "./Game_Environment/animation";
 import { createBowlingLane } from "./Game_Environment/bowlingLane";
 import { createAim } from "./aim";
@@ -17,25 +21,17 @@ import {
 } from "./renderScoreBoard";
 import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 
+
+
 const canvas = document.getElementById("renderCanvas");
 const engine = new BABYLON.Engine(canvas);
 
 async function createScene() {
   const scene = new BABYLON.Scene(engine);
 
-  const music = new BABYLON.Sound(
-    "Music",
-    "./Audio/stranger_things.mp3",
-    scene,
-    null,
-    {
-      loop: true,
-      autoplay: true,
-    }
-  );
-
   const havokInstance = await HavokPhysics();
   const havokPlugin = new BABYLON.HavokPlugin(true, havokInstance);
+  scene.enablePhysics(new BABYLON.Vector3(0, -9.8, 0), havokPlugin);
 
   const camera = new BABYLON.UniversalCamera(
     "camera",
@@ -44,15 +40,6 @@ async function createScene() {
   camera.setTarget(new BABYLON.Vector3(0, 0, 0));
   camera.inputs.clear();
   camera.attachControl();
-
-  const light = new BABYLON.HemisphericLight(
-    "light",
-    new BABYLON.Vector3(0, 10, 0)
-  );
-  light.intensity = 1.2;
-  light.lightmapMode = BABYLON.Light.FALLOFF_PHYSICAL;
-
-  scene.enablePhysics(new BABYLON.Vector3(0, -9.8, 0), havokPlugin);
 
   const bowlingPinResult = await BABYLON.SceneLoader.ImportMeshAsync(
     "",
@@ -72,11 +59,13 @@ async function createScene() {
   aim.parent = bowling_ball;
 
   createEnvironment();
+  createLights();
+  createGameMusic(scene);
   const lane = createBowlingLane();
 
   let setPins = createBowlingPins(bowlingPinResult);
-  
-  let meshObject = {bowling_ball, bowlingAggregate, setPins};
+
+  let meshObject = { bowling_ball, bowlingAggregate, setPins };
   console.log(meshObject);
   let startingPoint;
   let currentMesh;
@@ -88,8 +77,7 @@ async function createScene() {
       currentRollScoreBoardDisplay.updateText(
         "Strike!!!\n" + currentRollScore.toString()
       );
-    } 
-    else{
+    } else {
       currentRollScoreBoardDisplay.updateText(
         "Current\nScore: " + currentRollScore.toString()
       );
@@ -97,8 +85,7 @@ async function createScene() {
     overallScoreBoardDisplay.updateText(
       "Overall\nScore: " + overallScore.toString()
     );
-  }
-
+  };
 
   const getLanePosition = () => {
     const pickinfo = scene.pick(scene.pointerX, scene.pointerY, (mesh) => {
@@ -119,11 +106,8 @@ async function createScene() {
     }
   };
 
-  if (false) {
-
-  }
   scene.onPointerObservable.add((pointerInfo) => {
-    if(game.isGameStarted === true){
+    if (game.isGameStarted === true) {
       switch (pointerInfo.type) {
         case BABYLON.PointerEventTypes.POINTERDOWN:
           if (
@@ -131,15 +115,33 @@ async function createScene() {
             pointerInfo.pickInfo.pickedMesh == bowling_ball
           ) {
             aim.isVisible = true;
-            [currentMesh, startingPoint] = pointerDown(pointerInfo.pickInfo.pickedMesh, getLanePosition);
+            [currentMesh, startingPoint] = pointerDown(
+              pointerInfo.pickInfo.pickedMesh,
+              getLanePosition
+            );
           }
           break;
         case BABYLON.PointerEventTypes.POINTERUP:
           aim.isVisible = false;
-          [startingPoint, currentMesh] = pointerUp(startingPoint, aim, game, meshObject, updateGameScores, bowlingPinResult, createBowlingPins, scene);
+          [startingPoint, currentMesh] = pointerUp(
+            startingPoint,
+            aim,
+            game,
+            meshObject,
+            updateGameScores,
+            bowlingPinResult,
+            createBowlingPins,
+            scene
+          );
           break;
         case BABYLON.PointerEventTypes.POINTERMOVE:
-          startingPoint = pointerMove(startingPoint, getLanePosition, meshObject, aim, currentMesh);
+          startingPoint = pointerMove(
+            startingPoint,
+            getLanePosition,
+            meshObject,
+            aim,
+            currentMesh
+          );
           break;
       }
     }
@@ -148,7 +150,7 @@ async function createScene() {
   // Create a new instance of StartGame with generalPins -- need gui to be added
   let game = new StartNewGame(setPins);
   createAnimations(camera, scene, game);
-  createMusic();
+  createRollSound();
   renderScoreBoard(scene);
   havokPlugin.onCollisionEndedObservable.add((ev) =>
     rollCollisionHandler(ev, scene, window, game)
@@ -164,27 +166,6 @@ async function createScene() {
   return scene;
 }
 
-const createMusic = () => {
-  window.globalShootmusic = new BABYLON.Sound(
-    "rollMusic",
-    "./Audio/rollingball.mp3",
-    null,
-    {
-      loop: true,
-      autoplay: true,
-    }
-  );
-  window.globalHitMusic = new BABYLON.Sound(
-    "hitMusic",
-    "./Audio/hit.mp3",
-    null,
-    {
-      loop: true,
-      autoplay: true,
-    }
-  );
-};
-
 createScene().then((scene) => {
   engine.runRenderLoop(function () {
     if (scene) {
@@ -194,4 +175,4 @@ createScene().then((scene) => {
 });
 window.addEventListener("resize", function () {
   engine.resize();
-})
+});
