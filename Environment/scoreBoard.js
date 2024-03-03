@@ -1,8 +1,6 @@
 import { GUI3DManager } from "@babylonjs/gui/3D/gui3DManager";
 import { TextBlock } from "@babylonjs/gui";
 import { Button3D } from "@babylonjs/gui";
-import { AdvancedDynamicTexture } from "@babylonjs/gui";
-import { createOwnPlane, createButton } from "./createButtonForGUI";
 import * as BABYLON from "@babylonjs/core";
 
 export function scoreBoardGUI(scene, positionCoordinates, visibility, value) {
@@ -19,14 +17,14 @@ export function scoreBoardGUI(scene, positionCoordinates, visibility, value) {
   button.isVisible = visibility;
   button.color = "navyblue";
 
-  let text1 = new TextBlock();
-  text1.text = value;
-  text1.color = "#14f9fe";
-  text1.fontSize = 45;
-  button.content = text1;
+  let textContent = new TextBlock();
+  textContent.text = value;
+  textContent.color = "#14f9fe";
+  textContent.fontSize = 45;
+  button.content = textContent;
 
   button.updateText = function (newValue) {
-    text1.text = newValue;
+    textContent.text = newValue;
   };
   return button;
 }

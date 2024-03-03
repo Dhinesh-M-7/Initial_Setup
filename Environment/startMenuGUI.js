@@ -1,4 +1,4 @@
-import { AdvancedDynamicTexture, Button } from "@babylonjs/gui";
+import { AdvancedDynamicTexture } from "@babylonjs/gui";
 import * as BABYLON from "@babylonjs/core";
 import {
   overallScoreBoardDisplay,
@@ -55,8 +55,8 @@ const handleStartGame = (startPlane, infoPlane, exitPlane, game) => {
 };
 
 const handleExitGame = () => {
-  // var customWindow = window.open("", "_self", "");
-  window.close();
+  var customWindow = window.open("", "_self", "");
+  customWindow.close();
 };
 
 const handleInfo = (scene) => {
