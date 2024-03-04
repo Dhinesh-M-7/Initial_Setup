@@ -76,7 +76,6 @@ async function createScene() {
   let setPins = createBowlingPins(bowlingPinResult);
   
   let meshObject = {bowling_ball, bowlingAggregate, setPins};
-  console.log(meshObject);
   let startingPoint;
   let currentMesh;
 
