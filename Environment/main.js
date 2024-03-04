@@ -67,27 +67,22 @@ async function createScene() {
 
   let setPins = createBowlingPins(bowlingPinResult);
 
-  let ballMovementObjects = { bowling_ball, bowlingAggregate, aim, setPins };
+  let ballMovementObjects = { bowling_ball, bowlingAggregate, setPins };
   let startingPoint;
   let currentMesh;
 
-  const updateGameScores = (game, currentRollScore, overallScore) => {
-    if (game.frames[game.currentFrameIndex - 1].bonus === "strike") {
-
-      //Adding particles when strike occurs
+  const updateGameScores = (game) => {
+    const currentRollScore = game.gameScoreCalculation();
+    const overallScore = game.totalScoreCalculation();
+    currentRollScoreBoardDisplay.updateText("Attempt - " + (game.currentFrameIndex+1).toString());
+    if (game.entireFrames[game.currentPlayerIndex][game.currentFrameIndex].bonus === "strike") {
       particles(new BABYLON.Vector3(13, 18, -30));
       particles(new BABYLON.Vector3(-13, 18, -30));
-      
-      currentRollScoreBoardDisplay.updateText(
-        "Strike!!!\n" + currentRollScore.toString()
-      );
-    } else {
-      currentRollScoreBoardDisplay.updateText(
-        "Current\nScore: " + currentRollScore.toString()
-      );
-    }
+      currentRollScoreBoardDisplay.appendText("\n!!!Strike!!!");
+    } 
+    currentRollScoreBoardDisplay.appendText("\nCurrent: "+ currentRollScore.toString());
     overallScoreBoardDisplay.updateText(
-      "Overall\nScore: " + overallScore.toString()
+      game.players[game.currentPlayerIndex] + "\nOverall: " + overallScore.toString()
     );
   };
 
@@ -151,8 +146,8 @@ async function createScene() {
     }
   });
 
-  // Create a new instance of StartGame with generalPins -- need gui to be added
-  let game = new StartNewGame(setPins);
+  // Create a new instance of StartGame with generalPins
+  let game = new StartNewGame(setPins, ['Player 1', 'Player 2']);
   createAnimations(camera, scene, game);
   createRollSound();
   renderScoreBoard(scene);

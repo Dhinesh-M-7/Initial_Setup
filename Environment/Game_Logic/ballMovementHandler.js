@@ -7,8 +7,6 @@ import {
 } from "../Game_GUI/renderScoreBoard";
 
 export const pointerDown = (mesh, getLanePosition) => {
-  //currentMesh = mesh;
-
   const startingPoint = getLanePosition();
   return [mesh, startingPoint];
 };
@@ -55,10 +53,9 @@ export const pointerUp = (
       ballMovementObjects.bowling_ball.position = new BABYLON.Vector3(0,4,-62);
 
       //Updating the score
-      const currentRollScore = game.gameScoreCalculation();
-      const overallScore = game.totalScoreCalculation();
-      updateGameScores(game, currentRollScore, overallScore);
-      if (game.currentFrameIndex === 5) {
+      updateGameScores(game);
+
+      if (game.currentFrameIndex === game.totalAttempts-1 && game.currentPlayerIndex === game.players.length-1){
         game.isGameStarted = false;
         setTimeout(() => {
           overallScoreBoardDisplay.isVisible = false;
@@ -67,6 +64,7 @@ export const pointerUp = (
         }, 1500);
       }
 
+      game.switchPlayer();
       game.ballIsRolled = false;
 
       game.initializePins();
