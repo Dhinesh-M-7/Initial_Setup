@@ -67,8 +67,7 @@ async function createScene() {
 
   let setPins = createBowlingPins(bowlingPinResult);
 
-  let meshObject = { bowling_ball, bowlingAggregate, setPins };
-  console.log(meshObject);
+  let ballMovementObjects = { bowling_ball, bowlingAggregate, aim, setPins };
   let startingPoint;
   let currentMesh;
 
@@ -129,7 +128,7 @@ async function createScene() {
             startingPoint,
             aim,
             game,
-            meshObject,
+            ballMovementObjects,
             updateGameScores,
             bowlingPinResult,
             createBowlingPins,
@@ -140,7 +139,7 @@ async function createScene() {
           startingPoint = pointerMove(
             startingPoint,
             getLanePosition,
-            meshObject,
+            ballMovementObjects,
             aim,
             currentMesh
           );
