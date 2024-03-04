@@ -39,20 +39,20 @@ function createExitButton(scene) {
 }
 
 const handleStartGame = (startPlane, infoPlane, exitPlane, game) => {
+  //dispose the menu GUI and enter the environment
   startPlane.dispose();
   infoPlane.dispose();
   exitPlane.dispose();
-
+  //set the default for the scoreboard displays
   overallScoreBoardDisplay.updateText("Overall\nScore: 0");
   currentRollScoreBoardDisplay.updateText("Current\nScore: 0");
   overallScoreBoardDisplay.isVisible = true;
   currentRollScoreBoardDisplay.isVisible = true;
+  //single player and multiple player game selection
   // const newGame = new StartNewGame(game.generalPins,  ['Player']);
   const newGame = new StartNewGame(game.generalPins, ["Player 1", "Player 2"]);
-  // const newGame = new StartNewGame(game.generalPins, ['dhinesh', 'michael', 'monisha', 'arjun', 'karthik']);
-
   newGame.isGameStarted = true;
-  game.updateToNewGame(newGame);
+  game.updateToNewGame(newGame); //resets the game object to new game
 };
 
 const handleExitGame = () => {

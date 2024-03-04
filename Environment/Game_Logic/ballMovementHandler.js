@@ -59,10 +59,10 @@ export const pointerUp = (
         4,
         -62
       );
-
-      //Updating the score
+      //update the score board GUI -- current and overall scores
       updateGameScores(game);
-
+      //if every player has rolled (5) all attempts, 
+      //stop the game -- controls, GUI and then reset the game
       if (
         game.currentFrameIndex === game.totalAttempts - 1 &&
         game.currentPlayerIndex === game.players.length - 1
@@ -74,10 +74,9 @@ export const pointerUp = (
           startMenuGUI(scene, game);
         }, 1500);
       }
-
+      //switch to the next player -- marks the end of the roll
       game.switchPlayer();
       game.ballIsRolled = false;
-
       game.initializePins();
     }, 5000);
   }
