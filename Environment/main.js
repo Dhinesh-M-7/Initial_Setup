@@ -8,7 +8,11 @@ import {
   pointerMove,
 } from "./Game_Logic/ballMovementHandler";
 import { createEnvironment } from "./Game_Environment/environment";
-import { createLights, createGameMusic, createRollSound } from "./Game_Environment/lightsAndMusic";
+import {
+  createLights,
+  createGameMusic,
+  createRollSound,
+} from "./Game_Environment/lightsAndMusic";
 import { createAnimations } from "./Game_Environment/animation";
 import { createBowlingLane } from "./Game_Environment/bowlingLane";
 import { createAim } from "./aim";
@@ -18,10 +22,8 @@ import {
   renderScoreBoard,
   currentRollScoreBoardDisplay,
   overallScoreBoardDisplay,
-} from "./renderScoreBoard";
+} from "./Game_GUI/renderScoreBoard";
 import { StartNewGame } from "./Game_Logic/newGameDataStructure";
-
-
 
 const canvas = document.getElementById("renderCanvas");
 const engine = new BABYLON.Engine(canvas);

@@ -1,11 +1,11 @@
-import { AdvancedDynamicTexture } from "@babylonjs/gui";
+import { AdvancedDynamicTexture, Button } from "@babylonjs/gui";
 import * as BABYLON from "@babylonjs/core";
 import {
   overallScoreBoardDisplay,
   currentRollScoreBoardDisplay,
 } from "./renderScoreBoard";
 import { infoGUI } from "./infoGUI";
-import { StartNewGame } from "./Game_Logic/newGameDataStructure";
+import { StartNewGame } from "../Game_Logic/newGameDataStructure";
 
 function createOwnPlane(scene, height, width, positionCoordinates) {
   let plane = BABYLON.MeshBuilder.CreatePlane(

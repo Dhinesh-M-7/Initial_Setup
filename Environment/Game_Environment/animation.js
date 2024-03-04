@@ -1,5 +1,5 @@
 import * as BABYLON from "@babylonjs/core";
-import { startMenuGUI } from "../startMenuGUI";
+import { startMenuGUI } from "../Game_GUI/startMenuGUI";
 
 //Defining frame number and values for camera movement and rotation
 const movementFrames = [0, 1, 5, 6, 13, 14];
@@ -56,7 +56,6 @@ export const createAnimations = (camera, scene, game) => {
   }
 
   rotation.setKeys(rotate_keys);
-
 
   //Starting the animation on the scene
   scene.beginDirectAnimation(
