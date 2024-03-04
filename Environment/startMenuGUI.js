@@ -19,13 +19,13 @@ function createOwnPlane(scene, height, width, positionCoordinates) {
   return plane;
 }
 
-function createButton(buttonName) {
+function createButton(buttonName, color) {
   let button = Button.CreateSimpleButton("but1", buttonName);
   button.width = 5;
   button.height = 2;
   button.color = "white";
   button.fontSize = 80;
-  button.background = "#6f6f6f";
+  button.background = color;
   return button;
 }
 
@@ -33,7 +33,7 @@ function createStartButton(scene) {
   let startButtonPositionCoordinates = [0, 25, -92];
   let startPlane = createOwnPlane(scene, 1, 5, startButtonPositionCoordinates);
   startPlane.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
-  let startButton = createButton("NEW GAME");
+  let startButton = createButton("NEW GAME", "green");
   let advancedTexture = AdvancedDynamicTexture.CreateForMesh(startPlane);
   advancedTexture.addControl(startButton);
   return [startButton, startPlane];
@@ -43,7 +43,7 @@ function createInfoButton(scene) {
   let infoButtonPositionCoordinates = [0, 23.5, -92];
   let infoPlane = createOwnPlane(scene, 1, 5, infoButtonPositionCoordinates);
   infoPlane.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
-  let infoButton = createButton("INFO");
+  let infoButton = createButton("INFO", "orange");
   let advancedTexture = AdvancedDynamicTexture.CreateForMesh(infoPlane);
   advancedTexture.addControl(infoButton);
   return [infoButton, infoPlane];
@@ -53,7 +53,7 @@ function createExitButton(scene) {
   let exitButtonPositionCoordinates = [0, 22, -92];
   let exitPlane = createOwnPlane(scene, 1, 5, exitButtonPositionCoordinates);
   exitPlane.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
-  let exitButton = createButton("EXIT");
+  let exitButton = createButton("EXIT", "red");
   let advancedTexture = AdvancedDynamicTexture.CreateForMesh(exitPlane);
   advancedTexture.addControl(exitButton);
   return [exitButton, exitPlane];
@@ -68,8 +68,8 @@ const handleStartGame = (startPlane, infoPlane, exitPlane, game) => {
   currentRollScoreBoardDisplay.updateText("Current\nScore: 0");
   overallScoreBoardDisplay.isVisible = true;
   currentRollScoreBoardDisplay.isVisible = true;
-  const newGame = new StartNewGame(game.generalPins, game.players)
-  // const newGame = new StartNewGame(game.generalPins, ['dhinesh', 'michael', 'monisha', 'arjun', 'karthik']);
+  // const newGame = new StartNewGame(game.generalPins, game.players)
+  const newGame = new StartNewGame(game.generalPins, ['dhinesh', 'michael', 'monisha', 'arjun', 'karthik']);
   newGame.isGameStarted = true;
   game.updateToNewGame(newGame);
 };

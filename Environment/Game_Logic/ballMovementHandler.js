@@ -7,8 +7,6 @@ import {
 } from "../renderScoreBoard";
 
 export const pointerDown = (mesh, getLanePosition) => {
-  //currentMesh = mesh;
-
   const startingPoint = getLanePosition();
   return [mesh, startingPoint];
 };
@@ -25,10 +23,10 @@ export const pointerUp = (
 ) => {
   const bowlingBallPosition = meshObject.bowling_ball.absolutePosition;
   if (startingPoint) {
-    const ballSpeed = (-bowlingBallPosition.z - 6) * 10;
+    const ballSpeed = (-bowlingBallPosition.z - 62) * 30;
     if (bowlingBallPosition.z < -63) {
       meshObject.bowlingAggregate.body.applyImpulse(
-        new BABYLON.Vector3(-aim.rotation.y * 550, 0, ballSpeed),
+        new BABYLON.Vector3(-aim.rotation.y * 110, 0, ballSpeed),
         meshObject.bowling_ball.getAbsolutePosition()
       );
       window.globalShootmusic.play();
