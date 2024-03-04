@@ -1,10 +1,10 @@
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders";
-import { startMenuGUI } from "../startMenuGUI";
+import { startMenuGUI } from "../Game_GUI/startMenuGUI";
 import {
   overallScoreBoardDisplay,
   currentRollScoreBoardDisplay,
-} from "../renderScoreBoard";
+} from "../Game_GUI/renderScoreBoard";
 
 export const pointerDown = (mesh, getLanePosition) => {
   //currentMesh = mesh;

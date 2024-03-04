@@ -22,7 +22,7 @@ import {
   renderScoreBoard,
   currentRollScoreBoardDisplay,
   overallScoreBoardDisplay,
-} from "./renderScoreBoard";
+} from "./Game_GUI/renderScoreBoard";
 import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 
 const canvas = document.getElementById("renderCanvas");
@@ -153,6 +153,7 @@ async function createScene() {
   createAnimations(camera, scene, game);
   createRollSound();
   renderScoreBoard(scene);
+
   havokPlugin.onCollisionEndedObservable.add((ev) =>
     rollCollisionHandler(ev, scene, window, game)
   );
