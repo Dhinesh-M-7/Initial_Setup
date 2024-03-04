@@ -15,48 +15,47 @@ export const pointerUp = (
   startingPoint,
   aim,
   game,
-  meshObject,
+  ballMovementObjects,
   updateGameScores,
   bowlingPinResult,
   createBowlingPins,
   scene
 ) => {
-  const bowlingBallPosition = meshObject.bowling_ball.absolutePosition;
-  if (startingPoint) {
-    const ballSpeed = (-bowlingBallPosition.z - 62) * 30;
-    if (bowlingBallPosition.z < -63) {
-      meshObject.bowlingAggregate.body.applyImpulse(
-        new BABYLON.Vector3(-aim.rotation.y * 110, 0, ballSpeed),
-        meshObject.bowling_ball.getAbsolutePosition()
-      );
-      window.globalShootmusic.play();
-      setTimeout(function () {
-        window.globalShootmusic.stop();
-      }, 1500);
-      game.ballIsRolled = true;
-    }
+  const bowlingBallPosition = ballMovementObjects.bowling_ball.absolutePosition;
+
+  //Mapping ball Speed with respect to the dragiing of the ball
+  const ballSpeed = (-bowlingBallPosition.z - 62) * 40;
+  if (bowlingBallPosition.z < -63) {
+    //Applying impulse to the ball
+    ballMovementObjects.bowlingAggregate.body.applyImpulse(
+      new BABYLON.Vector3(-aim.rotation.y * 120, 0, ballSpeed),
+      ballMovementObjects.bowling_ball.getAbsolutePosition()
+    );
+    window.globalShootmusic.play();
+    setTimeout(function () {
+      window.globalShootmusic.stop();
+    }, 1500);
+    game.ballIsRolled = true;
   }
-  //startingPoint = null;
+
   if (game.ballIsRolled === true) {
     setTimeout(() => {
-      console.log(game.entireFrames);
-      meshObject.setPins.forEach((pin) => {
+      //Getting back the pin to it's original position
+      ballMovementObjects.setPins.forEach((pin) => {
         pin.dispose();
       });
-      meshObject.setPins = createBowlingPins(bowlingPinResult);
+      ballMovementObjects.setPins = createBowlingPins(bowlingPinResult);
 
-      meshObject.bowlingAggregate.body.setLinearVelocity(
-        new BABYLON.Vector3(0, 0, 0)
-      );
-      meshObject.bowlingAggregate.body.setAngularVelocity(
-        new BABYLON.Vector3(0, 0, 0)
-      );
-      meshObject.bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
-      meshObject.bowling_ball.position = new BABYLON.Vector3(0, 4, -62);
+      //Getting back the ball to it's initial position
+      ballMovementObjects.bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
+      ballMovementObjects.bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
+      ballMovementObjects.bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
+      ballMovementObjects.bowling_ball.position = new BABYLON.Vector3(0,4,-62);
 
+      //Updating the score
       updateGameScores(game);
 
-      if (game.currentFrameIndex === game.totalAttempts-1 && game.currentPlayerIndex === game.players.length-1) {
+      if (game.currentFrameIndex === game.totalAttempts-1 && game.currentPlayerIndex === game.players.length-1){
         game.isGameStarted = false;
         setTimeout(() => {
           overallScoreBoardDisplay.isVisible = false;
@@ -64,8 +63,10 @@ export const pointerUp = (
           startMenuGUI(scene, game);
         }, 1500);
       }
+
       game.switchPlayer();
       game.ballIsRolled = false;
+
       game.initializePins();
     }, 5000);
   }
@@ -75,22 +76,15 @@ export const pointerUp = (
 export const pointerMove = (
   startingPoint,
   getLanePosition,
-  meshObject,
+  ballMovementObjects,
   aim,
   currentMesh
 ) => {
-  if (!startingPoint) {
-    return;
-  }
   const current = getLanePosition();
 
-  if (!current) {
-    return;
-  }
+  if (currentMesh != ballMovementObjects.bowling_ball) return;
 
-  if (!currentMesh || currentMesh.name != "bowlingBall") return;
-
-  let aimAngle = (meshObject.bowling_ball.position.x + current.x) * 0.1;
+  let aimAngle = (ballMovementObjects.bowling_ball.position.x + current.x) * 0.1;
 
   if (aimAngle > 0.15) aimAngle = 0.15;
   else if (aimAngle < -0.15) aimAngle = -0.15;
@@ -104,16 +98,16 @@ export const pointerMove = (
   const minZ = -67; // Minimum z value
   const maxZ = -62; // Maximum z value
 
-  const newZ = meshObject.bowling_ball.position.z + diff.z;
+  const newZ = ballMovementObjects.bowling_ball.position.z + diff.z;
 
   // Check if the new position exceeds the limits
   if (newZ < minZ) {
-    diff.z = minZ - meshObject.bowling_ball.position.z;
+    diff.z = minZ - ballMovementObjects.bowling_ball.position.z;
   } else if (newZ > maxZ) {
-    diff.z = maxZ - meshObject.bowling_ball.position.z;
+    diff.z = maxZ - ballMovementObjects.bowling_ball.position.z;
   }
 
-  meshObject.bowling_ball.position.addInPlace(diff);
+  ballMovementObjects.bowling_ball.position.addInPlace(diff);
 
   startingPoint = current;
   return startingPoint;

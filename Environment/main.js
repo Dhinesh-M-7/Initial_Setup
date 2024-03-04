@@ -8,7 +8,11 @@ import {
   pointerMove,
 } from "./Game_Logic/ballMovementHandler";
 import { createEnvironment } from "./Game_Environment/environment";
-import { createLights, createGameMusic, createRollSound } from "./Game_Environment/lightsAndMusic";
+import {
+  createLights,
+  createGameMusic,
+  createRollSound,
+} from "./Game_Environment/lightsAndMusic";
 import { createAnimations } from "./Game_Environment/animation";
 import { createBowlingLane } from "./Game_Environment/bowlingLane";
 import { createAim } from "./aim";
@@ -20,8 +24,6 @@ import {
   overallScoreBoardDisplay,
 } from "./renderScoreBoard";
 import { StartNewGame } from "./Game_Logic/newGameDataStructure";
-
-
 
 const canvas = document.getElementById("renderCanvas");
 const engine = new BABYLON.Engine(canvas);
@@ -65,7 +67,7 @@ async function createScene() {
 
   let setPins = createBowlingPins(bowlingPinResult);
 
-  let meshObject = { bowling_ball, bowlingAggregate, setPins };
+  let ballMovementObjects = { bowling_ball, bowlingAggregate, setPins };
   let startingPoint;
   let currentMesh;
 
@@ -124,7 +126,7 @@ async function createScene() {
             startingPoint,
             aim,
             game,
-            meshObject,
+            ballMovementObjects,
             updateGameScores,
             bowlingPinResult,
             createBowlingPins,
@@ -135,7 +137,7 @@ async function createScene() {
           startingPoint = pointerMove(
             startingPoint,
             getLanePosition,
-            meshObject,
+            ballMovementObjects,
             aim,
             currentMesh
           );
