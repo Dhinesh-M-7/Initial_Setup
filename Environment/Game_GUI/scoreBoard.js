@@ -7,13 +7,14 @@ import {
   currentRollScoreBoardDisplay,
   overallScoreBoardDisplay,
 } from "./renderScoreBoard";
-
+//updates the current roll and overall score after every roll for each player
 export const updateGameScores = (game) => {
   const currentRollScore = game.gameScoreCalculation();
   const overallScore = game.totalScoreCalculation();
   currentRollScoreBoardDisplay.updateText(
     "Attempt - " + (game.currentFrameIndex + 1).toString()
   );
+  //checks whether the player has hit all the pins -- if so '!!!Strike!!!' is displayed
   if (
     game.entireFrames[game.currentPlayerIndex][game.currentFrameIndex].bonus ===
     "strike"
@@ -56,6 +57,7 @@ export function scoreBoardGUI(scene, positionCoordinates, visibility, value) {
   display.updateText = function (newValue) {
     textContent.text = newValue;
   };
+  //Helps to append the value with the existing Display value
   display.appendText = function (addValue) {
     textContent.text += addValue;
   };
