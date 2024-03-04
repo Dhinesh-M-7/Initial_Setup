@@ -1,5 +1,6 @@
 import { Button } from "@babylonjs/gui";
 import * as BABYLON from "@babylonjs/core";
+
 export function createOwnPlane(scene, height, width, positionCoordinates) {
   let plane = BABYLON.MeshBuilder.CreatePlane(
     "plane",
@@ -12,12 +13,12 @@ export function createOwnPlane(scene, height, width, positionCoordinates) {
   return plane;
 }
 
-export function createButton(buttonName) {
+export function createButton(buttonName, color) {
   let button = Button.CreateSimpleButton("but1", buttonName);
   button.width = 5;
   button.height = 2;
   button.fontSize = 80;
   button.color = "white";
-  button.background = "#6f6f6f";
+  button.background = color;
   return button;
 }

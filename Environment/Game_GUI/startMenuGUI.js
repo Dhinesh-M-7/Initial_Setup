@@ -6,28 +6,7 @@ import {
 } from "./renderScoreBoard";
 import { infoGUI } from "./infoGUI";
 import { StartNewGame } from "../Game_Logic/newGameDataStructure";
-
-function createOwnPlane(scene, height, width, positionCoordinates) {
-  let plane = BABYLON.MeshBuilder.CreatePlane(
-    "plane",
-    { height: height, width: width },
-    scene
-  );
-  plane.position.x = positionCoordinates[0];
-  plane.position.y = positionCoordinates[1];
-  plane.position.z = positionCoordinates[2];
-  return plane;
-}
-
-function createButton(buttonName, color) {
-  let button = Button.CreateSimpleButton("but1", buttonName);
-  button.width = 5;
-  button.height = 2;
-  button.color = "white";
-  button.fontSize = 80;
-  button.background = color;
-  return button;
-}
+import { createOwnPlane, createButton } from "./createButtonForGUI";
 
 function createStartButton(scene) {
   let startButtonPositionCoordinates = [0, 25, -92];
