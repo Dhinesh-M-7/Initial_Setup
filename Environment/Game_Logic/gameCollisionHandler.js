@@ -5,7 +5,6 @@ export const rollCollisionHandler = (ev, scene, window, game) => {
     const colliderMeshName = colliderMesh.name;
 
     if(colliderMeshName === 'bowlingBall' && collidedAgainstMeshName.slice(0,3) === 'pin'){
-        // console.log('hit');
         window.globalHitMusic.play();
     }
     
