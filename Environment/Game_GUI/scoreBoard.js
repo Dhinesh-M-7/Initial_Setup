@@ -2,6 +2,35 @@ import { GUI3DManager } from "@babylonjs/gui/3D/gui3DManager";
 import { TextBlock } from "@babylonjs/gui";
 import { Button3D } from "@babylonjs/gui";
 import * as BABYLON from "@babylonjs/core";
+import { particles } from "../Game_Environment/particles";
+import {
+  currentRollScoreBoardDisplay,
+  overallScoreBoardDisplay,
+} from "./renderScoreBoard";
+
+export const updateGameScores = (game) => {
+  const currentRollScore = game.gameScoreCalculation();
+  const overallScore = game.totalScoreCalculation();
+  currentRollScoreBoardDisplay.updateText(
+    "Attempt - " + (game.currentFrameIndex + 1).toString()
+  );
+  if (
+    game.entireFrames[game.currentPlayerIndex][game.currentFrameIndex].bonus ===
+    "strike"
+  ) {
+    particles(new BABYLON.Vector3(13, 18, -30));
+    particles(new BABYLON.Vector3(-13, 18, -30));
+    currentRollScoreBoardDisplay.appendText("\n!!!Strike!!!");
+  }
+  currentRollScoreBoardDisplay.appendText(
+    "\nCurrent: " + currentRollScore.toString()
+  );
+  overallScoreBoardDisplay.updateText(
+    game.players[game.currentPlayerIndex] +
+      "\nOverall: " +
+      overallScore.toString()
+  );
+};
 
 export function scoreBoardGUI(scene, positionCoordinates, visibility, value) {
   let anchor = new BABYLON.AbstractMesh("anchor", scene);
@@ -27,8 +56,8 @@ export function scoreBoardGUI(scene, positionCoordinates, visibility, value) {
   display.updateText = function (newValue) {
     textContent.text = newValue;
   };
-  display.appendText = function(addValue) {
+  display.appendText = function (addValue) {
     textContent.text += addValue;
-  }
+  };
   return display;
 }

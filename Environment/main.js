@@ -6,6 +6,7 @@ import {
   pointerDown,
   pointerUp,
   pointerMove,
+  ballMovement,
 } from "./Game_Logic/ballMovementHandler";
 import { createEnvironment } from "./Game_Environment/environment";
 import {
@@ -16,13 +17,11 @@ import {
 import { createAnimations } from "./Game_Environment/animation";
 import { createBowlingLane } from "./Game_Environment/bowlingLane";
 import { createAim } from "./Game_Logic/aim";
-import { createBowlingBall, createBowlingPins } from "./Game_Environment/bowlingBallAndPins";
-import { particles } from "./Game_Environment/particles";
 import {
-  renderScoreBoard,
-  currentRollScoreBoardDisplay,
-  overallScoreBoardDisplay,
-} from "./Game_GUI/renderScoreBoard";
+  createBowlingBall,
+  createBowlingPins,
+} from "./Game_Environment/bowlingBallAndPins";
+import { renderScoreBoard } from "./Game_GUI/renderScoreBoard";
 import { StartNewGame } from "./Game_Logic/newGameDataStructure";
 
 const canvas = document.getElementById("renderCanvas");
@@ -71,21 +70,6 @@ async function createScene() {
   let startingPoint;
   let currentMesh;
 
-  const updateGameScores = (game) => {
-    const currentRollScore = game.gameScoreCalculation();
-    const overallScore = game.totalScoreCalculation();
-    currentRollScoreBoardDisplay.updateText("Attempt - " + (game.currentFrameIndex+1).toString());
-    if (game.entireFrames[game.currentPlayerIndex][game.currentFrameIndex].bonus === "strike") {
-      particles(new BABYLON.Vector3(13, 18, -30));
-      particles(new BABYLON.Vector3(-13, 18, -30));
-      currentRollScoreBoardDisplay.appendText("\n!!!Strike!!!");
-    } 
-    currentRollScoreBoardDisplay.appendText("\nCurrent: "+ currentRollScore.toString());
-    overallScoreBoardDisplay.updateText(
-      game.players[game.currentPlayerIndex] + "\nOverall: " + overallScore.toString()
-    );
-  };
-
   const getLanePosition = () => {
     const pickinfo = scene.pick(scene.pointerX, scene.pointerY, (mesh) => {
       return mesh == lane;
@@ -94,15 +78,6 @@ async function createScene() {
       return pickinfo.pickedPoint;
     }
     return null;
-  };
-
-  const ballMovement = (pressedArrow) => {
-    if (bowling_ball.position.x <= 8 && bowling_ball.position.x >= -8) {
-      if (pressedArrow == "ArrowLeft" && bowling_ball.position.x != 8)
-        bowling_ball.position.x += 1;
-      if (pressedArrow == "ArrowRight" && bowling_ball.position.x != -8)
-        bowling_ball.position.x -= 1;
-    }
   };
 
   scene.onPointerObservable.add((pointerInfo) => {
@@ -127,7 +102,6 @@ async function createScene() {
             aim,
             game,
             ballMovementObjects,
-            updateGameScores,
             bowlingPinResult,
             createBowlingPins,
             scene
@@ -147,7 +121,7 @@ async function createScene() {
   });
 
   // Create a new instance of StartGame with generalPins
-  let game = new StartNewGame(setPins, ['Player 1', 'Player 2']);
+  let game = new StartNewGame(setPins, ["Player 1", "Player 2"]);
   createAnimations(camera, scene, game);
   createRollSound();
   renderScoreBoard(scene);
@@ -159,7 +133,7 @@ async function createScene() {
   scene.onKeyboardObservable.add((kbInfo) => {
     switch (kbInfo.type) {
       case BABYLON.KeyboardEventTypes.KEYDOWN:
-        ballMovement(kbInfo.event.key);
+        ballMovement(bowling_ball, kbInfo.event.key);
     }
   });
 

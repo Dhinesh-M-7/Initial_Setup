@@ -5,6 +5,7 @@ import {
   overallScoreBoardDisplay,
   currentRollScoreBoardDisplay,
 } from "../Game_GUI/renderScoreBoard";
+import { updateGameScores } from "../Game_GUI/scoreBoard";
 
 export const pointerDown = (mesh, getLanePosition) => {
   const startingPoint = getLanePosition();
@@ -16,7 +17,6 @@ export const pointerUp = (
   aim,
   game,
   ballMovementObjects,
-  updateGameScores,
   bowlingPinResult,
   createBowlingPins,
   scene
@@ -47,15 +47,26 @@ export const pointerUp = (
       ballMovementObjects.setPins = createBowlingPins(bowlingPinResult);
 
       //Getting back the ball to it's initial position
-      ballMovementObjects.bowlingAggregate.body.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
-      ballMovementObjects.bowlingAggregate.body.setAngularVelocity(new BABYLON.Vector3(0, 0, 0));
+      ballMovementObjects.bowlingAggregate.body.setLinearVelocity(
+        new BABYLON.Vector3(0, 0, 0)
+      );
+      ballMovementObjects.bowlingAggregate.body.setAngularVelocity(
+        new BABYLON.Vector3(0, 0, 0)
+      );
       ballMovementObjects.bowling_ball.rotation = new BABYLON.Vector3(0, 0, 0);
-      ballMovementObjects.bowling_ball.position = new BABYLON.Vector3(0,4,-62);
+      ballMovementObjects.bowling_ball.position = new BABYLON.Vector3(
+        0,
+        4,
+        -62
+      );
 
       //Updating the score
       updateGameScores(game);
 
-      if (game.currentFrameIndex === game.totalAttempts-1 && game.currentPlayerIndex === game.players.length-1){
+      if (
+        game.currentFrameIndex === game.totalAttempts - 1 &&
+        game.currentPlayerIndex === game.players.length - 1
+      ) {
         game.isGameStarted = false;
         setTimeout(() => {
           overallScoreBoardDisplay.isVisible = false;
@@ -84,7 +95,8 @@ export const pointerMove = (
 
   if (currentMesh != ballMovementObjects.bowling_ball) return;
 
-  let aimAngle = (ballMovementObjects.bowling_ball.position.x + current.x) * 0.1;
+  let aimAngle =
+    (ballMovementObjects.bowling_ball.position.x + current.x) * 0.1;
 
   if (aimAngle > 0.15) aimAngle = 0.15;
   else if (aimAngle < -0.15) aimAngle = -0.15;
@@ -111,4 +123,13 @@ export const pointerMove = (
 
   startingPoint = current;
   return startingPoint;
+};
+
+export const ballMovement = (bowling_ball, pressedArrow) => {
+  if (bowling_ball.position.x <= 8 && bowling_ball.position.x >= -8) {
+    if (pressedArrow == "ArrowLeft" && bowling_ball.position.x != 8)
+      bowling_ball.position.x += 1;
+    if (pressedArrow == "ArrowRight" && bowling_ball.position.x != -8)
+      bowling_ball.position.x -= 1;
+  }
 };

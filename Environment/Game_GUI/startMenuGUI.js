@@ -48,7 +48,7 @@ const handleStartGame = (startPlane, infoPlane, exitPlane, game) => {
   overallScoreBoardDisplay.isVisible = true;
   currentRollScoreBoardDisplay.isVisible = true;
   // const newGame = new StartNewGame(game.generalPins,  ['Player']);
-  const newGame = new StartNewGame(game.generalPins, ['player 1', 'player 2']);
+  const newGame = new StartNewGame(game.generalPins, ["Player 1", "Player 2"]);
   // const newGame = new StartNewGame(game.generalPins, ['dhinesh', 'michael', 'monisha', 'arjun', 'karthik']);
 
   newGame.isGameStarted = true;
