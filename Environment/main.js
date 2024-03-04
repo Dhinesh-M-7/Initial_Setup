@@ -73,8 +73,11 @@ async function createScene() {
 
   const updateGameScores = (game, currentRollScore, overallScore) => {
     if (game.frames[game.currentFrameIndex - 1].bonus === "strike") {
+
+      //Adding particles when strike occurs
       particles(new BABYLON.Vector3(13, 18, -30));
       particles(new BABYLON.Vector3(-13, 18, -30));
+      
       currentRollScoreBoardDisplay.updateText(
         "Strike!!!\n" + currentRollScore.toString()
       );

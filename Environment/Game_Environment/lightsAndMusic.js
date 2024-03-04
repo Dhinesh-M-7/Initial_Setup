@@ -13,7 +13,7 @@ export const createLights = () => {
       );
       roofLight.intensity = 0.4;
 }
-
+//Adding scene music
 export const createGameMusic = (scene) => {
     const music = new BABYLON.Sound(
         "Music",
@@ -26,15 +26,15 @@ export const createGameMusic = (scene) => {
         }
       );
 }
-
+//Adding roll and hit music
 export const createRollSound = () => {
     window.globalShootmusic = new BABYLON.Sound(
       "rollMusic",
       "./Audio/rollingball.mp3",
       null,
       {
-        loop: true,
-        autoplay: true,
+        loop: false,
+        autoplay: false,
       }
     );
     window.globalHitMusic = new BABYLON.Sound(
@@ -42,8 +42,8 @@ export const createRollSound = () => {
       "./Audio/hit.mp3",
       null,
       {
-        loop: true,
-        autoplay: true,
+        loop: false,
+        autoplay: false,
       }
     );
   };
