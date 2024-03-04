@@ -15,8 +15,8 @@ import {
 } from "./Game_Environment/lightsAndMusic";
 import { createAnimations } from "./Game_Environment/animation";
 import { createBowlingLane } from "./Game_Environment/bowlingLane";
-import { createAim } from "./aim";
-import { createBowlingBall, createBowlingPins } from "./bowlingBallAndPins";
+import { createAim } from "./Game_Logic/aim";
+import { createBowlingBall, createBowlingPins } from "./Game_Environment/bowlingBallAndPins";
 import { particles } from "./Game_Environment/particles";
 import {
   renderScoreBoard,
