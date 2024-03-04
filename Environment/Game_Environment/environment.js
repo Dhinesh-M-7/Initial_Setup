@@ -1,6 +1,8 @@
 import * as BABYLON from "@babylonjs/core";
 
 export const createEnvironment = () => {
+
+  //creation of ground
   const ground = BABYLON.MeshBuilder.CreateGround("ground", {
     width: 100,
     height: 200,
@@ -9,7 +11,7 @@ export const createEnvironment = () => {
   groundMat.diffuseTexture = new BABYLON.Texture("Images/Neon-floor.jpg");
   ground.material = groundMat;
 
-
+  //creating the left side wall of the game room
   const leftWall = new BABYLON.MeshBuilder.CreatePlane("plane", {
     height: 50,
     width: 200,
@@ -21,6 +23,7 @@ export const createEnvironment = () => {
   leftWallMat.diffuseTexture = new BABYLON.Texture("Images/Neon-sidewall.jpg");
   leftWall.material = leftWallMat;
 
+  //creating the right side wall of the game room
   const rightWall = new BABYLON.MeshBuilder.CreatePlane("plane", {
     height: 50,
     width: 200,
@@ -35,7 +38,7 @@ export const createEnvironment = () => {
   //Place where the pins fall after getting hit by the bowling ball
   const pinDeck = new BABYLON.MeshBuilder.CreatePlane("pinDeck", {
     height: 15,
-    width: 30,
+    width: 100,
   });
   pinDeck.position.y = 7.5;
   pinDeck.position.z = 100;
@@ -77,6 +80,16 @@ export const createEnvironment = () => {
   );
   cameraWall.material = cameraWallMat;
 
+  //adding a roof
+  const roof = BABYLON.MeshBuilder.CreatePlane("roof", {
+    width: 100,
+    height: 200,
+  });
+  const roofMat = new BABYLON.StandardMaterial("roof-mat");
+  roofMat.diffuseTexture = new BABYLON.Texture("Images/Neon-floor.jpg");
+  roof.material = roofMat;
+  roof.rotation.x = - Math.PI / 2;
+  roof.position.y = 50
 
   //Adding invisible planes at the sides of bowling lane to prevent pins from leaving the lane.
   const laneProtector1 = new BABYLON.MeshBuilder.CreatePlane("laneProtector", {

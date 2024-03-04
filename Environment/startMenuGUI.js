@@ -6,13 +6,34 @@ import {
 } from "./renderScoreBoard";
 import { infoGUI } from "./infoGUI";
 import { StartNewGame } from "./Game_Logic/newGameDataStructure";
-import { createOwnPlane, createButton } from "./createButtonForGUI";
+
+function createOwnPlane(scene, height, width, positionCoordinates) {
+  let plane = BABYLON.MeshBuilder.CreatePlane(
+    "plane",
+    { height: height, width: width },
+    scene
+  );
+  plane.position.x = positionCoordinates[0];
+  plane.position.y = positionCoordinates[1];
+  plane.position.z = positionCoordinates[2];
+  return plane;
+}
+
+function createButton(buttonName, color) {
+  let button = Button.CreateSimpleButton("but1", buttonName);
+  button.width = 5;
+  button.height = 2;
+  button.color = "white";
+  button.fontSize = 80;
+  button.background = color;
+  return button;
+}
 
 function createStartButton(scene) {
   let startButtonPositionCoordinates = [0, 25, -92];
   let startPlane = createOwnPlane(scene, 1, 5, startButtonPositionCoordinates);
   startPlane.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
-  let startButton = createButton("NEW GAME");
+  let startButton = createButton("NEW GAME", "green");
   let advancedTexture = AdvancedDynamicTexture.CreateForMesh(startPlane);
   advancedTexture.addControl(startButton);
   return [startButton, startPlane];
@@ -22,7 +43,7 @@ function createInfoButton(scene) {
   let infoButtonPositionCoordinates = [0, 23.5, -92];
   let infoPlane = createOwnPlane(scene, 1, 5, infoButtonPositionCoordinates);
   infoPlane.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
-  let infoButton = createButton("INFO");
+  let infoButton = createButton("INFO", "orange");
   let advancedTexture = AdvancedDynamicTexture.CreateForMesh(infoPlane);
   advancedTexture.addControl(infoButton);
   return [infoButton, infoPlane];
@@ -32,7 +53,7 @@ function createExitButton(scene) {
   let exitButtonPositionCoordinates = [0, 22, -92];
   let exitPlane = createOwnPlane(scene, 1, 5, exitButtonPositionCoordinates);
   exitPlane.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
-  let exitButton = createButton("EXIT");
+  let exitButton = createButton("EXIT", "red");
   let advancedTexture = AdvancedDynamicTexture.CreateForMesh(exitPlane);
   advancedTexture.addControl(exitButton);
   return [exitButton, exitPlane];
