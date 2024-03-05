@@ -7,8 +7,8 @@ import {
 } from "../Game_GUI/renderScoreBoard";
 import { updateGameScores } from "../Game_GUI/scoreBoard";
 
-export const pointerDown = (mesh, getLanePosition) => {
-  const startingPoint = getLanePosition();
+export const pointerDown = (mesh, getPointerPosition) => {
+  const startingPoint = getPointerPosition();
   return [mesh, startingPoint];
 };
 
@@ -85,42 +85,42 @@ export const pointerUp = (
 
 export const pointerMove = (
   startingPoint,
-  getLanePosition,
+  getPointerPosition,
   ballMovementObjects,
   aim,
   currentMesh
 ) => {
-  const current = getLanePosition();
+  const currentPosition = getPointerPosition();
 
   if (currentMesh != ballMovementObjects.bowling_ball) return;
 
   let aimAngle =
-    (ballMovementObjects.bowling_ball.position.x + current.x) * 0.1;
+    (ballMovementObjects.bowling_ball.position.x + currentPosition.x) * 0.1;
 
   if (aimAngle > 0.15) aimAngle = 0.15;
   else if (aimAngle < -0.15) aimAngle = -0.15;
 
   aim.rotation.y = aimAngle;
 
-  const diff = current.subtract(startingPoint);
-  diff.x = 0;
+  const differenceFromCurrentPoint = currentPosition.subtract(startingPoint);
+  differenceFromCurrentPoint.x = 0;
 
   // Define the limits for z movement
   const minZ = -67; // Minimum z value
   const maxZ = -62; // Maximum z value
 
-  const newZ = ballMovementObjects.bowling_ball.position.z + diff.z;
+  const newZ = ballMovementObjects.bowling_ball.position.z + differenceFromCurrentPoint.z;
 
   // Check if the new position exceeds the limits
   if (newZ < minZ) {
-    diff.z = minZ - ballMovementObjects.bowling_ball.position.z;
+    differenceFromCurrentPoint.z = minZ - ballMovementObjects.bowling_ball.position.z;
   } else if (newZ > maxZ) {
-    diff.z = maxZ - ballMovementObjects.bowling_ball.position.z;
+    differenceFromCurrentPoint.z = maxZ - ballMovementObjects.bowling_ball.position.z;
   }
 
-  ballMovementObjects.bowling_ball.position.addInPlace(diff);
+  ballMovementObjects.bowling_ball.position.addInPlace(differenceFromCurrentPoint);
 
-  startingPoint = current;
+  startingPoint = currentPosition;
   return startingPoint;
 };
 

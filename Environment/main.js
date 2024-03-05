@@ -70,7 +70,7 @@ async function createScene() {
   let startingPoint;
   let currentMesh;
 
-  const getLanePosition = () => {
+  const getPointerPosition = () => {
     const pickinfo = scene.pick(scene.pointerX, scene.pointerY, (mesh) => {
       return mesh == lane;
     });
@@ -91,7 +91,7 @@ async function createScene() {
             aim.isVisible = true;
             [currentMesh, startingPoint] = pointerDown(
               pointerInfo.pickInfo.pickedMesh,
-              getLanePosition
+              getPointerPosition
             );
           }
           break;
@@ -110,7 +110,7 @@ async function createScene() {
         case BABYLON.PointerEventTypes.POINTERMOVE:
           startingPoint = pointerMove(
             startingPoint,
-            getLanePosition,
+            getPointerPosition,
             ballMovementObjects,
             aim,
             currentMesh
